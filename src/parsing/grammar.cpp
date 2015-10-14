@@ -31,7 +31,7 @@
 #include <cstdint>
 
 #include <algorithm>
-#include <regex>
+//#include <regex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -45,6 +45,7 @@
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/operator.hpp>
+#include <boost/regex.hpp>
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -578,10 +579,13 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 	} else {
 		file_path = parentGame->DataFolder();
 	}
-	std::regex regex;
+	//std::regex regex;
+	boost::regex regex;
 	try {
-		regex = std::regex(reg, std::regex::ECMAScript|std::regex::icase);
-	} catch (std::regex_error e) {
+		//regex = std::regex(reg, std::regex::ECMAScript|std::regex::icase);
+		regex = boost::regex(reg, boost::regex::ECMAScript|boost::regex::icase);
+	//} catch (std::regex_error e) {
+	} catch (boost::regex_error e) {
 		LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
 		          reg.c_str());
 		result = false;  // Fail the check.
@@ -591,7 +595,9 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 	for (fs::directory_iterator itr(file_path);
 	     itr != fs::directory_iterator(); ++itr) {
 		if (fs::is_regular_file(itr->status())) {
-			if (std::regex_match(itr->path().filename().string(), regex)) {
+			// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
+			//if (std::regex_match(itr->path().filename().string(), regex)) {
+			if (boost::regex_match(itr->path().filename().string(), regex)) {
 				result = true;
 				break;
 			}

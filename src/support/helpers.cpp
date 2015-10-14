@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
-#include <regex>
+//#include <regex>
 #include <sstream>
 #include <string>
 
@@ -44,6 +44,7 @@
 #include <boost/filesystem.hpp>
 //#include <boost/filesystem/fstream.hpp>
 #include <boost/locale.hpp>
+#include <boost/regex.hpp>
 #include <boost/spirit/include/karma.hpp>
 
 #include "alphanum.hpp"
@@ -291,12 +292,16 @@ bool Version::operator > (Version ver) {
 bool Version::operator < (Version ver) {
 	// Version string could have a wide variety of formats. Use regex to choose specific comparison types.
 
-	std::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
+	// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
+	//std::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
+	boost::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
 
 	//std::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  // Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
-	if (std::regex_match(verString, reg1) &&
-	    std::regex_match(ver.AsString(), reg1)) {
+	//if (std::regex_match(verString, reg1) &&
+	//    std::regex_match(ver.AsString(), reg1)) {
+	if (boost::regex_match(verString, reg1) &&
+	    boost::regex_match(ver.AsString(), reg1)) {
 		// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
 		// with zeros. An arbitrary number of numbers should be supported.
 		std::istringstream parser1(verString);

@@ -34,7 +34,7 @@
 #include <algorithm>  // For sort function; not sure if right header as it wasn't included before but none of the included headers seem to define the sort function
 #include <fstream>
 #include <ostream>
-#include <regex>
+//#include <regex>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -42,6 +42,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -459,11 +460,16 @@ void ItemList::EvalRegex(const Game &parentGame) {
 	std::vector<Item>::iterator itemIter = items.begin();
 	while (itemIter != items.end()) {
 		if (itemIter->Type() == REGEX) {
-			std::regex reg;  // Form a regex.
+			//std::regex reg;  // Form a regex.
+			// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
+			boost::regex reg;  // Form a regex.
 			try {
-				reg = std::regex(itemIter->Name()+"(\\.ghost)?",
-				                   std::regex::ECMAScript|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
-			} catch (std::regex_error /*&e*/) {
+				//reg = std::regex(itemIter->Name()+"(\\.ghost)?",
+				                   //std::regex::ECMAScript|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
+				reg = boost::regex(itemIter->Name()+"(\\.ghost)?",
+				                   boost::regex::ECMAScript|boost::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
+			//} catch (std::regex_error /*&e*/) {
+			} catch (boost::regex_error /*&e*/) {
 				boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL,
 				                           itemIter->Name());
 				LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
@@ -645,10 +651,12 @@ void ItemList::Move(std::size_t newPos, const Item item) {
 // Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
 std::unordered_set<std::string>::iterator ItemList::FindRegexMatch(
     const std::unordered_set<std::string> set,
-    const std::regex reg,
+    //const std::regex reg,
+    const boost::regex reg,
     std::unordered_set<std::string>::iterator startPos) {
 	while(startPos != set.end()) {
-		if (std::regex_match(*startPos, reg))
+		//if (std::regex_match(*startPos, reg))
+		if (boost::regex_match(*startPos, reg))
 			break;
 		++startPos;
 	}

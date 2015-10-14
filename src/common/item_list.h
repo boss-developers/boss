@@ -31,13 +31,14 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <regex>
+//#include <regex>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 #include "common/dll_def.h"
 #include "common/error.h"
@@ -106,7 +107,8 @@ class BOSS_COMMON ItemList {
 	// regex and returns its iterator position.
 	std::unordered_set<std::string>::iterator FindRegexMatch(
 	    const std::unordered_set<std::string> set,
-	    const std::regex reg,
+	    //const std::regex reg,
+	    const boost::regex reg,
 	    std::unordered_set<std::string>::iterator startPos);
 
 	std::vector<Item> items;
