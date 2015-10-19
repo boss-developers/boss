@@ -5,10 +5,13 @@ option(BUILD_GUI "Build the BOSS GUI" ON)
 #option(BUILD_SHARED_LIBS "Build Shared Library (OFF for Static)" OFF)
 
 set (LIBGIT2_ROOT "../libgit2")
+#set (CMAKE_VERBOSE_MAKEFILE ON)
 
 # Main Header Files
 
-set(BOSS_H      src/common/conditional_data.h
+set(BOSS_H      src/base/fstream.h
+                src/base/regex.h
+                src/common/conditional_data.h
                 src/common/dll_def.h
                 src/common/error.h
                 src/common/game.h
@@ -70,15 +73,30 @@ if (WIN32)
 	#set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Shared Library (OFF for Static)")
 	set(BUILD_SHARED_LIBS OFF)
 	if (MINGW)
-		set(CMAKE_EXE_LINKER_FLAGS "-static")
+		#add_compile_options("-static" "-static-libstdc++" "-static-libgcc")
+		#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+		#set(CMAKE_EXE_LINKER_FLAGS "-static -Wl,--allow-multiple-definition")
+		#set(CMAKE_EXE_LINKER_FLAGS "-static")
+		set(CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
 		set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+		# Temporary, need to figure out how to properly make a static build
+		#set(CMAKE_EXE_LINK_DYNAMIC_C_FLAGS)       # remove -Wl,-Bdynamic
+		#set(CMAKE_EXE_LINK_DYNAMIC_CXX_FLAGS)
+		#set(CMAKE_SHARED_LIBRARY_C_FLAGS)         # remove -fPIC
+		#set(CMAKE_SHARED_LIBRARY_CXX_FLAGS)
+		#set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)    # remove -rdynamic
+		#set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 	endif ()
 	# Set up the Boost options for Windows
 	set(Boost_USE_STATIC_LIBS ON)
 	set(Boost_USE_STATIC_RUNTIME ON)
-	find_package(Boost REQUIRED filesystem regex program_options locale system exception)
+	if (CMAKE_GENERATOR STREQUAL "Visual Studio 14 2015")
+		find_package(Boost REQUIRED filesystem iostreams regex program_options locale system exception)
+	else ()
+		find_package(Boost REQUIRED filesystem iostreams program_options locale system exception)
+	endif ()
 else ()
-	find_package(Boost REQUIRED filesystem regex program_options locale system)
+	find_package(Boost REQUIRED filesystem iostreams program_options locale system)
 endif ()
 
 add_executable(boss src/boss_cli.cpp ${BOSS_SRC})
@@ -95,11 +113,17 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	target_compile_options(boss PUBLIC "-O3" "-std=c++11")
 endif ()
 
+if(MINGW)
+#target_compile_options(boss PUBLIC "-static-libstdc++" "-static-libgcc")
+	set_target_properties(boss PROPERTIES LINK_SEARCH_START_STATIC 1)
+	set_target_properties(boss PROPERTIES LINK_SEARCH_END_STATIC 1)
+endif ()
+
 target_link_libraries(boss ${Boost_LIBRARIES} git2)
 
 # Add Windows specific libraries
 if (WIN32)
-	target_link_libraries(boss version gdi32 ws2_32)
+	target_link_libraries(boss version gdi32)
 endif ()
 
 # GUI Build
@@ -152,4 +176,7 @@ if (MINGW OR NOT WIN32)
 	if (BUILD_GUI)
 		target_link_libraries(boss_gui ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
 	endif ()
+endif ()
+if (WIN32)
+	target_link_libraries(boss ws2_32)
 endif ()

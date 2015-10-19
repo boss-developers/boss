@@ -58,6 +58,12 @@
 #include "support/platform.h"
 
 #if _WIN32 || _WIN64
+#	ifndef UNICODE
+#		define UNICODE
+#	endif
+#	ifndef _UNICODE
+#		define _UNICODE
+#	endif
 #	include <shlobj.h>
 #	include <windows.h>
 #endif
@@ -873,8 +879,12 @@ fs::path Game::GetLocalAppDataPath() {
 	HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL,
 	                              SHGFP_TYPE_CURRENT, path);
 
+	const int utf8_string_size = WideCharToMultiByte(CP_UTF8, 0, path, -1, NULL, 0, NULL, NULL);
+	char *narrow_path = new char[utf8_string_size];
+	WideCharToMultiByte(CP_UTF8, 0, path, -1, narrow_path, utf8_string_size, NULL, NULL);
+
 	if (res == S_OK)
-		return fs::path(path);
+		return fs::path(narrow_path);
 #endif
 	return fs::path("");
 }

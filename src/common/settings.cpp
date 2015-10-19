@@ -38,6 +38,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
 
+#include "base/fstream.h"
 #include "common/error.h"
 #include "common/globals.h"
 #include "parsing/grammar.h"
@@ -81,7 +82,8 @@ void Settings::Load(const fs::path file) {
 void Settings::Save(const fs::path file, const std::uint32_t currentGameId) {
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 	//ofstream ini(file.c_str(), ios_base::trunc);
-	std::ofstream ini(file.string(), std::ios_base::trunc);
+	//std::ofstream ini(file.string(), std::ios_base::trunc);
+	boss_fstream::ofstream ini(file, std::ios_base::trunc);
 	if (ini.fail())
 		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 	ini << '\xEF' << '\xBB' << '\xBF'  // Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.

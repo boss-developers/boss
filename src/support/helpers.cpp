@@ -44,11 +44,13 @@
 #include <boost/filesystem.hpp>
 //#include <boost/filesystem/fstream.hpp>
 #include <boost/locale.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 #include <boost/spirit/include/karma.hpp>
 
 #include "alphanum.hpp"
 
+#include "base/fstream.h"
+#include "base/regex.h"
 #include "common/error.h"
 #include "support/logger.h"
 
@@ -76,7 +78,8 @@ std::uint32_t GetCrc32(const fs::path &filename) {
 	char buffer[buffer_size];
 	// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
 	//ifstream ifile(filename.c_str(), ios::binary);
-	std::ifstream ifile(filename.string(), std::ios::binary);
+	//std::ifstream ifile(filename.string(), std::ios::binary);
+	boss_fstream::ifstream ifile(filename, std::ios::binary);
 	//fs::ifstream ifile(filename, std::ios::binary);  // MCP Note: I think this is std::ifstream as it's not using a path argument but I'm not sure
 	LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
 	boost::crc_32_type result;
@@ -98,8 +101,9 @@ std::uint32_t GetCrc32(const fs::path &filename) {
 void fileToBuffer(const fs::path file, std::string &buffer) {
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 	//ifstream ifile(file.c_str());
-	std::ifstream ifile(file.string());
+	//std::ifstream ifile(file.string());
 	//fs::ifstream ifile(file);
+	boss_fstream::ifstream ifile(file);
 	if (ifile.fail())
 		return;
 	ifile.unsetf(std::ios::skipws);  // No white space skipping!
@@ -294,14 +298,14 @@ bool Version::operator < (Version ver) {
 
 	// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
 	//std::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
-	boost::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
+	boss_regex::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
 
 	//std::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  // Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
 	//if (std::regex_match(verString, reg1) &&
 	//    std::regex_match(ver.AsString(), reg1)) {
-	if (boost::regex_match(verString, reg1) &&
-	    boost::regex_match(ver.AsString(), reg1)) {
+	if (boss_regex::regex_match(verString, reg1) &&
+	    boss_regex::regex_match(ver.AsString(), reg1)) {
 		// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
 		// with zeros. An arbitrary number of numbers should be supported.
 		std::istringstream parser1(verString);
@@ -345,3 +349,9 @@ bool Version::operator != (Version ver) {
 }
 
 }  // namespace boss
+/*#ifdef _UNICODE
+#	undef _UNICODE
+#endif
+#ifdef UNICODE
+#	undef UNICODE
+#endif*/

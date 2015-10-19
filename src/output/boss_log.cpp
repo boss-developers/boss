@@ -40,6 +40,7 @@
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
 
+#include "base/fstream.h"
 #include "common/error.h"
 #include "common/globals.h"
 #include "output/output.h"
@@ -105,13 +106,14 @@ void BossLog::Save(const fs::path file, const bool overwrite) {
 		recognisedHasChanged = HasRecognisedListChanged(file);
 
 	//ofstream outFile;
-	std::ofstream outFile;
+	//std::ofstream outFile;
+	boss_fstream::ofstream outFile;
 	if (overwrite)
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		outFile.open(file.string());
+		outFile.open(file);
 	else
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		outFile.open(file.string(), std::ios_base::out|std::ios_base::app);  // MCP Note: May need std::ofstream:: here instead
+		outFile.open(file, std::ios_base::out|std::ios_base::app);  // MCP Note: May need std::ofstream:: here instead
 	if (outFile.fail())
 		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 

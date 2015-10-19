@@ -45,8 +45,9 @@
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/operator.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
+#include "base/regex.h"
 #include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/game.h"
@@ -580,12 +581,12 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 		file_path = parentGame->DataFolder();
 	}
 	//std::regex regex;
-	boost::regex regex;
+	boss_regex::regex regex;
 	try {
 		//regex = std::regex(reg, std::regex::ECMAScript|std::regex::icase);
-		regex = boost::regex(reg, boost::regex::ECMAScript|boost::regex::icase);
+		regex = boss_regex::regex(reg, boss_regex::regex::ECMAScript|boss_regex::regex::icase);
 	//} catch (std::regex_error e) {
-	} catch (boost::regex_error e) {
+	} catch (boss_regex::regex_error e) {
 		LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
 		          reg.c_str());
 		result = false;  // Fail the check.
@@ -597,7 +598,7 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 		if (fs::is_regular_file(itr->status())) {
 			// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
 			//if (std::regex_match(itr->path().filename().string(), regex)) {
-			if (boost::regex_match(itr->path().filename().string(), regex)) {
+			if (boss_regex::regex_match(itr->path().filename().string(), regex)) {
 				result = true;
 				break;
 			}

@@ -37,6 +37,7 @@
 
 #include <git2.h>
 
+#include "base/fstream.h"
 #include "common/error.h"
 #include "common/game.h"
 #include "common/globals.h"
@@ -161,7 +162,8 @@ inline std::string GetMasterlistVersion(Game &game) {
 		ptrs.free();
 		// For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
 		std::string revision;
-		std::ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
+		//std::ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
+		boss_fstream::ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD"));
 		head >> revision;
 		head.close();
 		revision.resize(9);

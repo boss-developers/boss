@@ -38,8 +38,9 @@
 #include <vector>
 
 #include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
+#include "base/regex.h"
 #include "common/dll_def.h"
 #include "common/error.h"
 
@@ -108,7 +109,7 @@ class BOSS_COMMON ItemList {
 	std::unordered_set<std::string>::iterator FindRegexMatch(
 	    const std::unordered_set<std::string> set,
 	    //const std::regex reg,
-	    const boost::regex reg,
+	    const boss_regex::regex reg,
 	    std::unordered_set<std::string>::iterator startPos);
 
 	std::vector<Item> items;

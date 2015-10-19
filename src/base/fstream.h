@@ -25,21 +25,20 @@
 	$Revision: 1681 $, $Date: 2010-10-17 21:01:25 +0100 (Sun, 17 Oct 2010) $
 */
 
-#ifndef SUPPORT_VERSION_REGEX_H_
-#define SUPPORT_VERSION_REGEX_H_
+#ifndef BASE_FSTREAM_H_
+#define BASE_FSTREAM_H_
 
-//#include <regex>
-
-//#include <boost/regex.hpp>
-
-#include "base/regex.h"
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
 
 namespace boss {
+namespace boss_fstream {
 
-/// Array used to try each of the expressions defined above using
-/// an iteration for each of them.
-//extern std::regex *version_checks[];
-extern boss_regex::regex *version_checks[];
+typedef boost::iostreams::stream<boost::iostreams::file_descriptor_sink> ofstream;
+typedef boost::iostreams::stream<boost::iostreams::file_descriptor_source> ifstream;
+typedef boost::iostreams::stream<boost::iostreams::file_descriptor> fstream;
 
+}  // namespace boss_fstream
 }  // namespace boss
-#endif  // SUPPORT_VERSION_REGEX_H_
+
+#endif  // BASE_FSTREAM_H_

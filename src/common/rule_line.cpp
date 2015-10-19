@@ -38,6 +38,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
+#include "base/fstream.h"
 #include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/game.h"
@@ -243,7 +244,8 @@ void RuleList::Load(const Game &parentGame, const fs::path file) {
 	if (!fs::exists(file)) {
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		//ofstream userlist_file(file.c_str(), ios_base::binary);
-		std::ofstream userlist_file(file.string(), std::ios_base::binary);  // Is this one std:: or boost::filesystem::? Not sure
+		//std::ofstream userlist_file(file.string(), std::ios_base::binary);  // Is this one std:: or boost::filesystem::? Not sure
+		boss_fstream::ofstream userlist_file(file, std::ios_base::binary);
 		if (!userlist_file.fail())
 			userlist_file << '\xEF' << '\xBB' << '\xBF';  // Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
 		else
@@ -268,7 +270,8 @@ void RuleList::Load(const Game &parentGame, const fs::path file) {
 void RuleList::Save(const fs::path file) {
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 	//ofstream outFile(file.c_str(),ios_base::trunc);
-	std::ofstream outFile(file.string(), std::ios_base::trunc);
+	//std::ofstream outFile(file.string(), std::ios_base::trunc);
+	boss_fstream::ofstream outFile(file, std::ios_base::trunc);
 
 	if (outFile.fail()) {  // Provide error message if it can't be written.
 		LOG_ERROR("Backup cannot be saved.");

@@ -29,7 +29,9 @@
 
 //#include <regex>
 
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
+
+#include "base/regex.h"
 
 namespace boss {
 
@@ -77,12 +79,12 @@ const char *regex7 =
 //                                new std::regex(regex5, std::regex::icase),  // This incorrectly identifies "OBSE v19" where 19 is any integer.
 //                                new std::regex(regex6, std::regex::icase),  // This is responsible for metallicow's false positive.
 //                                new std::regex(regex7, std::regex::icase), 0};
-boost::regex *version_checks[] = {new boost::regex(regex1, boost::regex::icase),
-                                  new boost::regex(regex2, boost::regex::icase),
-                                  new boost::regex(regex3, boost::regex::icase),
-                                  new boost::regex(regex4, boost::regex::icase),
-                                  new boost::regex(regex5, boost::regex::icase),  // This incorrectly identifies "OBSE v19" where 19 is any integer.
-                                  new boost::regex(regex6, boost::regex::icase),  // This is responsible for metallicow's false positive.
-                                  new boost::regex(regex7, boost::regex::icase), 0};
+boss_regex::regex *version_checks[] = {new boss_regex::regex(regex1, boss_regex::regex::icase),
+                                       new boss_regex::regex(regex2, boss_regex::regex::icase),
+                                       new boss_regex::regex(regex3, boss_regex::regex::icase),
+                                       new boss_regex::regex(regex4, boss_regex::regex::icase),
+                                       new boss_regex::regex(regex5, boss_regex::regex::icase),  // This incorrectly identifies "OBSE v19" where 19 is any integer.
+                                       new boss_regex::regex(regex6, boss_regex::regex::icase),  // This is responsible for metallicow's false positive.
+                                       new boss_regex::regex(regex7, boss_regex::regex::icase), 0};
 
 }  // namespace boss

@@ -42,8 +42,10 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
+#include "base/fstream.h"
+#include "base/regex.h"
 #include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/game.h"
@@ -170,7 +172,8 @@ void ItemList::Load(const Game &parentGame, const fs::path path) {
 
 		// MCP Note: changed from path.c_str() to path.string(); needs testing as error was about not being able to convert wchar_t to char
 		//std::ifstream in(path.c_str());
-		std::ifstream in(path.string());
+		//std::ifstream in(path.string());
+		boss_fstream::ifstream in(path);
 		if (in.fail())
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 
@@ -233,7 +236,8 @@ void ItemList::Load(const Game &parentGame, const fs::path path) {
 
 void ItemList::Save(const fs::path file, const fs::path oldFile) {
 	//ofstream ofile;
-	std::ofstream ofile;  // Not sure if it's using the one from std:: or boost::filesystem::
+	//std::ofstream ofile;  // Not sure if it's using the one from std:: or boost::filesystem::
+	boss_fstream::ofstream ofile;
 	// Back up file if it already exists.
 	try {
 		LOG_DEBUG("Saving backup of current modlist...");
@@ -248,7 +252,7 @@ void ItemList::Save(const fs::path file, const fs::path oldFile) {
 	// Open output file.
 
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-	ofile.open(file.string());
+	ofile.open(file);
 	if (ofile.fail()) {  // Provide error message if it can't be written.
 		LOG_ERROR("Backup cannot be saved.");
 		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
@@ -305,10 +309,11 @@ void ItemList::SavePluginNames(const Game &parentGame,
 
 	LOG_INFO("Writing new \"%s\"", file.string().c_str());
 	//ofstream outfile;
-	std::ofstream outfile;
+	//std::ofstream outfile;
+	boss_fstream::ofstream outfile;
 
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-	outfile.open(file.string(), std::ios_base::trunc);
+	outfile.open(file, std::ios_base::trunc);
 	if (outfile.fail())
 		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
@@ -462,14 +467,14 @@ void ItemList::EvalRegex(const Game &parentGame) {
 		if (itemIter->Type() == REGEX) {
 			//std::regex reg;  // Form a regex.
 			// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
-			boost::regex reg;  // Form a regex.
+			boss_regex::regex reg;  // Form a regex.
 			try {
 				//reg = std::regex(itemIter->Name()+"(\\.ghost)?",
 				                   //std::regex::ECMAScript|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
-				reg = boost::regex(itemIter->Name()+"(\\.ghost)?",
-				                   boost::regex::ECMAScript|boost::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
+				reg = boss_regex::regex(itemIter->Name()+"(\\.ghost)?",
+				                        boss_regex::regex::ECMAScript|boss_regex::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
 			//} catch (std::regex_error /*&e*/) {
-			} catch (boost::regex_error /*&e*/) {
+			} catch (boss_regex::regex_error /*&e*/) {
 				boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL,
 				                           itemIter->Name());
 				LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
@@ -652,11 +657,11 @@ void ItemList::Move(std::size_t newPos, const Item item) {
 std::unordered_set<std::string>::iterator ItemList::FindRegexMatch(
     const std::unordered_set<std::string> set,
     //const std::regex reg,
-    const boost::regex reg,
+    const boss_regex::regex reg,
     std::unordered_set<std::string>::iterator startPos) {
 	while(startPos != set.end()) {
 		//if (std::regex_match(*startPos, reg))
-		if (boost::regex_match(*startPos, reg))
+		if (boss_regex::regex_match(*startPos, reg))
 			break;
 		++startPos;
 	}
