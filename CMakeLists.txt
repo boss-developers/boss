@@ -67,6 +67,8 @@ set(GUI_SRC     ${BOSS_SRC}
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
+configure_file(${CMAKE_SOURCE_DIR}/src/config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
+
 # Find Boost
 if (WIN32)
 	# For Windows, only build static builds

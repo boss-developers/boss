@@ -40,6 +40,7 @@
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
 
+#include "config.h"
 #include "base/fstream.h"
 #include "common/error.h"
 #include "common/globals.h"
@@ -407,6 +408,11 @@ std::string BossLog::PrintHeaderBottom() {
 }
 
 std::string BossLog::PrintFooter() {
+#ifdef SUBMITTER_HASH
+	std::string submitter_hash(SUBMITTER_HASH);
+#else
+	std::string submitter_hash("\"8ed50783e7dd02093cf43293f3c7f85386fb576a\"");
+#endif
 	std::stringstream out;
 	std::string colourTooltip = bloc::translate("Colours must be specified using lowercase hex codes.");
 
@@ -481,6 +487,9 @@ std::string BossLog::PrintFooter() {
 		    << "</script>\n"
 		    << "<script src='../resources/promise-1.0.0.min.js'></script>\n"
 		    << "<script src='../resources/octokit.js'></script>\n"
+		    << "<script>\n"
+		    << "	var gh = new Octokit({token: " << submitter_hash << "});" << "\n"
+		    << "</script>\n"
 		    << "<script src='../resources/script.js'></script>";
 	}
 	return out.str();
