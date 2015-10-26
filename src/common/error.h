@@ -166,16 +166,16 @@ class BOSS_COMMON ParsingError {
 
 	bool Empty() const;
 	std::string Header() const;
-	std::string Footer() const;
 	std::string Detail() const;
+	std::string Footer() const;
 	std::string WholeMessage() const;
 
 	void Clear();
 
  private:
 	std::string header;
-	std::string footer;
 	std::string detail;
+	std::string footer;
 	std::string wholeMessage;
 };
 

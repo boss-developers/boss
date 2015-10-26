@@ -153,8 +153,8 @@ std::string boss_error::getString() const {
 
 ParsingError::ParsingError()
     : header(""),
-      footer(""),
       detail(""),
+      footer(""),
       wholeMessage("") {}
 
 // For parsing errors.
@@ -170,7 +170,7 @@ ParsingError::ParsingError(const std::string inWholeMessage)
     : wholeMessage(inWholeMessage) {}
 
 bool ParsingError::Empty() const {
-	return (header.empty() && footer.empty() && detail.empty() &&
+	return (header.empty() && detail.empty() && footer.empty() &&
 	        wholeMessage.empty());
 }
 
@@ -178,12 +178,12 @@ std::string ParsingError::Header() const {
 	return header;
 }
 
-std::string ParsingError::Footer() const {
-	return footer;
-}
-
 std::string ParsingError::Detail() const {
 	return detail;
+}
+
+std::string ParsingError::Footer() const {
+	return footer;
 }
 
 std::string ParsingError::WholeMessage() const {
@@ -192,8 +192,8 @@ std::string ParsingError::WholeMessage() const {
 
 void ParsingError::Clear() {
 	header.clear();
-	footer.clear();
 	detail.clear();
+	footer.clear();
 	wholeMessage.clear();
 }
 

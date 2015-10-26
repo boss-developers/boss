@@ -58,14 +58,10 @@ namespace fs = boost::filesystem;
 //////////////////////////////
 
 // TODO(MCP): Maybe condense these two constructors into one using default values for the paramaters?
-RuleLine::RuleLine() {
-	key = NONE;
-	object = "";
+RuleLine::RuleLine() : key(NONE), object("") {
 }
 
-RuleLine::RuleLine(const std::uint32_t inKey, const std::string inObject) {
-	key = inKey;
-	object = inObject;
+RuleLine::RuleLine(const std::uint32_t inKey, const std::string inObject) : key(inKey), object(inObject) {
 }
 
 bool RuleLine::IsObjectMessage() const {
@@ -191,7 +187,7 @@ void RuleLine::Object(const std::string inObject) {
 // Rule Class Functions
 //////////////////////////////
 
-Rule::Rule() : RuleLine() {
+Rule::Rule() : RuleLine(){
 	enabled = true;
 	lines.clear();
 }

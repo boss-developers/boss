@@ -56,15 +56,11 @@ namespace fs = boost::filesystem;
 /////////////////////////////////////
 
 // TODO(MCP): Maybe change this constructor to use default values for the paramaters?
-conditionalData::conditionalData() {
-	data = "";
-	conditions = "";
+conditionalData::conditionalData() : data(""), conditions("") {
 }
 
 conditionalData::conditionalData(const std::string inData,
-                                 const std::string inConditions) {
-	data = inData;
-	conditions = inConditions;
+                                 const std::string inConditions) : data(inData), conditions(inConditions) {
 }
 
 std::string conditionalData::Data() const {
