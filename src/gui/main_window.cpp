@@ -73,7 +73,7 @@ wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
 using boss::MainFrame;
 
-BEGIN_EVENT_TABLE(MainFrame, wxFrame)
+wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_CLOSE(MainFrame::OnClose)
 	EVT_MENU(MENU_Quit, MainFrame::OnQuit)
 	EVT_MENU(OPTION_EditUserRules, MainFrame::OnEditUserRules)
@@ -104,9 +104,9 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_RADIOBUTTON(RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange)
 	EVT_RADIOBUTTON(RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange)
 	EVT_RADIOBUTTON(RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
-IMPLEMENT_APP(boss::BossGUI)
+wxIMPLEMENT_APP(boss::BossGUI);
 
 namespace boss {
 
@@ -247,7 +247,7 @@ bool BossGUI::OnInit() {
 
 	//frame->SetIcon(wxIconLocation("BOSS.ico"));
 	frame->SetIcon(wxICON(boss_icon));
-	frame->Show(TRUE);
+	frame->Show(TRUE);  // MCP Note: Show apparently takes a bool and defaults to true, so replace TRUE with either that or remove it? Not sure with TRUE comes from...
 	SetTopWindow(frame);
 
 	return true;

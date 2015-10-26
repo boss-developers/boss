@@ -46,7 +46,7 @@ class SettingsFrame : public wxFrame {
 	void OnOKQuit(wxCommandEvent &event);
 	void OnCancelQuit(wxCommandEvent &event);
 	void SetDefaultValues();
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
  private:
 	wxCheckBox *UseUserRuleManagerBox;
 	wxCheckBox *CloseGUIAfterRunningBox;

@@ -71,7 +71,7 @@ class RuleBoxClass : public wxPanel {
 	void ToggleEnabled(wxCommandEvent &event);  // Doesn't handle RuleList modification, only greying out of UI element.
 	void OnSelect(wxMouseEvent &event);
 	void Highlight(bool highlight);
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
  private:
 	wxStaticText *ruleContent;
 	wxCheckBox *ruleCheckbox;
@@ -89,7 +89,7 @@ class RuleListFrameClass : public wxPanel {
 	void MoveRule(wxWindowID id);
 	void OnToggleRule(wxCommandEvent &event);
 	void OnRuleSelection(wxCommandEvent &event);
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
  private:
 	void ReDrawRuleList();                                             // Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	std::size_t selectedRuleIndex;
@@ -116,7 +116,7 @@ class UserRulesEditorFrame : public wxFrame {
 
 	void OnDragStart(wxTreeEvent &event);
 
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
 
 	friend class TextDropTarget;
  private:

@@ -35,10 +35,10 @@
 
 using boss::SettingsFrame;
 
-BEGIN_EVENT_TABLE(SettingsFrame, wxFrame)
+wxBEGIN_EVENT_TABLE(SettingsFrame, wxFrame)
 	EVT_BUTTON(OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
 	EVT_BUTTON(OPTION_CancelExitSettings, SettingsFrame::OnCancelQuit)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 namespace boss {
 

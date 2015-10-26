@@ -86,7 +86,7 @@ class MainFrame : public wxFrame {
 	std::uint32_t updateCheckCode;  // 0 = update, 1 = no update, 2 = error.
 	std::string updateCheckString;  // Holds wxMessageBox text.
 	wxCriticalSection updateData;   // Protects fields above
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
 
  private:
 	wxMenuBar *MenuBar;

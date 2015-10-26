@@ -54,7 +54,7 @@
 
 using boss::UserRulesEditorFrame;
 
-BEGIN_EVENT_TABLE(UserRulesEditorFrame, wxFrame)
+wxBEGIN_EVENT_TABLE(UserRulesEditorFrame, wxFrame)
 	EVT_BUTTON(BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit)
 	EVT_BUTTON(BUTTON_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit)
 	EVT_BUTTON(BUTTON_NewRule, UserRulesEditorFrame::OnRuleCreate)
@@ -76,21 +76,21 @@ BEGIN_EVENT_TABLE(UserRulesEditorFrame, wxFrame)
 	EVT_SEARCHCTRL_CANCEL_BTN(SEARCH_Modlist, UserRulesEditorFrame::OnCancelSearch)
 	EVT_TEXT_ENTER(SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList)
 	EVT_TEXT_ENTER(SEARCH_Modlist, UserRulesEditorFrame::OnSearchList)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 using boss::RuleListFrameClass;
 
-BEGIN_EVENT_TABLE(RuleListFrameClass, wxPanel)
+wxBEGIN_EVENT_TABLE(RuleListFrameClass, wxPanel)
 	EVT_CHECKBOX(wxID_ANY, RuleListFrameClass::OnToggleRule)
 	EVT_LISTBOX(wxID_ANY, RuleListFrameClass::OnRuleSelection)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 using boss::RuleBoxClass;
 
-BEGIN_EVENT_TABLE(RuleBoxClass, wxPanel)
+wxBEGIN_EVENT_TABLE(RuleBoxClass, wxPanel)
 	EVT_CHECKBOX(wxID_ANY, RuleBoxClass::ToggleEnabled)
 	EVT_LEFT_DOWN(RuleBoxClass::OnSelect)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 namespace boss {
 
