@@ -663,8 +663,10 @@ void conditional_grammar::CheckSum(bool &result, std::string file,
 		 * The C++ library from VS2010 doesn't support the variable argument
 		 * version of emplace so we need to explicitly make the arguments into
 		 * a pair instead of relying on the function to do it.
+		 * 
+		 * fileCRCs->emplace(std::make_pair(file, CRC));
 		 */
-		fileCRCs->emplace(std::make_pair(file, CRC));
+		fileCRCs->emplace(file, CRC);
 	}
 
 	if (sum == CRC)
