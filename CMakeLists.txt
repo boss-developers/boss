@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 2.6)
 project(boss)
 
 option(BUILD_GUI "Build the BOSS GUI" ON)
+option(ENABLE_ALL_WARNINGS "Enable all compilation warnings" OFF)
+if (MSVC)
+	if (CMAKE_CL_64)
+		set(ARCH "64")
+	else ()
+		set(ARCH "32")
+	endif ()
+endif ()
 #option(BUILD_SHARED_LIBS "Build Shared Library (OFF for Static)" OFF)
 
 set (LIBGIT2_ROOT "../libgit2")
@@ -65,7 +73,7 @@ set(GUI_SRC     ${BOSS_SRC}
                 src/gui/settings_window.cpp
                 src/gui/user_rule_editor.cpp)
 
-link_directories(${CMAKE_SOURCE_DIR}/lib)
+link_directories(${CMAKE_SOURCE_DIR}/lib ${CMAKE_SOURCE_DIR}/lib${ARCH})
 
 configure_file(${CMAKE_SOURCE_DIR}/src/config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
 
@@ -103,7 +111,8 @@ endif ()
 
 add_executable(boss src/boss_cli.cpp ${BOSS_SRC})
 
-target_include_directories(boss PUBLIC src ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include)
+target_include_directories(boss PUBLIC src)
+target_include_directories(boss SYSTEM PUBLIC ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include)
 
 # If building for Windows, add in the resource file
 if (WIN32)
@@ -113,6 +122,9 @@ endif ()
 # For MinGW and GCC
 if (CMAKE_COMPILER_IS_GNUCXX)
 	target_compile_options(boss PUBLIC "-O3" "-std=c++11")
+	if (ENABLE_ALL_WARNINGS)
+		target_compile_options(boss PUBLIC "-Weffc++" "-Wall" "-Wpedantic" "-Wextra")
+	endif ()
 endif ()
 
 if(MINGW)
@@ -132,8 +144,11 @@ endif ()
 if (BUILD_GUI)
 	# Set up and find wxWidgets
 	if (WIN32)
+		set(wxWidgets_ROOT_DIR "../wxWidgets")
 		set(wxWidgets_CONFIGURATION mswu)
 		set(wxWidgets_USE_STATIC ON)
+		set(wxWidgets_LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
+		set(wxWidgets_CONFIG_EXECUTABLE "${CMAKE_SOURCE_DIR}/lib/wx-config")
 	endif ()
 
 	if (wxWidgets_FOUND)
@@ -141,9 +156,19 @@ if (BUILD_GUI)
 	endif ()
 	set(wxWidgets_USE_UNICODE ON)
 	find_package(wxWidgets COMPONENTS core base adv)
+	message(STATUS "Using wxWidgets Static Libraries: " ${wxWidgets_USE_STATIC})
+	message(STATUS "wxWidgets Include Directories: " ${wxWidgets_INCLUDE_DIRS})
+	message(STATUS "Location of wx-config: " ${wxWidgets_CONFIG_EXECUTABLE})
+	message(STATUS "wxWidgets Libraries: " ${wxWidgets_LIBRARIES})
+	message(STATUS "wxWidgets Lib Directory: " ${wxWidgets_LIB_DIR})
 
 	add_executable(boss_gui ${GUI_SRC})
-	target_include_directories(boss_gui PUBLIC src ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include ${wxWidgets_INCLUDE_DIRS})
+	if(MINGW)
+		set_target_properties(boss_gui PROPERTIES LINK_SEARCH_START_STATIC 1)
+		set_target_properties(boss_gui PROPERTIES LINK_SEARCH_END_STATIC 1)
+	endif ()
+	target_include_directories(boss_gui PUBLIC src)
+	target_include_directories(boss_gui SYSTEM PUBLIC ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include ${wxWidgets_INCLUDE_DIRS})
 
 	# If building for Windows, add in the resource file
 	if (WIN32)
@@ -153,12 +178,15 @@ if (BUILD_GUI)
 	# For MinGW and GCC
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		target_compile_options(boss_gui PUBLIC "-O3" "-std=c++11")
+		if (ENABLE_ALL_WARNINGS)
+			target_compile_options(boss_gui PUBLIC "-Weffc++" "-Wall" "-Wpedantic" "-Wextra")
+		endif ()
 	endif ()
 
 	target_compile_definitions(boss_gui PUBLIC ${wxWidgets_DEFINITIONS})
 	target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} git2)
 	if (WIN32)
-		target_link_libraries(boss_gui version gdi32 ws2_32)
+		target_link_libraries(boss_gui version gdi32)
 	endif ()
 endif ()
 
@@ -181,4 +209,7 @@ if (MINGW OR NOT WIN32)
 endif ()
 if (WIN32)
 	target_link_libraries(boss ws2_32)
+	if (BUILD_GUI)
+		target_link_libraries(boss_gui ws2_32)
+	endif ()
 endif ()

@@ -52,6 +52,7 @@
 #include <boost/locale.hpp>
 
 #include <wx/aboutdlg.h>
+#include <wx/gdicmn.h>
 #include <wx/snglinst.h>
 
 #include "common/error.h"
@@ -59,6 +60,7 @@
 #include "common/globals.h"
 #include "common/rule_line.h"
 #include "common/settings.h"
+#include "gui/boss_icon.xpm"
 #include "gui/element_ids.h"
 #include "gui/settings_window.h"
 #include "gui/user_rule_editor.h"
@@ -219,7 +221,8 @@ bool BossGUI::OnInit() {
 			    translate("Please pick which game to run BOSS for:"),
 			    translate("BOSS: Select Game"),
 			    choices);
-			choiceDia->SetIcon(wxIconLocation("BOSS.ico"));
+			//choiceDia->SetIcon(wxIconLocation("BOSS.ico"));
+			choiceDia->SetIcon(wxICON(boss_icon));
 
 			if (choiceDia->ShowModal() != wxID_OK)
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -242,7 +245,8 @@ bool BossGUI::OnInit() {
 	}
 	frame->SetGames(game, detected);
 
-	frame->SetIcon(wxIconLocation("BOSS.ico"));
+	//frame->SetIcon(wxIconLocation("BOSS.ico"));
+	frame->SetIcon(wxICON(boss_icon));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
 
@@ -320,6 +324,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	SetMenuBar(MenuBar);
 
 	// Set up stuff in the frame.
+	// MCP Note: Change the background color of the windows?
 	SetBackgroundColour(wxColour(255, 255, 255));
 
 	// Contents in one big resizing box.
@@ -448,7 +453,8 @@ void MainFrame::OnOpenSettings(wxCommandEvent &event) {
 	// Tell the user that stuff is happenining.
 	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),
 	                                            this);
-	settings->SetIcon(wxIconLocation("BOSS.ico"));
+	//settings->SetIcon(wxIconLocation("BOSS.ico"));
+	settings->SetIcon(wxICON(boss_icon));
 	settings->Show();
 }
 
@@ -732,7 +738,8 @@ void MainFrame::OnAbout(wxCommandEvent &event) {
 	                     "\n"
 	                     "You should have received a copy of the GNU General Public License\n"
 	                     "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
-	aboutInfo.SetIcon(wxIconLocation("BOSS.ico"));
+	//aboutInfo.SetIcon(wxIconLocation("BOSS.ico"));
+	aboutInfo.SetIcon(wxICON(boss_icon));
 	wxAboutBox(aboutInfo);
 }
 
@@ -827,7 +834,8 @@ void MainFrame::OnEditUserRules(wxCommandEvent &event) {
 		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"),
 		                                                        this,
 		                                                        game);
-		editor->SetIcon(wxIconLocation("BOSS.ico"));
+		//editor->SetIcon(wxIconLocation("BOSS.ico"));
+		editor->SetIcon(wxICON(boss_icon));
 		editor->Show();
 	} else {
 		if (fs::exists(game.Userlist())) {
