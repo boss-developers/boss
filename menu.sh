@@ -19,9 +19,8 @@
 #translation_options=("Extract Strings" "Generate Translation Files" "Compile Translation Files" "Quit")
 #generate_translation_options=("Create New Translation" "Update Existing Translation" "Quit")
 choice=0
-until [ "$choice" = "3" ]
 #select main_opt in "${main_options[@]}"
-do
+until [ "$choice" = "3" ]; do
 	echo "Main Menu"
 	echo "	1) Package Archive"
 	echo "	2) Translation Files"
@@ -40,8 +39,7 @@ do
 		  | "translation files")
 			#select tanslation_opt in "${translation_options[@]}"
 			translation_choice=0
-			until [ "$translation_choice" = "4" ]
-			do
+			until [ "$translation_choice" = "4" ]; do
 				echo "Translation Files"
 				echo "	1) Extract Strings"
 				echo "	2) Generate Translation Files"
@@ -61,8 +59,7 @@ do
 					  | "generate translation files")
 						#select generate_translation_opt in "${generate_translation_options[@]}"
 						generate_translation_choice=0
-						until [ "$generate_translation_choice" = "3" ]
-						do
+						until [ "$generate_translation_choice" = "3" ]; do
 							echo "Generate Translation FIles"
 							echo "	1) Create New Translation"
 							echo "	2) Update Existing Translation"
