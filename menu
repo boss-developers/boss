@@ -21,7 +21,7 @@
 function translation_files_menu() {
 	local generate_translation_choice=0
 	until [ "$generate_translation_choice" = "3" ]; do
-		echo "Generate Translation FIles"
+		echo "Generate Translation Files"
 		echo "	1) Create New Translation"
 		echo "	2) Update Existing Translation"
 		echo "	3) Quit"
