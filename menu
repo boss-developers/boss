@@ -14,12 +14,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BOSS.  If not, see <http://www.gnu.org/licenses/>.
 
-#PS3='Choice: '
-#main_options=("Package Archive" "Translation Files" "Quit")
-#translation_options=("Extract Strings" "Generate Translation Files" "Compile Translation Files" "Quit")
-#generate_translation_options=("Create New Translation" "Update Existing Translation" "Quit")
-#select main_opt in "${main_options[@]}"
-
 #function package_archive() {
 #}
 
@@ -76,7 +70,6 @@ function translation_menu() {
 			2 \
 			  | "Generate Translation Files" \
 			  | "generate translation files")
-				#select generate_translation_opt in "${generate_translation_options[@]}"
 				translation_files_menu
 				;;
 			3 \
@@ -116,7 +109,6 @@ function main() {
 			2 \
 			  | "Translation Files" \
 			  | "translation files")
-				#select tanslation_opt in "${translation_options[@]}"
 				translation_menu
 				;;
 			3 \
