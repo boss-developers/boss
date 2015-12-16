@@ -24,7 +24,7 @@
 #}
 
 function translation_files_menu() {
-	generate_translation_choice=0
+	local generate_translation_choice=0
 	until [ "$generate_translation_choice" = "3" ]; do
 		echo "Generate Translation FIles"
 		echo "	1) Create New Translation"
@@ -57,7 +57,7 @@ function translation_files_menu() {
 }
 
 function translation_menu() {
-	translation_choice=0
+	local translation_choice=0
 	until [ "$translation_choice" = "4" ]; do
 		echo "Translation Files"
 		echo "	1) Extract Strings"
@@ -97,17 +97,17 @@ function translation_menu() {
 }
 
 function main() {
-	choice=0
-	until [ "$choice" = "3" ]; do
+	local main_choice=0
+	until [ "$main_choice" = "3" ]; do
 		echo "Main Menu"
 		echo "	1) Package Archive"
 		echo "	2) Translation Files"
 		echo "	3) Quit"
 	
 		echo -n "Choice: "
-		read choice
+		read main_choice
 		echo ""
-		case $choice in
+		case $main_choice in
 			1 \
 			  | "Package Archive" \
 			  | "package archive")
@@ -122,7 +122,7 @@ function main() {
 			3 \
 			  | "Quit" \
 			  | "quit")
-				choice=3
+				main_choice=3
 				break
 				;;
 			*)
