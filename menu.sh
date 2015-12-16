@@ -18,101 +18,118 @@
 #main_options=("Package Archive" "Translation Files" "Quit")
 #translation_options=("Extract Strings" "Generate Translation Files" "Compile Translation Files" "Quit")
 #generate_translation_options=("Create New Translation" "Update Existing Translation" "Quit")
-choice=0
 #select main_opt in "${main_options[@]}"
-until [ "$choice" = "3" ]; do
-	echo "Main Menu"
-	echo "	1) Package Archive"
-	echo "	2) Translation Files"
-	echo "	3) Quit"
 
-	echo -n "Choice: "
-	read choice
-	echo ""
-	case $choice in
-		1 \
-		  | "Package Archive" \
-		  | "package archive")
-			;;
-		2 \
-		  | "Translation Files" \
-		  | "translation files")
-			#select tanslation_opt in "${translation_options[@]}"
-			translation_choice=0
-			until [ "$translation_choice" = "4" ]; do
-				echo "Translation Files"
-				echo "	1) Extract Strings"
-				echo "	2) Generate Translation Files"
-				echo "	3) Compile Translation Files"
-				echo "	4) Quit"
+#function package_archive() {
+#}
 
-				echo -n "Choice: "
-				read translation_choice
-				echo ""
-				case $translation_choice in
-					1 \
-					  | "Extract Strings" \
-					  | "extract strings")
-						;;
-					2 \
-					  | "Generate Translation Files" \
-					  | "generate translation files")
-						#select generate_translation_opt in "${generate_translation_options[@]}"
-						generate_translation_choice=0
-						until [ "$generate_translation_choice" = "3" ]; do
-							echo "Generate Translation FIles"
-							echo "	1) Create New Translation"
-							echo "	2) Update Existing Translation"
-							echo "	3) Quit"
+function translation_files_menu() {
+	generate_translation_choice=0
+	until [ "$generate_translation_choice" = "3" ]; do
+		echo "Generate Translation FIles"
+		echo "	1) Create New Translation"
+		echo "	2) Update Existing Translation"
+		echo "	3) Quit"
 
-							echo -n "Choice: "
-							read generate_translation_choice
-							echo ""
-							case $generate_translation_choice in
-								1 \
-								  | "Create New Translation" \
-								  | "create new translation")
-									;;
-								2 \
-								  | "Update Existing Translation" \
-								  | "update existing translation")
-									;;
-								3 \
-								  | "Quit" \
-								  | "quit")
-									generate_translation_choice=3
-									break
-									;;
-								*)
-									echo "Invalid Option"
-									;;
-							esac
-						done
-						;;
-					3 \
-					  | "Compile Translation Files" \
-					  | "compile translation files")
-						;;
-					4 \
-					  | "Quit" \
-					  | "quit")
-						translation_choice=4
-						break
-						;;
-					*)
-						echo "Invalid Option"
-						;;
-				esac
-			done
-			;;
-		3 \
-		  | "Quit" \
-		  | "quit")
-			choice=3
-			break
-			;;
-		*)
-			echo "Invalid Option"
-			;;
-	esac
-done
+		echo -n "Choice: "
+		read generate_translation_choice
+		echo ""
+		case $generate_translation_choice in
+			1 \
+			  | "Create New Translation" \
+			  | "create new translation")
+				;;
+			2 \
+			  | "Update Existing Translation" \
+			  | "update existing translation")
+				;;
+			3 \
+			  | "Quit" \
+			  | "quit")
+				generate_translation_choice=3
+				break
+				;;
+			*)
+				echo "Invalid Option"
+				;;
+		esac
+	done
+}
+
+function translation_menu() {
+	translation_choice=0
+	until [ "$translation_choice" = "4" ]; do
+		echo "Translation Files"
+		echo "	1) Extract Strings"
+		echo "	2) Generate Translation Files"
+		echo "	3) Compile Translation Files"
+		echo "	4) Quit"
+	
+		echo -n "Choice: "
+		read translation_choice
+		echo ""
+		case $translation_choice in
+			1 \
+			  | "Extract Strings" \
+			  | "extract strings")
+				;;
+			2 \
+			  | "Generate Translation Files" \
+			  | "generate translation files")
+				#select generate_translation_opt in "${generate_translation_options[@]}"
+				translation_files_menu
+				;;
+			3 \
+			  | "Compile Translation Files" \
+			  | "compile translation files")
+				;;
+			4 \
+			  | "Quit" \
+			  | "quit")
+				translation_choice=4
+				break
+				;;
+			*)
+				echo "Invalid Option"
+				;;
+		esac
+	done
+}
+
+function main() {
+	choice=0
+	until [ "$choice" = "3" ]; do
+		echo "Main Menu"
+		echo "	1) Package Archive"
+		echo "	2) Translation Files"
+		echo "	3) Quit"
+	
+		echo -n "Choice: "
+		read choice
+		echo ""
+		case $choice in
+			1 \
+			  | "Package Archive" \
+			  | "package archive")
+				#package_archive
+				;;
+			2 \
+			  | "Translation Files" \
+			  | "translation files")
+				#select tanslation_opt in "${translation_options[@]}"
+				translation_menu
+				;;
+			3 \
+			  | "Quit" \
+			  | "quit")
+				choice=3
+				break
+				;;
+			*)
+				echo "Invalid Option"
+				;;
+		esac
+	done
+}
+
+main "$@"
