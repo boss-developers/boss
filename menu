@@ -15,8 +15,50 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BOSS.  If not, see <http://www.gnu.org/licenses/>.
 
-#function package_archive() {
-#}
+function package_archive() {
+	archive_name="boss.zip"
+	file_list=("bin/Release-32/boss.exe" \
+	           "bin/Release-32/boss_gui.exe" \
+	           "data/BOSS.ini" \
+	           "Docs" \
+	           "resources/octokit.js" \
+	           "resources/promise-1.0.0.min.js" \
+	           "resources/style.css" \
+	           "resources/script.js")
+	for lang in "es" "ru" "zh"; do
+		file_list+=("resources/l10n/${lang}/LC_MESSAGES/messages.po")
+	done
+	# TODO(MCP): Rename the directories for the games in the BOSS directory to be consistent with the repository names
+	for game in "oblivion" "falloutnv" "skyrim" "fallout3" "nehrim"; do
+		#game_repos+=("../${game}/.git/config" \
+		#             "../${game}/.git/HEAD" \
+		#             "../${game}/.git/index" \
+		#             "../${game}/.git/packed-refs" \
+		#             "../${game}/.git/refs/heads/master" \
+		#             "../${game}/.git/refs/remotes/origin/HEAD" \
+		#             "../${game}/.git/objects")
+		mkdir -p "${game}/.git/" \
+		         "${game}/.git/refs/heads/" \
+		         "${game}/.git/refs/remotes/origin/" \
+		         "${game}/.git/objects"
+		cp -ur "../${game}/.git/config" "${game}/.git/config"
+		cp -ur "../${game}/.git/HEAD" "${game}/.git/HEAD"
+		cp -ur "../${game}/.git/index" "${game}/.git/index"
+		cp -ur "../${game}/.git/packed-refs" "${game}/.git/packed-refs"
+		cp -ur "../${game}/.git/refs/heads/master" "${game}/.git/refs/heads/master"
+		cp -ur "../${game}/.git/refs/remotes/origin/HEAD" "${game}/.git/refs/remotes/origin/HEAD"
+		cp -ur "../${game}/.git/objects" "${game}/.git/objects"
+		file_list+=("${game}/.git/config" \
+		            "${game}/.git/HEAD" \
+		            "${game}/.git/index" \
+		            "${game}/.git/packed-refs" \
+		            "${game}/.git/refs/heads/master" \
+		            "${game}/.git/refs/remotes/origin/HEAD" \
+		            "${game}/.git/objects")
+		echo "${game}'s Git files have been copied."
+	done
+	zip -r -9 "${archive_name}" "${file_list[@]}"
+}
 
 function translation_files_menu() {
 	local generate_translation_choice=0
@@ -33,10 +75,29 @@ function translation_files_menu() {
 			1 \
 			  | "Create New Translation" \
 			  | "create new translation")
+				local locale_choice
+				template_directory="resources/l10n/"
+				template_file="boss.pot"
+				echo -n "Enter locale (format should be ll<_CC>): "
+				read locale_choice
+				echo ""
+				mkdir -p "${template_directory}${locale_choice}"
+				msginit --locale="${locale_choice}" \
+				        --input="${template_directory}${template_file}" \
+				        --output-file="${template_directory}${locale_choice}/boss.po"
 				;;
 			2 \
 			  | "Update Existing Translation" \
 			  | "update existing translation")
+				template_directory="resources/l10n/"
+				template_file="boss.pot"
+				for lang in "es" "ru" "zh"; do
+					msgmerge --update \
+					         --indent \
+					         --previous \
+					         "${template_directory}${lang}/LC_MESSAGES/messages.po" \
+					         "${template_directory}${template_file}"
+				done
 				;;
 			3 \
 			  | "Quit" \
@@ -67,6 +128,22 @@ function translation_menu() {
 			1 \
 			  | "Extract Strings" \
 			  | "extract strings")
+				template_directory="resources/l10n/"
+				template_file="boss.pot"
+				# TODO(MCP): Look at replacing some of the values with generated to keep the project consistent?
+				find src/ -type f \( -name '*.cpp' -or -name '*.h' \) \
+				  | xargs xgettext --from-code utf-8 \
+				                   --keyword=translate:1,1t \
+				                   --keyword=translate:1,2,3t \
+				                   --boost \
+				                   --indent \
+				                   --c++ \
+				                   --package-name=BOSS \
+				                   --copyright-holder="BOSS Development Team" \
+				                   --package-version=2.3.0 \
+				                   --output-file "${template_file}" \
+				                   --output-dir "${template_directory}"
+				echo "Strings extracted to ${template_directory}${template_file}"
 				;;
 			2 \
 			  | "Generate Translation Files" \
@@ -76,6 +153,12 @@ function translation_menu() {
 			3 \
 			  | "Compile Translation Files" \
 			  | "compile translation files")
+				template_directory="resources/l10n/"
+				template_file="boss.pot"
+				for lang in "es" "ru" "zh"; do
+					msgfmt --output-file="${template_directory}${lang}/LC_MESSAGES/messages.mo" \
+					       "${template_directory}${lang}/LC_MESSAGES/messages.po"
+				done
 				;;
 			4 \
 			  | "Quit" \
@@ -105,7 +188,7 @@ function main() {
 			1 \
 			  | "Package Archive" \
 			  | "package archive")
-				#package_archive
+				package_archive
 				;;
 			2 \
 			  | "Translation Files" \
