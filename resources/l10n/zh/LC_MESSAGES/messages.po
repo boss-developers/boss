@@ -1,1888 +1,1849 @@
-msgid ""
-msgstr ""
-"Project-Id-Version: Better Oblivion Mod Manager 2.1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-17 11:26+0800\n"
-"PO-Revision-Date: 2012-09-11 17:25+0800\n"
-"Last-Translator: icedream <icedream@tesfans.org>\n"
-"Language-Team: 上古卷轴爱好者 <icedream@tesfans.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: Simplified Chinese\n"
-
-#: Error.h:121
-msgid "Masterlist Parsing Error: Expected a %1% at:"
-msgstr "解析Masterlist出错: 预计%1%于:"
-
-#: Error.h:122
-msgid "Ini Parsing Error: Expected a %1% at:"
-msgstr "解析Ini出错: 预计%1%于:"
-
-#: Error.h:123
-msgid "Userlist Parsing Error: Expected a %1% at:"
-msgstr "解析Userlist出错: 预计%1%于:"
-
-#: Error.h:124
-msgid "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-msgstr "Userlist语法出错: 规则起始于\"%1%: %2%\" %3%"
-
-#: Error.h:125
-msgid "Masterlist parsing aborted. Utility will end now."
-msgstr "Masterlist解析已终止。程序即将关闭。"
-
-#: Error.h:126
-msgid ""
-"Ini parsing aborted. Some or all of the options may not have been set "
-"correctly."
-msgstr "Ini解析已终止。多个或者全部选项可能没有设置正确。"
-
-#: Error.h:127
-msgid "Userlist parsing aborted. No rules will be applied."
-msgstr "Userlist解析已终止。未应用任何规则。"
-
-#: Error.h:130
-msgid "includes a sort line in a rule with a FOR rule keyword."
-msgstr "含一条带For规则关键词的排序行。"
-
-#: Error.h:131
-msgid "tries to add a group."
-msgstr "试图添加群组。"
-
-#: Error.h:132
-msgid "tries to sort the group \"ESMs\"."
-msgstr "试图排序群组\"ESMs\"。"
-
-#: Error.h:133
-msgid "tries to sort the master .ESM file."
-msgstr "试图排序.ESM文件。"
-
-#: Error.h:134
-msgid "references a mod and a group."
-msgstr "引用mod和群组。"
-
-#: Error.h:135
-msgid "tries to sort a group before the group \"ESMs\"."
-msgstr "试图将一个群组排到群组\"ESMs\"前面。"
-
-#: Error.h:136
-msgid "tries to sort a mod before the master .ESM file."
-msgstr "试图将一个mod排到.ESM文件前面。"
-
-#: Error.h:137
-msgid ""
-"tries to insert a mod into the top of the group \"ESMs\", before the master ."
-"ESM file."
-msgstr "试图将一个mod插入群组\"ESMs\"顶部，位于.ESM文件前面。"
-
-#: Error.h:138
-msgid "tries to insert a group or insert something into a mod."
-msgstr "试图插入群组或者其他到mod内。"
-
-#: Error.h:139
-msgid "tries to attach a message to a group."
-msgstr "试图给群组添加信息。"
-
-#: Error.h:140
-msgid "has more than one sort line."
-msgstr "含不止一个排序行。"
-
-#: Error.h:141
-msgid "has more than one REPLACE-using message line."
-msgstr "含不止一个REPLACE消息行。"
-
-#: Error.h:142
-msgid "has a REPLACE-using message line that is not the first message line."
-msgstr "含一个非首个信息行的REPLACE信息行。"
-
-#: Error.h:143
-msgid "has a sort line that is not the second line of the rule."
-msgstr "含一个非规则第二行的排序行。"
-
-#: Error.h:144
-msgid "tries to sort a mod or group relative to itself."
-msgstr "视图修改mod或者群组到本来的位置。"
-
-#: Error.h:145
-msgid "tries to attach an malformatted message."
-msgstr "视图添加非法格式的信息。"
-
-#: Error.h:146
-msgid "tries to sort a plugin before a master file."
-msgstr "试图将.ESP排在.ESM文件前面。"
-
-#: Error.h:147
-msgid "tries to sort a master file before a plugin."
-msgstr "试图将.ESM排在.ESP文件前面。"
-
-#: Error.cpp:122 Error.cpp:196
-msgid "No error."
-msgstr "未出现错误。"
-
-#: Error.cpp:124
-msgid "No game master .esm file found!"
-msgstr "找不到游戏.ESM文件！"
-
-#: Error.cpp:126
-msgid "\"%1%\" cannot be read!"
-msgstr "\"%1%\" 无法读取！"
-
-#: Error.cpp:128
-msgid "\"%1%\" cannot be written to!"
-msgstr "\"%1%\" 无法写入！"
-
-#: Error.cpp:130
-msgid "\"%1%\" is not encoded in valid UTF-8!"
-msgstr "\"%1%\" 未以UTF-8编码！"
-
-#: Error.cpp:132
-msgid "\"%1%\" cannot be found!"
-msgstr "\"%1%\" 无法找到！"
-
-#: Error.cpp:134
-msgid "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
-msgstr "对象\"%2%\"的条件\"%1%\"评估出错！"
-
-#: Error.cpp:136
-msgid "\"%1%\" is not a valid regular expression. Item skipped."
-msgstr "\"%1%\" 不是有效的正则表达式。已跳过。"
-
-#: Error.cpp:138
-msgid "No game detected!"
-msgstr "未检测游戏！"
-
-#: Error.cpp:140
-msgid "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
-msgstr "无法将\"%1%\"由UTF-8转换为\"%2%\"。"
-
-#: Error.cpp:142
-msgid "Master file \"%1%\" loading after non-master plugins!"
-msgstr "master文件\"%1%\"排在一个非Mater文件后面！"
-
-#: Error.cpp:146
-msgid "Cannot find online masterlist revision number!"
-msgstr "找不到在线masterlist修订编号！"
-
-#: Error.cpp:148
-msgid "Cannot find online masterlist revision date!"
-msgstr "找不到在线masterlist修订日期！"
-
-#: Error.cpp:150
-msgid "Cannot read list of files to be updated!"
-msgstr "无法读取需要更新的文件列表！"
-
-#: Error.cpp:152
-msgid "Downloaded file \"%1%\" failed verification test!"
-msgstr "已下载的文件\"%1%\"验证失败！"
-
-#: Error.cpp:154
-msgid ""
-"The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%"
-"\"."
-msgstr "无法获取文件\"%1%\"的修改时间！系统错误提示：\"%2%\"。"
-
-#: Error.cpp:156
-msgid "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
-msgstr "无法重命名文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: Error.cpp:158
-msgid "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
-msgstr "无法删除文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: Error.cpp:160
-msgid "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
-msgstr "无法创建文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: Error.cpp:162
-msgid "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
-msgstr "无法扫描文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: Error.cpp:164
-msgid "cURL cannot be initialised!"
-msgstr "cURL无法初始化！"
-
-#: Error.cpp:166
-msgid "cURL's error buffer could not be set! cURL response: \"%1%\"."
-msgstr "cURL错误缓冲器无法设置！cURL错误提示：\"%1%\"。"
-
-#: Error.cpp:168
-msgid "A cURL option could not be set! cURL response: \"%1%\"."
-msgstr "一个cURL选项无法设置！cURL错误提示：\"%1%\"。"
-
-#: Error.cpp:170
-msgid "Proxy hostname or port invalid! cURL response: \"%1%\"."
-msgstr "代理服务器或者端口无效！cURL错误提示：\"%1%\"。"
-
-#: Error.cpp:172
-msgid "Failed to set proxy type! cURL response: \"%1%\"."
-msgstr "无法设置代理类型！cURL错误提示：\"%1%\"。"
-
-#: Error.cpp:174
-msgid ""
-"Proxy authentication username or password invalid! cURL response: \"%1%\"."
-msgstr "代理用户名或者密码无效！cURL错误提示：\"%1%\"."
-
-#: Error.cpp:176
-msgid "Failed to set proxy authentication type! cURL response: \"%1%\"."
-msgstr "代理验证类型无法设置！cURL错误提示：\"%1%\"。"
-
-#: Error.cpp:178
-msgid "cURL could not perform task! cURL response: \"%1%\"."
-msgstr "cURL无法运行任务！cURL错误提示：\"%1%\"。"
-
-#: Error.cpp:180
-msgid "Cancelled by user."
-msgstr "用户已取消。"
-
-#: Error.cpp:182
-msgid "Parsing of \"%1%\" failed!"
-msgstr "解析\"%1%\"失败！"
-
-#: Error.cpp:184
-msgid ""
-"The modification date of \"%1%\" cannot be written! Filesystem response: "
-"\"%2%\"."
-msgstr "\"%1%\"的修改时间无法写入！系统错误提示：\"%2%\"。"
-
-#: Error.cpp:186
-msgid "The window \"%1%\" failed to initialise. Details: \"%2%\"."
-msgstr "窗口\"%1%\"初始化失败。详细信息：\"%2%\"。"
-
-#: Error.cpp:188
-msgid "Memory allocation failed."
-msgstr "记忆分配出错。"
-
-#: Error.cpp:190
-msgid "No Internet connection detected."
-msgstr "未检测到可用网络。"
-
-#: Error.cpp:192
-msgid "No tag map has yet been initialised."
-msgstr "标签映射未初始化。"
-
-#: Error.cpp:194
-msgid ""
-"The requested change to the active plugins list would result in over 255 "
-"plugins being active."
-msgstr "对已激活插件列表的修改将导致超过255个插件被激活。"
-
-#: Game.cpp:503
-msgid "Rule is disabled."
-msgstr "规则已禁止。"
-
-#: Game.cpp:519 Game.cpp:557 Game.cpp:596
-msgid " is not installed or in the masterlist."
-msgstr "未安装或者已存在于masterlist中。"
-
-#: Game.cpp:523 Game.cpp:562
-msgid " is already in the masterlist."
-msgstr "已存在于masterlist中。"
-
-#: Game.cpp:527 Game.cpp:566
-msgid " is not in the masterlist, cannot override."
-msgstr "不存在于masterlist中，不能覆盖。"
-
-#: Game.cpp:535
-msgid " is not installed, and is not in the masterlist."
-msgstr "未安装，并且不存在于masterlist中。"
-
-#: Game.cpp:539
-msgid " is not in the masterlist and has not been sorted by a rule."
-msgstr "不存在于masterlist中并且未定义排序规则。"
-
-#: Game.cpp:577 Game.cpp:615 Game.cpp:633
-msgid "The group "
-msgstr "群组"
-
-#: Game.cpp:577 Game.cpp:615 Game.cpp:633
-msgid " is not in the masterlist or is malformatted."
-msgstr "不存在于masterlist中或者格式错误。"
-
-#: Game.cpp:682 Game.cpp:699
-msgid "Version: "
-msgstr "版本："
-
-#: Game.cpp:684 Game.cpp:701 Game.cpp:782 Game.cpp:784
-msgid "Checksum: "
-msgstr "CRC："
-
-#: Game.cpp:754
-msgid ""
-"The order of plugins set by BOSS differs from their order in its masterlist, "
-"as one or more of the installed plugins is false-flagged. For more "
-"information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged "
-"Plugins\"."
-msgstr ""
-"由BOSS调整的排序与masterlist中的排序不一致，因为一个或者多个已安装的插件标记"
-"错误。更新信息可以查看\"file:../Docs/BOSS%20Readme.html#appendix-c False-"
-"Flagged Plugins\"。"
-
-#: Game.cpp:757
-msgid "Could not enforce load order master/plugin partition. Details: "
-msgstr "无法运行.ESM、.ESP排序比较。详细信息："
-
-#: Game.cpp:776 ..\boss-common\Output\Output.cpp:1085
-#: ..\boss-cli\BOSS-CLI.cpp:75
-msgid "Version "
-msgstr "版本 "
-
-#: Game.cpp:778
-msgid "Active"
-msgstr "已激活"
-
-#: Game.cpp:797
-msgid "Error: "
-msgstr "错误："
-
-#: Game.cpp:832 ..\boss-cli\BOSS-CLI.cpp:446
-msgid "Critical Error: "
-msgstr "严重错误："
-
-#: Game.cpp:833 ..\boss-cli\BOSS-CLI.cpp:447 ..\boss-cli\BOSS-CLI.cpp:489
-#: ..\boss-cli\BOSS-CLI.cpp:498 ..\boss-cli\BOSS-CLI.cpp:530
-#: ..\boss-cli\BOSS-CLI.cpp:574 ..\boss-cli\BOSS-CLI.cpp:613
-#: MainWindow.cpp:488 MainWindow.cpp:497 MainWindow.cpp:537 MainWindow.cpp:592
-#: MainWindow.cpp:642
-msgid ""
-"Check the Troubleshooting section of the ReadMe for more information and "
-"possible solutions."
-msgstr ""
-"请检查说明文档中问题解决部分的介绍，获取更多相关信息以及可能的解决办法。"
-
-#: Game.cpp:834 ..\boss-cli\BOSS-CLI.cpp:448 ..\boss-cli\BOSS-CLI.cpp:531
-#: ..\boss-cli\BOSS-CLI.cpp:575 ..\boss-cli\BOSS-CLI.cpp:614
-#: MainWindow.cpp:538 MainWindow.cpp:593 MainWindow.cpp:643
-msgid "Utility will end now."
-msgstr "程序即将关闭。"
-
-#: ..\boss-common\Output\Output.cpp:493 ..\boss-common\Output\Output.cpp:495
-#: ..\boss-common\Output\Output.cpp:528 ..\boss-common\Output\Output.cpp:530
-msgid "Note"
-msgstr "注意"
-
-#: ..\boss-common\Output\Output.cpp:498 ..\boss-common\Output\Output.cpp:500
-msgid "Bash Tag suggestion(s)"
-msgstr "Bash标签建议"
-
-#: ..\boss-common\Output\Output.cpp:503 ..\boss-common\Output\Output.cpp:505
-msgid "Requires"
-msgstr "需要"
-
-#: ..\boss-common\Output\Output.cpp:508 ..\boss-common\Output\Output.cpp:510
-msgid "Incompatible with"
-msgstr "冲突："
-
-#: ..\boss-common\Output\Output.cpp:513 ..\boss-common\Output\Output.cpp:515
-#: ..\boss-common\Output\Output.cpp:1907 ..\boss-common\Output\Output.cpp:1909
-msgid "Warning"
-msgstr "警告"
-
-#: ..\boss-common\Output\Output.cpp:518 ..\boss-common\Output\Output.cpp:520
-#: ..\boss-common\Output\Output.cpp:1911 ..\boss-common\Output\Output.cpp:1913
-msgid "Error"
-msgstr "错误"
-
-#: ..\boss-common\Output\Output.cpp:523 ..\boss-common\Output\Output.cpp:525
-msgid "Contains dirty edits"
-msgstr "含dirty edits"
-
-#: ..\boss-common\Output\Output.cpp:568
-msgid "Sort %1% before %2%"
-msgstr "将%1%排在%2%前面"
-
-#: ..\boss-common\Output\Output.cpp:570
-msgid "Sort %1% after %2%"
-msgstr "将%1%排在%2%后面"
-
-#: ..\boss-common\Output\Output.cpp:572
-msgid "Insert %1% at the top of %2%"
-msgstr "将%1%插到%2%顶部"
-
-#: ..\boss-common\Output\Output.cpp:574
-msgid "Insert %1% at the bottom of %2%"
-msgstr "将%1%插到%2%底部"
-
-#: ..\boss-common\Output\Output.cpp:578
-msgid "Add the following messages to %1%:"
-msgstr "添加以下信息到%1%："
-
-#: ..\boss-common\Output\Output.cpp:580 UserRuleEditor.cpp:217
-msgid "Add the following messages:"
-msgstr "添加以下信息："
-
-#: ..\boss-common\Output\Output.cpp:587
-msgid "Replace the messages attached to %1% with:"
-msgstr "替换%1%的信息为："
-
-#: ..\boss-common\Output\Output.cpp:589
-msgid "Replace the attached messages with:"
-msgstr "替换信息为："
-
-#: ..\boss-common\Output\Output.cpp:1081
-msgid "\tVersion "
-msgstr ""
-"由<a href=\"http://www.tesfans.org/boss-chinese-translator/\" target=\"_blank"
-"\">icedream</a>汉化<br />\t版本 "
-
-#: ..\boss-common\Output\Output.cpp:1093
-msgid "Log Feature Support"
-msgstr "日志功能支持"
-
-#: ..\boss-common\Output\Output.cpp:1094
-msgid "Display Settings"
-msgstr "显示设置"
-
-#: ..\boss-common\Output\Output.cpp:1095
-msgid "Filters"
-msgstr "过滤配置"
-
-#: ..\boss-common\Output\Output.cpp:1099
-msgid "The BOSS Log requires Javascript to be enabled in order to function."
-msgstr "BOSS日志需要开启Javascript才能运行函数。"
-
-#: ..\boss-common\Output\Output.cpp:1106
-msgid "Colours must be specified using lowercase hex codes."
-msgstr "颜色代码必须使用小写十六进制数。"
-
-#: ..\boss-common\Output\Output.cpp:1110
-msgid ""
-"The BOSS Log can be displayed using an alternative colour scheme, which can "
-"be enabled and customised using the options below. Colours must be specified "
-"using their lowercase hex codes. The default value for each element is "
-"displayed as the placeholder for its text box, and this value is used if the "
-"text box is left empty."
-msgstr ""
-"您可以在下面开启并且自定义BOSS日志主题颜色。<br />颜色代码必须使用小写十六进"
-"制数。每个元素的默认数值已显示在文本框背景中，文本框放空时，该数值将被使用。"
-"<br />"
-
-#: ..\boss-common\Output\Output.cpp:1111
-msgid ""
-" Some examples of colour codes that can be used may be found <a href='http://"
-"en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>."
-msgstr ""
-"常见颜色代码可以在<a href='http://en.wikipedia.org/wiki/"
-"Web_colors#Color_table'>此处</a>查看。"
-
-#: ..\boss-common\Output\Output.cpp:1113
-msgid "Use Alternative Colour Scheme"
-msgstr "使用自定义颜色主题"
-
-#: ..\boss-common\Output\Output.cpp:1115
-msgid "Element"
-msgstr "元素"
-
-#: ..\boss-common\Output\Output.cpp:1115
-msgid "Colour"
-msgstr "颜色"
-
-#: ..\boss-common\Output\Output.cpp:1117
-msgid "General Text"
-msgstr "普通文本"
-
-#: ..\boss-common\Output\Output.cpp:1118
-msgid "Window Backgrounds"
-msgstr "窗口背景"
-
-#: ..\boss-common\Output\Output.cpp:1119
-msgid "Menu Background"
-msgstr "菜单背景"
-
-#: ..\boss-common\Output\Output.cpp:1120
-msgid "Menu Button Hover"
-msgstr "菜单按钮（鼠标经过）"
-
-#: ..\boss-common\Output\Output.cpp:1121
-msgid "Active Menu Button"
-msgstr "菜单按钮（已选择）"
-
-#: ..\boss-common\Output\Output.cpp:1122
-msgid "Links"
-msgstr "超链接"
-
-#: ..\boss-common\Output\Output.cpp:1123
-msgid "Visited Links"
-msgstr "超链接（已浏览）"
-
-#: ..\boss-common\Output\Output.cpp:1124
-msgid "CRC Labels"
-msgstr "文字“CRC”"
-
-#: ..\boss-common\Output\Output.cpp:1125
-msgid "Active Labels"
-msgstr "文字“已激活”"
-
-#: ..\boss-common\Output\Output.cpp:1126
-msgid "Version Labels"
-msgstr "文字“版本”"
-
-#: ..\boss-common\Output\Output.cpp:1127
-msgid "Errors"
-msgstr "错误"
-
-#: ..\boss-common\Output\Output.cpp:1128
-msgid "Warnings"
-msgstr "警告"
-
-#: ..\boss-common\Output\Output.cpp:1129
-msgid "Dirty Messages"
-msgstr "Dirty Edit信息"
-
-#: ..\boss-common\Output\Output.cpp:1130
-msgid "Bash Tag Suggestion Prefixes"
-msgstr "Bash标签建议"
-
-#: ..\boss-common\Output\Output.cpp:1131
-msgid "CSS Settings Panel File Drag Highlight"
-msgstr "CSS设置菜单面板文件拖拽高亮"
-
-#: ..\boss-common\Output\Output.cpp:1132
-msgid "Filters Background"
-msgstr "过滤工具背景"
-
-#: ..\boss-common\Output\Output.cpp:1133
-msgid "Success Messages"
-msgstr "成功信息"
-
-#: ..\boss-common\Output\Output.cpp:1134
-msgid "Quoted Userlist Messages"
-msgstr "Userlist调用信息"
-
-#: ..\boss-common\Output\Output.cpp:1135
-msgid "Summary Messages Default Background"
-msgstr "总结信息默认背景"
-
-#: ..\boss-common\Output\Output.cpp:1136
-msgid "Table Headings"
-msgstr "表格标题"
-
-#: ..\boss-common\Output\Output.cpp:1138
-msgid ""
-"You can <span class='button' id='cssButtonBackup'>back up</span> your "
-"display settings to avoid losing them when you <span "
-"id='loseSettingsClose'>close the BOSS Log</span><span "
-"id='loseSettingsCacheClear'>clear your browser's cache</span>."
-msgstr ""
-"您可以<span class='button' id='cssButtonBackup'>备份</span>您的显示设置避免"
-"<span id='loseSettingsClose'>关闭BOSS日志</span><span "
-"id='loseSettingsCacheClear'>清理浏览器缓存</span>后丢失设置。<br />"
-
-#: ..\boss-common\Output\Output.cpp:1138
-msgid ""
-"Backup files are given nonsensical names by your browser, but you can rename "
-"them to whatever you want. Drag and drop a backup file into this panel to "
-"restore the settings it contains."
-msgstr ""
-"备份文件的名字由浏览器自动设置，但您可以把他修改成您容易识别的名字。<br />拖"
-"拽文件到菜单面板可以恢复备份文件内保存的设置。"
-
-#: ..\boss-common\Output\Output.cpp:1139
-msgid "Apply"
-msgstr "应用"
-
-#: ..\boss-common\Output\Output.cpp:1144
-msgid ""
-"Support for the BOSS Log's more advanced features varies. Here's what your "
-"browser supports:"
-msgstr ""
-"不同浏览器对BOSS日志高级功能的支持有所不同。以下是您的浏览器支持的功能："
-
-#: ..\boss-common\Output\Output.cpp:1145
-msgid "Functionality"
-msgstr "功能"
-
-#: ..\boss-common\Output\Output.cpp:1148
-msgid "In-Log Plugin Submission"
-msgstr "内置插件提交功能"
-
-#: ..\boss-common\Output\Output.cpp:1148
-msgid ""
-"Allows unrecognised plugins to be anonymously submitted to the BOSS team "
-"directly from the BOSS Log."
-msgstr "允许直接从BOSS日志中匿名提交无法识别的插件给BOSS团队。"
-
-#: ..\boss-common\Output\Output.cpp:1149
-msgid "Backup/Restore of Display Settings"
-msgstr "备份/恢复显示设置"
-
-#: ..\boss-common\Output\Output.cpp:1149
-msgid "Allows the backup and restore of custom display settings."
-msgstr "允许备份与恢复自定义显示设置。"
-
-#: ..\boss-common\Output\Output.cpp:1150
-msgid "Settings Memory"
-msgstr "保存设置"
-
-#: ..\boss-common\Output\Output.cpp:1150
-msgid ""
-"Allows the BOSS Log to automatically restore the display settings and filter "
-"configuration last used, and to hide this panel, whenever the BOSS Log is "
-"opened."
-msgstr ""
-"允许每次打开BOSS日志时，自动应用上一次的显示设置、过滤配置或者隐藏此面板。"
-
-#: ..\boss-common\Output\Output.cpp:1152
-msgid "Appearance"
-msgstr "外观"
-
-#: ..\boss-common\Output\Output.cpp:1155
-msgid "Opacity"
-msgstr "透明度"
-
-#: ..\boss-common\Output\Output.cpp:1156
-msgid "Shadows"
-msgstr "阴影"
-
-#: ..\boss-common\Output\Output.cpp:1157
-msgid "Transitions"
-msgstr "过渡"
-
-#: ..\boss-common\Output\Output.cpp:1158
-msgid "Transforms"
-msgstr "变换"
-
-#: ..\boss-common\Output\Output.cpp:1159
-msgid "Input Placeholders"
-msgstr "输入占位符"
-
-#: ..\boss-common\Output\Output.cpp:1160
-msgid "Form Validation"
-msgstr "格式检查"
-
-#: ..\boss-common\Output\Output.cpp:1162
-msgid ""
-"Do not display this panel again for this browser. If this checkbox is left "
-"unchecked, this panel will be displayed every time you open the BOSS Log."
-msgstr ""
-"不再在此浏览器显示此面板。如果不勾选此选项，您每次打开BOSS日志都会看到此面"
-"板。"
-
-#: ..\boss-common\Output\Output.cpp:1167
-msgid "Hide Version Numbers"
-msgstr "隐藏版本信息"
-
-#: ..\boss-common\Output\Output.cpp:1168
-msgid "Hide 'Active' Label"
-msgstr "隐藏文字“已激活”"
-
-#: ..\boss-common\Output\Output.cpp:1169
-msgid "Hide Checksums"
-msgstr "隐藏CRC数据"
-
-#: ..\boss-common\Output\Output.cpp:1170
-msgid "Hide Notes"
-msgstr "隐藏注意事项"
-
-#: ..\boss-common\Output\Output.cpp:1171
-msgid "Hide Bash Tag Suggestions"
-msgstr "隐藏Bash标签建议"
-
-#: ..\boss-common\Output\Output.cpp:1172
-msgid "Hide Requirements"
-msgstr "隐藏需求信息"
-
-#: ..\boss-common\Output\Output.cpp:1173
-msgid "Hide Incompatibilities"
-msgstr "隐藏不兼容信息"
-
-#: ..\boss-common\Output\Output.cpp:1174
-msgid "Hide 'Do Not Clean' Messages"
-msgstr "隐藏 'Do Not Clean'(不要清理)信息"
-
-#: ..\boss-common\Output\Output.cpp:1175
-msgid "Hide All Plugin Messages"
-msgstr "隐藏所有插件信息"
-
-#: ..\boss-common\Output\Output.cpp:1176
-msgid "Hide Inactive Plugins"
-msgstr "隐藏未激活插件"
-
-#: ..\boss-common\Output\Output.cpp:1177
-msgid "Hide Messageless Plugins"
-msgstr "隐藏无信息的插件"
-
-#: ..\boss-common\Output\Output.cpp:1178
-msgid "Hide Clean Plugins"
-msgstr "隐藏不需清理的插件"
-
-#: ..\boss-common\Output\Output.cpp:1180
-msgid "%1% of %2% recognised plugins hidden."
-msgstr "%1%/%2%可识别插件已隐藏。"
-
-#: ..\boss-common\Output\Output.cpp:1181
-msgid "%1% of %2% messages hidden."
-msgstr "%1%/%2%信息已隐藏。"
-
-#: ..\boss-common\Output\Output.cpp:1187
-msgid "Submit Plugin"
-msgstr "提交插件"
-
-#: ..\boss-common\Output\Output.cpp:1188
-msgid "Plugin"
-msgstr "插件名"
-
-#: ..\boss-common\Output\Output.cpp:1190
-msgid "Download Location"
-msgstr "下载地址"
-
-#: ..\boss-common\Output\Output.cpp:1190
-msgctxt ""
-"Label for text box. Do not use a single quote in translation, use '&#x27;' "
-"instead"
-msgid "A link to the plugin&#x27;s download location."
-msgstr "插件的下载地址。"
-
-#: ..\boss-common\Output\Output.cpp:1191
-msgid "Additional Notes"
-msgstr "补充信息"
-
-#: ..\boss-common\Output\Output.cpp:1191
-msgid ""
-"Any additional information, such as recommended Bash Tags, load order "
-"suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no "
-"download link is available, this information is crucial."
-msgstr ""
-"任何补充信息，比如推荐的Bash标签、排序建议、ITM/UDR数量以及需要清理的插件的"
-"CRC数值，你都可以填在这边。如果没有下载地址的话，此数据就十分重要！"
-
-#: ..\boss-common\Output\Output.cpp:1193
-msgid "Submit"
-msgstr "提交"
-
-#: ..\boss-common\Output\Output.cpp:1194
-msgid "Close"
-msgstr "关闭"
-
-#: ..\boss-common\Output\Output.cpp:1214
-msgid "Checking for existing submission..."
-msgstr "正在检查已存在的提案..."
-
-#: ..\boss-common\Output\Output.cpp:1228
-msgid "Error: Existing submission check failed!"
-msgstr "错误：已存在提案检查失败！"
-
-#: ..\boss-common\Output\Output.cpp:1244
-msgid "Previous submission found, updating with supplied details..."
-msgstr "找到旧版的提案，正在更新详细信息..."
-
-#: ..\boss-common\Output\Output.cpp:1250
-msgid "Plugin submission updated!"
-msgstr "插件提案已更新！"
-
-#: ..\boss-common\Output\Output.cpp:1252
-msgid "Error: Plugin submission could not be updated."
-msgstr "错误：插件提案无法更新。"
-
-#: ..\boss-common\Output\Output.cpp:1275
-msgid "No previous submission found, creating new submission..."
-msgstr "未找到旧版的提案数据，正在创建新提案..."
-
-#: ..\boss-common\Output\Output.cpp:1281
-msgid "Plugin submitted!"
-msgstr "插件已提交！"
-
-#: ..\boss-common\Output\Output.cpp:1283
-msgid "Error: Plugin could not be submitted."
-msgstr "错误：插件无法提交。"
-
-#: ..\boss-common\Output\Output.cpp:1289
-msgid "Error: Data transfer failed."
-msgstr "错误：Data转换失败。"
-
-#: ..\boss-common\Output\Output.cpp:1321
-msgid ""
-"Web storage quota for this document has been exceeded. Please empty your "
-"browser\\'s cache. Note that this will delete all locally stored data."
-msgstr ""
-"文档网络存储空间不足。请清空您的浏览器缓存。注意此步骤将删除所有本地保存的数"
-"据。"
-
-#: ..\boss-common\Output\Output.cpp:1508
-msgid "Please supply at least a link or some notes."
-msgstr "请至少提供一个链接或者一些补充信息。"
-
-#: ..\boss-common\Output\Output.cpp:1522
-msgid "Exception occurred:"
-msgstr "发生例外："
-
-#: ..\boss-common\Output\Output.cpp:1860 ..\boss-common\Output\Output.cpp:1891
-msgid "Summary"
-msgstr "总结"
-
-#: ..\boss-common\Output\Output.cpp:1863 ..\boss-common\Output\Output.cpp:1954
-#: UserRuleEditor.cpp:883
-msgid "User Rules"
-msgstr "用户规则"
-
-#: ..\boss-common\Output\Output.cpp:1866
-msgid "%1% Plugins"
-msgstr "%1%插件"
-
-#: ..\boss-common\Output\Output.cpp:1870 ..\boss-common\Output\Output.cpp:1986
-msgid "Recognised Plugins"
-msgstr "已识别插件"
-
-#: ..\boss-common\Output\Output.cpp:1872
-msgid "Restored Load Order"
-msgstr "已恢复排序"
-
-#: ..\boss-common\Output\Output.cpp:1876 ..\boss-common\Output\Output.cpp:2009
-msgid "Unrecognised Plugins"
-msgstr "无法识别插件"
-
-#: ..\boss-common\Output\Output.cpp:1894
-msgid "Plugin Type"
-msgstr "插件类型"
-
-#: ..\boss-common\Output\Output.cpp:1894 ..\boss-common\Output\Output.cpp:1904
-msgid "Count"
-msgstr "总数"
-
-#: ..\boss-common\Output\Output.cpp:1895
-msgid "Recognised (or sorted by user rules)"
-msgstr "已识别(或者由用户规则排序)"
-
-#: ..\boss-common\Output\Output.cpp:1897 ..\boss-common\Output\Output.cpp:1899
-msgid "Unrecognised"
-msgstr "无法识别"
-
-#: ..\boss-common\Output\Output.cpp:1900
-msgid "Inactive"
-msgstr "未激活"
-
-#: ..\boss-common\Output\Output.cpp:1901 ..\boss-common\Output\Output.cpp:1914
-msgid "All"
-msgstr "全部"
-
-#: ..\boss-common\Output\Output.cpp:1904
-msgid "Plugin Message Type"
-msgstr "信息类型"
-
-#: ..\boss-common\Output\Output.cpp:1923
-msgid "No change in recognised plugin list since last run."
-msgstr "与上一次操作相比，可识别插件的排序未发生变化。"
-
-#: ..\boss-common\Output\Output.cpp:1955
-msgid "Rule"
-msgstr "规则"
-
-#: ..\boss-common\Output\Output.cpp:1955
-msgid "Applied"
-msgstr "已应用"
-
-#: ..\boss-common\Output\Output.cpp:1955
-msgid "Details (if applicable)"
-msgstr "详细信息(如果可用)"
-
-#: ..\boss-common\Output\Output.cpp:1969
-msgid " Plugins"
-msgstr " 个插件"
-
-#: ..\boss-common\Output\Output.cpp:1988
-msgid "Restored Load Order (Using modlist.txt)"
-msgstr "已恢复排序(使用modlist.txt)"
-
-#: ..\boss-common\Output\Output.cpp:1990
-msgid "Restored Load Order (Using modlist.old)"
-msgstr "已恢复排序(使用modlist.old)"
-
-#: ..\boss-common\Output\Output.cpp:1993
-msgid ""
-"These plugins are recognised by BOSS and have been sorted according to its "
-"masterlist. Please read any attached messages and act on any that require "
-"action."
-msgstr ""
-"以下插件已被BOSS识别并且根据masterlist调整了排序。请阅读提示信息做出相应调"
-"整。"
-
-#: ..\boss-common\Output\Output.cpp:2011
-msgid ""
-"The following plugins were not found in the masterlist, and must be "
-"positioned manually, using your favourite mod manager or by using BOSS's "
-"user rules functionality."
-msgstr ""
-"以下插件masterlist中不存在，所以需要手动排序，您可以使用mod管理工具或者再使用"
-"BOSS用户规则的功能修改这些插件的排序。"
-
-#: ..\boss-common\Output\Output.cpp:2012
-msgid ""
-" You can submit unrecognised plugins for addition to the masterlist directly "
-"from this log by clicking on a plugin and supplying a link and/or "
-"description of its contents in the panel that is displayed."
-msgstr ""
-" 您还可以提交无法识别的插件到masterlist中，只需要点击插件然后在窗口中输入插件"
-"的下载地址或者内容介绍。"
-
-#: ..\boss-common\Output\Output.cpp:2089
-msgid "Please read any attached messages and act on any that require action."
-msgstr "请阅读相关的信息并且适时做出相应调整。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:88
-msgid "Description:"
-msgstr "介绍："
-
-#: ..\boss-cli\BOSS-CLI.cpp:89
-msgid ""
-"  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, "
-"Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a "
-"frequently updated  masterlist to minimise incompatibilities between mods."
-msgstr ""
-" BOSS是一个可以帮忙调整 TESIV: Oblivion, Nehrim,  Fallout 3, Fallout: New "
-"Vegas 与 TESV: Skyrim 等游戏插件的排序的工具。主要依靠长期更新的masterlist以"
-"达到mod之间最小的冲突。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:93
-msgid "Examples:"
-msgstr "例："
-
-#: ..\boss-cli\BOSS-CLI.cpp:95
-msgid "    updates the masterlist, sorts your mods, and shows the log"
-msgstr "    更新masterlist，排序，然后显示日志"
-
-#: ..\boss-cli\BOSS-CLI.cpp:97
-msgid "    reverts your load order 1 level and skips showing the log"
-msgstr "    恢复到上一次的排序，然后显示日志"
-
-#: ..\boss-cli\BOSS-CLI.cpp:99
-msgid "    reverts your load order 2 levels and shows the log"
-msgstr "    恢复到上上一次的排序，然后显示日志"
-
-#: ..\boss-cli\BOSS-CLI.cpp:113 ..\boss-cli\BOSS-CLI.cpp:122
-#, c-format
-msgid "Downloading: %s; %3.0f%% of %3.0f KB"
-msgstr "正在下载: %s; %3.0f%% 总大小 %3.0f KB"
-
-#: ..\boss-cli\BOSS-CLI.cpp:195
-msgid "produces this help message"
-msgstr "生成此帮助信息"
-
-#: ..\boss-cli\BOSS-CLI.cpp:196
-msgid "prints the version banner"
-msgstr "打印版本标语"
-
-#: ..\boss-cli\BOSS-CLI.cpp:198
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web before sorting"
-msgstr "排序之前自动更新本地masterlist副本到网络上的最新版本"
-
-#: ..\boss-cli\BOSS-CLI.cpp:201
-msgid "inhibit the automatic masterlist updater"
-msgstr "禁止自动更新masterlist"
-
-#: ..\boss-cli\BOSS-CLI.cpp:203
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web but don't sort right now"
-msgstr "自动更新本地masterlist副本到网络上的最新版本但不立即更新排序"
-
-#: ..\boss-cli\BOSS-CLI.cpp:208
-msgid "don't launch a browser to show the HTML log at program completion"
-msgstr "完成排序后不在浏览器中显示HTML格式日志。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:211
-msgid ""
-"revert to a previous load order.  this parameter optionally accepts values "
-"of 1 or 2, indicating how many undo steps to apply.  if no option value is "
-"specified, it defaults to 1"
-msgstr ""
-"恢复到旧的版本呢。此参数可设置为1或者2，分别表示恢复的等级。如果未输入数值，"
-"将使用默认值1。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:217
-msgid ""
-"specify verbosity level (0-3) of the debugging output.  0 is the default, "
-"showing only WARN and ERROR messges. 1 (INFO and above) is implied if this "
-"option is specified without an argument.  higher values increase the "
-"verbosity further"
-msgstr ""
-"定义调试输出内容的冗长级别。0为默认值，仅显示警告与错误信息。如果未设置此项，"
-"将使用数值1(显示提示警告、错误、提示信息)。数值越高，输出内容越冗长。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:223
-msgid ""
-"override game autodetection.  valid values are: 'Oblivion', 'Nehrim', "
-"'Fallout3', 'FalloutNV', and 'Skyrim'"
-msgstr ""
-"覆盖游戏检测。有效数值"
-"为：'Oblivion'、'Nehrim'、'Fallout3'、'FalloutNV'和'Skyrim'"
-
-#: ..\boss-cli\BOSS-CLI.cpp:227
-msgid "add source file references to debug statements"
-msgstr "添加源代码信息到调试报告中"
-
-#: ..\boss-cli\BOSS-CLI.cpp:229
-msgid ""
-"show mod file CRCs, so that a file's CRC can be added to the masterlist in a "
-"conditional"
-msgstr "显示插件的CRC，这样文件的CRC将有条件的添加到masterlist中"
-
-#: ..\boss-cli\BOSS-CLI.cpp:232
-msgid "select output format. valid values are: 'html', 'text'"
-msgstr "选择输出格式。有效数值为：'html'或者'text'"
-
-#: ..\boss-cli\BOSS-CLI.cpp:235
-msgid "run BOSS without actually making any changes to load order"
-msgstr "运行BOSS，但不修改排序"
-
-#: ..\boss-cli\BOSS-CLI.cpp:237
-msgid "sets the proxy hostname for the masterlist updater"
-msgstr "设置masterlist更新的代理服务器"
-
-#: ..\boss-cli\BOSS-CLI.cpp:239
-msgid "sets the proxy port number for the masterlist updater"
-msgstr "设置masterlist更新的代理端口"
-
-#: ..\boss-cli\BOSS-CLI.cpp:241
-msgid ""
-"logs the debug output to the BOSSDebugLog.txt file instead of the command "
-"line."
-msgstr "将调试报告输出到BOSSDebugLog.txt，而不是显示在命令栏中。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:330
-msgid "Checking for BOSS updates..."
-msgstr "正在检查BOSS更新..."
-
-#: ..\boss-cli\BOSS-CLI.cpp:335 MainWindow.cpp:1026
-msgid "You are already using the latest version of BOSS."
-msgstr "您正在使用的BOSS已是最新版。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:341 ..\boss-cli\BOSS-CLI.cpp:346
-#, c-format
-msgid "Update available! New version: %s"
-msgstr "检测到新版本：%s"
-
-#: ..\boss-cli\BOSS-CLI.cpp:342
-msgid ""
-"The update may be downloaded from any of the locations listed in the BOSS "
-"Log."
-msgstr "您可以从BOSS日志中所列举的下载链接中任选一个下载最新版。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:355
-msgid "Release notes:"
-msgstr "发行说明："
-
-#: ..\boss-cli\BOSS-CLI.cpp:356
-msgid "Do you want to download and install the update? (y/n)"
-msgstr "您确定要下载并安装该更新？(是/否)"
-
-#: ..\boss-cli\BOSS-CLI.cpp:362
-msgid "No update has been downloaded or installed."
-msgstr "未下载或者安装任何更新。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:369
-msgid "New installer successfully downloaded!"
-msgstr "已成功下载新版安装程序！"
-
-#: ..\boss-cli\BOSS-CLI.cpp:370
-msgid ""
-"BOSS will now launch the downloaded installer and exit. Complete the "
-"installer to complete the update."
-msgstr ""
-"BOSS现在将退出并运行已下载的安装程序。您只要运行完安装程序即可更新BOSS。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:384 MainWindow.cpp:965
-msgid "Update cancelled."
-msgstr "更新已取消。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:401
-msgid "BOSS Update check failed. No Internet connection detected."
-msgstr "BOSS检查更新出错。未检测到可用网络。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:428 MainWindow.cpp:203
-msgid "Please pick which game to run BOSS for:"
-msgstr "请选择您要BOSS管理的游戏："
-
-#: ..\boss-cli\BOSS-CLI.cpp:434
-msgid "Invalid selection."
-msgstr "选项无效。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:471 MainWindow.cpp:468 UserRuleEditor.cpp:97
-msgid "Updating to the latest masterlist from the Google Code repository..."
-msgstr "正从Google Code repository下载最新masterlist...."
-
-#: ..\boss-cli\BOSS-CLI.cpp:478 MainWindow.cpp:476
-msgid ""
-"Your masterlist is already at the latest revision (r%1%; %2%). No update "
-"necessary."
-msgstr "您的masterlist已是最新版本(r%1%; %2%)，不需要更新。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:481 MainWindow.cpp:480
-msgid "Your masterlist has been updated to revision %1% (%2%)."
-msgstr "您的masterlist已更新到版本%1% (%2%)。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:487 ..\boss-cli\BOSS-CLI.cpp:496
-#: MainWindow.cpp:486 MainWindow.cpp:495
-msgid "Error: masterlist update failed."
-msgstr "错误：masterlist更新失败。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:488 ..\boss-cli\BOSS-CLI.cpp:497
-#: MainWindow.cpp:487 MainWindow.cpp:496
-msgid "Details: %1%"
-msgstr "详细信息：%1%"
-
-#: ..\boss-cli\BOSS-CLI.cpp:493 MainWindow.cpp:492
-msgid ""
-"No internet connection detected. Masterlist auto-updater could not check for "
-"updates."
-msgstr "未检测到可用网络。无法检查masterlist的更新。"
-
-#: ..\boss-cli\BOSS-CLI.cpp:520 MainWindow.cpp:443 MainWindow.cpp:517
-msgid "BOSS working..."
-msgstr "BOSS正在排序..."
-
-#: ..\boss-cli\BOSS-CLI.cpp:529 ..\boss-cli\BOSS-CLI.cpp:573
-#: ..\boss-cli\BOSS-CLI.cpp:612 MainWindow.cpp:536 MainWindow.cpp:591
-#: MainWindow.cpp:641
-msgid "Critical Error: %1%"
-msgstr "严重错误：%1%"
-
-#: ElementIDs.cpp:55 ElementIDs.cpp:70
-msgid "Downloading: %1%"
-msgstr "正在下载：%1%"
-
-#: ElementIDs.cpp:57 ElementIDs.cpp:72
-msgid "Are you sure you want to cancel?"
-msgstr "您确定要取消？"
-
-#: ElementIDs.cpp:57 ElementIDs.cpp:72
-msgid "BOSS: Updater"
-msgstr "BOSS：更新工具"
-
-#: MainWindow.cpp:107
-msgid "Error: %1% Details: %2%"
-msgstr "错误：%1% 详细信息：%2%"
-
-#: MainWindow.cpp:108 MainWindow.cpp:159 MainWindow.cpp:174 MainWindow.cpp:423
-#: MainWindow.cpp:682 MainWindow.cpp:698 MainWindow.cpp:722
-#: UserRuleEditor.cpp:109 UserRuleEditor.cpp:120 UserRuleEditor.cpp:136
-#: UserRuleEditor.cpp:181 UserRuleEditor.cpp:457 UserRuleEditor.cpp:484
-#: UserRuleEditor.cpp:753 UserRuleEditor.cpp:761 UserRuleEditor.cpp:771
-#: UserRuleEditor.cpp:779 UserRuleEditor.cpp:903
-msgid "BOSS: Error"
-msgstr "BOSS：错误"
-
-#: MainWindow.cpp:158
-msgid "Error: could not apply translation: %1%"
-msgstr "错误：无法加载翻译包：%1%"
-
-#: MainWindow.cpp:173
-msgid "Error: The BOSS GUI is already running. This instance will now quit."
-msgstr "错误：BOSS GUI 正在运行。当前操作即将退出。"
-
-#: MainWindow.cpp:199
-msgid " (not detected)"
-msgstr "(未检测到)"
-
-#: MainWindow.cpp:204
-msgid "BOSS: Select Game"
-msgstr "BOSS：选择游戏"
-
-#: MainWindow.cpp:245
-msgid "Plain Text"
-msgstr "纯文本"
-
-#: MainWindow.cpp:249
-msgid "Last Run"
-msgstr "最近一次运行"
-
-#: MainWindow.cpp:250
-msgid "2nd Last Run"
-msgstr "上上一次运行"
-
-#: MainWindow.cpp:257
-msgid "&View BOSS Log"
-msgstr "查看BOSS日志"
-
-#: MainWindow.cpp:257
-msgid "Opens your BOSSlog."
-msgstr "打开BOSS日志。"
-
-#: MainWindow.cpp:258
-msgid "&Run BOSS"
-msgstr "运行BOSS"
-
-#: MainWindow.cpp:258
-msgid "Runs BOSS with the options you have chosen."
-msgstr "按上面的设置运行BOSS。"
-
-#: MainWindow.cpp:260
-msgid "&Quit"
-msgstr "退出"
-
-#: MainWindow.cpp:260
-msgid "Quit BOSS."
-msgstr "退出BOSS。"
-
-#: MainWindow.cpp:261
-msgid "&File"
-msgstr "文件"
-
-#: MainWindow.cpp:264
-msgid "&User Rules..."
-msgstr "用户规则"
-
-#: MainWindow.cpp:264
-msgid "Opens your userlist in your default text editor."
-msgstr "在系统文本编辑器中打开userlist。"
-
-#: MainWindow.cpp:265
-msgid "&Settings..."
-msgstr "设置..."
-
-#: MainWindow.cpp:265
-msgid "Opens the Settings window."
-msgstr "打开设置窗口。"
-
-#: MainWindow.cpp:266
-msgid "&Edit"
-msgstr "编辑"
-
-#: MainWindow.cpp:269
-msgid "&Oblivion"
-msgstr "Oblivion"
-
-#: MainWindow.cpp:269
-msgid "Switch to running BOSS for Oblivion."
-msgstr "对Oblivion运行BOSS排序。"
-
-#: MainWindow.cpp:270
-msgid "&Nehrim"
-msgstr "Nehrim"
-
-#: MainWindow.cpp:270
-msgid "Switch to running BOSS for Nehrim."
-msgstr "对Nehrim运行BOSS排序。"
-
-#: MainWindow.cpp:271
-msgid "&Skyrim"
-msgstr "Skyrim"
-
-#: MainWindow.cpp:271
-msgid "Switch to running BOSS for Skyrim."
-msgstr "对Skyrim运行BOSS排序。"
-
-#: MainWindow.cpp:272
-msgid "&Fallout 3"
-msgstr "Fallout 3"
-
-#: MainWindow.cpp:272
-msgid "Switch to running BOSS for Fallout 3."
-msgstr "对Fallout 3运行BOSS排序。"
-
-#: MainWindow.cpp:273
-msgid "&Fallout: New Vegas"
-msgstr "Fallout: New Vegas"
-
-#: MainWindow.cpp:273
-msgid "Switch to running BOSS for Fallout: New Vegas."
-msgstr "对Fallout: New Vegas运行BOSS排序。"
-
-#: MainWindow.cpp:274
-msgid "&Morrowind"
-msgstr "Morrowind"
-
-#: MainWindow.cpp:274
-msgid "Switch to running BOSS for Morrowind."
-msgstr "对Morrowind运行BOSS排序。"
-
-#: MainWindow.cpp:275
-msgid "&Active Game"
-msgstr "当前游戏"
-
-#: MainWindow.cpp:278
-msgid "Open &Main Readme"
-msgstr "打开说明文档"
-
-#: MainWindow.cpp:278
-msgid "Opens the main BOSS readme in your default web browser."
-msgstr "浏览器打开说明文档。"
-
-#: MainWindow.cpp:279
-msgid "Open &Userlist Syntax Doc"
-msgstr "打开Userlist Syntax"
-
-#: MainWindow.cpp:279
-msgid ""
-"Opens the BOSS userlist syntax documentation in your default web browser."
-msgstr "浏览器打开用户规则语法说明。"
-
-#: MainWindow.cpp:280
-msgid "Open &Masterlist Syntax Doc"
-msgstr "打开Masterlist Syntax"
-
-#: MainWindow.cpp:280
-msgid ""
-"Opens the BOSS masterlist syntax documentation in your default web browser."
-msgstr "浏览器打开masterlist语法说明。"
-
-#: MainWindow.cpp:281
-msgid "&Open API Readme"
-msgstr "打开API Readme"
-
-#: MainWindow.cpp:281
-msgid "Opens the BOSS API readme in your default web browser."
-msgstr "浏览器打开API说明。"
-
-#: MainWindow.cpp:282
-msgid "Open &Version History"
-msgstr "打开Version History"
-
-#: MainWindow.cpp:282
-msgid "Opens the BOSS version history in your default web browser."
-msgstr "浏览器打开BOSS版本历史。"
-
-#: MainWindow.cpp:283
-msgid "View &Copyright Licenses"
-msgstr "查看版权许可"
-
-#: MainWindow.cpp:283
-msgid ""
-"View the GNU General Public License v3.0 and GNU Free Documentation License "
-"v1.3."
-msgstr ""
-"浏览器打开GNU General Public License v3.0和GNU Free Documentation License "
-"v1.3。"
-
-#: MainWindow.cpp:285
-msgid "&Check For Updates..."
-msgstr "检查更新..."
-
-#: MainWindow.cpp:285
-msgid "Checks for updates to BOSS."
-msgstr "检查BOSS的更新。"
-
-#: MainWindow.cpp:286
-msgid "&About BOSS..."
-msgstr "关于..."
-
-#: MainWindow.cpp:286
-msgid "Shows information about BOSS."
-msgstr "显示BOSS相关信息。"
-
-#: MainWindow.cpp:287
-msgid "&Help"
-msgstr "帮助"
-
-#: MainWindow.cpp:298
-msgid "Output Options"
-msgstr "输出选项"
-
-#: MainWindow.cpp:302
-msgid "Show BOSS Log On Completion"
-msgstr "完成后显示BOSS日志"
-
-#: MainWindow.cpp:303
-msgid "Display File CRCs"
-msgstr "显示文件CRC"
-
-#: MainWindow.cpp:304
-msgid "BOSS Log Format: "
-msgstr "BOSS日志格式："
-
-#: MainWindow.cpp:312
-msgid "Edit User Rules"
-msgstr " 编辑用户规则 "
-
-#: MainWindow.cpp:313
-msgid "Run BOSS"
-msgstr "   运行BOSS   "
-
-#: MainWindow.cpp:314
-msgid "View BOSS Log"
-msgstr "查看BOSS日志"
-
-#: MainWindow.cpp:321
-msgid "Run Options"
-msgstr "运行选项"
-
-#: MainWindow.cpp:327
-msgid "Sort Plugins"
-msgstr "调整排序"
-
-#: MainWindow.cpp:330
-msgid "Update Masterlist"
-msgstr "更新masterlist"
-
-#: MainWindow.cpp:331
-msgid "Perform Trial Run"
-msgstr "试运行"
-
-#: MainWindow.cpp:336
-msgid "Update Masterlist Only"
-msgstr "仅更新masterlist"
-
-#: MainWindow.cpp:340
-msgid "Undo Changes"
-msgstr "恢复修改"
-
-#: MainWindow.cpp:341
-msgid "Undo Level: "
-msgstr "恢复级别："
-
-#: MainWindow.cpp:350
-msgid ""
-"This decides both the format of BOSSlog generated when you click the \"Run "
-"BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog"
-"\" button."
-msgstr ""
-"决定单击\"运行BOSS\"按钮后生成的BOSS日志与单击\"查看BOSS日志\"按钮后打开的"
-"BOSS日志的格式。"
-
-#: MainWindow.cpp:351
-msgid ""
-"The format of BOSSlog this opens is decided by the setting of the \"BOSSlog "
-"Format\" Output Option above."
-msgstr "从这边打开的BOSS日志的格式取决于上面\"BOSS日志格式\"的设定。"
-
-#: MainWindow.cpp:352
-msgid ""
-"Runs BOSS, simulating its changes to your load order, but doesn't actually "
-"reorder your mods."
-msgstr "运行BOSS，模拟修改排序，但不改变mod的顺序。"
-
-#: MainWindow.cpp:404
-msgid "Ready"
-msgstr "已就绪"
-
-#: MainWindow.cpp:422 MainWindow.cpp:681 UserRuleEditor.cpp:119
-#: UserRuleEditor.cpp:135 UserRuleEditor.cpp:180 UserRuleEditor.cpp:902
-msgid "Error: %1%"
-msgstr "错误：%1%"
-
-#: MainWindow.cpp:443 UserRuleEditor.cpp:92 UserRuleEditor.cpp:127
-msgid "BOSS: Working..."
-msgstr "BOSS：正在排序..."
-
-#: MainWindow.cpp:477
-msgid "Masterlist already up-to-date."
-msgstr "masterlist已是最新版本。"
-
-#: MainWindow.cpp:481
-msgid "Masterlist updated successfully."
-msgstr "masterlist更新成功。"
-
-#: MainWindow.cpp:668 UserRuleEditor.cpp:86 UserRuleEditor.cpp:473
-#: UserRuleEditor.cpp:495
-msgid "BOSS: User Rules Manager"
-msgstr "BOSS：用户规则管理工具"
-
-#: MainWindow.cpp:697 MainWindow.cpp:721
-msgid "Error: \"%1%\" cannot be found."
-msgstr "错误：找不到\"%1%\"。"
-
-#: MainWindow.cpp:733
-msgid ""
-"A \"one-click\" program for users that quickly optimises and avoids "
-"detrimental conflicts in their\n"
-"TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and "
-"Fallout: New Vegas mod load orders."
-msgstr ""
-"         “一键”调整MOD顺序，帮助用户优化并减少MOD间的冲突，当前支持的游戏"
-"有：         \n"
-"TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 与 "
-"Fallout: New Vegas。"
-
-#: MainWindow.cpp:939
-msgid ""
-"The automatic updater will download the installer for the new version to "
-"this BOSS folder.\n"
-"\n"
-msgstr ""
-"自动更新工具将下载最新安装程序到此文件夹中。\n"
-"\n"
-
-#: MainWindow.cpp:940
-msgid ""
-"It will then launch the installer before exiting. Complete the installer to "
-"complete the update."
-msgstr "退出之前将运行安装程序。您只要运行完安装程序即可更新BOSS。"
-
-#: MainWindow.cpp:942 MainWindow.cpp:944 MainWindow.cpp:948 MainWindow.cpp:956
-#: MainWindow.cpp:966 MainWindow.cpp:972 MainWindow.cpp:981
-#: MainWindow.cpp:1085
-msgid "BOSS: Automatic Updater"
-msgstr "BOSS：自动更新工具"
-
-#: MainWindow.cpp:944
-msgid "Automatic updater cancelled."
-msgstr "自动更新已取消。"
-
-#: MainWindow.cpp:948
-msgid "Initialising download..."
-msgstr "正在初始化下载功能..."
-
-#: MainWindow.cpp:956
-msgid ""
-"New installer successfully downloaded! When you click 'OK', BOSS will launch "
-"the downloaded installer and exit. Complete the installer to complete the "
-"update."
-msgstr ""
-"新安装包已成功下载！单击“确定”，BOSS将运行安装包并退出程序。您只要运行完安装"
-"程序即可更新BOSS。"
-
-#: MainWindow.cpp:971
-msgid ""
-"Update failed. Details: %1%\n"
-"\n"
-"Update cancelled."
-msgstr ""
-"更新失败。详细信息：%1%\n"
-"\n"
-"更新已取消。"
-
-#: MainWindow.cpp:980
-msgid ""
-"Update failed. Details: %1%; %2%\n"
-"\n"
-"Update cancelled."
-msgstr ""
-"更新失败。详细信息：%1%; %2%\n"
-"\n"
-"更新已取消。"
-
-#: MainWindow.cpp:991
-msgid "BOSS: Settings"
-msgstr "BOSS：设置"
-
-#: MainWindow.cpp:1037 MainWindow.cpp:1049
-msgid "Update check failed. Details: %1%"
-msgstr "检查更新失败。详细信息：%1%"
-
-#: MainWindow.cpp:1043
-msgid "Update check failed. No Internet connection detected."
-msgstr "BOSS检查更新出错。未检测到可用网络。"
-
-#: MainWindow.cpp:1060 MainWindow.cpp:1066 MainWindow.cpp:1074
-#: MainWindow.cpp:1091
-msgid "BOSS: Check For Updates"
-msgstr "BOSS：检查更新"
-
-#: MainWindow.cpp:1073
-msgid ""
-"Update available! New version: %1%\n"
-"The update may be downloaded from any of the locations listed in the BOSS "
-"Log."
-msgstr ""
-"有可用更新！新版本：%1%\n"
-"您可以从BOSS日志中所列举的下载链接中任选一个下载最新版。"
-
-#: MainWindow.cpp:1084
-msgid "Failed to get release notes. Details: %1%"
-msgstr "无法获取发行说明。详细信息：%1%"
-
-#: MainWindow.cpp:1090
-msgid ""
-"Update available! New version: %1%\n"
-"Release notes:\n"
-"\n"
-"%2%\n"
-"\n"
-"Do you want to download and install the update?"
-msgstr ""
-"Update available! New version: %1%\n"
-"发行说明:\n"
-"\n"
-"%2%\n"
-"\n"
-"是否下载并安装此更新？"
-
-#: SettingsWindow.cpp:41
-msgid "Standard (0)"
-msgstr "标准(0)"
-
-#: SettingsWindow.cpp:42
-msgid "Level 1"
-msgstr "级别 1"
-
-#: SettingsWindow.cpp:43
-msgid "Level 2"
-msgstr "级别 2"
-
-#: SettingsWindow.cpp:44
-msgid "Level 3"
-msgstr "级别 3"
-
-#: SettingsWindow.cpp:48
-msgid "Autodetect"
-msgstr "自动检测"
-
-#: SettingsWindow.cpp:86
-msgid "Default Game:"
-msgstr "默认游戏："
-
-#: SettingsWindow.cpp:90
-msgid "Language:"
-msgstr "界面语言："
-
-#: SettingsWindow.cpp:93
-msgid "Check for BOSS updates on startup"
-msgstr "启动BOSS时检查更新"
-
-#: SettingsWindow.cpp:94
-msgid "Use User Rules Manager"
-msgstr "使用用户规则管理工具"
-
-#: SettingsWindow.cpp:95
-msgid "Close the GUI after running BOSS"
-msgstr "排序完成后关闭GUI"
-
-#: SettingsWindow.cpp:97
-msgid "Language settings will be applied after the BOSS GUI is restarted."
-msgstr "* 界面语言的修改必须重启才能生效。"
-
-#: SettingsWindow.cpp:106
-msgid "Proxy Hostname:"
-msgstr "代理服务器："
-
-#: SettingsWindow.cpp:109
-msgid "Proxy Port Number:"
-msgstr "代理端口："
-
-#: SettingsWindow.cpp:112
-msgid "Proxy Username:"
-msgstr "代理用户名："
-
-#: SettingsWindow.cpp:115
-msgid "Proxy Password:"
-msgstr "代理密码："
-
-#: SettingsWindow.cpp:127
-msgid "Debug Output Verbosity:"
-msgstr "调试输出冗长程度："
-
-#: SettingsWindow.cpp:130
-msgid "Include Source Code References"
-msgstr "包含源代码信息"
-
-#: SettingsWindow.cpp:131
-msgid "Log Debug Output"
-msgstr "输出调试日志"
-
-#: SettingsWindow.cpp:136
-msgid "General"
-msgstr "常规"
-
-#: SettingsWindow.cpp:137
-msgid "Internet"
-msgstr "网络"
-
-#: SettingsWindow.cpp:138
-msgid "Debugging"
-msgstr "调试"
-
-#: SettingsWindow.cpp:142
-msgid "OK"
-msgstr "确定"
-
-#: SettingsWindow.cpp:143 UserRuleEditor.cpp:261
-msgid "Cancel"
-msgstr "取消"
-
-#: SettingsWindow.cpp:154
-msgid "The output is logged to the BOSSDebugLog.txt file"
-msgstr "调试报告输出到BOSSDebugLog.txt中。"
-
-#: SettingsWindow.cpp:155
-msgid "Adds source code references to command line output."
-msgstr "添加源代码信息到命令栏输出。"
-
-#: SettingsWindow.cpp:156
-msgid ""
-"The higher the verbosity level, the more information is outputted to the "
-"command line."
-msgstr "冗长级别越高，输出到命令栏的内容越多。"
-
-#: UserRuleEditor.cpp:85
-msgid ""
-"The User Rules Manager requires the BOSS masterlist for %1% to have been "
-"downloaded, but it cannot be detected. Do you wish to download the latest "
-"masterlist now?"
-msgstr ""
-"用户规则管理器的运行需要先下载游戏%1%的masterlist才能运行，但当前未检测到该文"
-"件。是否马上下载最新版的masterlist？"
-
-#: UserRuleEditor.cpp:92 UserRuleEditor.cpp:127
-msgid "Initialising User Rules Manager..."
-msgstr "正在初始化用户规则管理工具..."
-
-#: UserRuleEditor.cpp:108
-msgid ""
-"Error: No internet connection detected. Masterlist could not be downloaded."
-msgstr "错误：未检测到可用网络。无法下载masterlist。"
-
-#: UserRuleEditor.cpp:150
-msgid "before"
-msgstr "早于"
-
-#: UserRuleEditor.cpp:151
-msgid "after"
-msgstr "晚于"
-
-#: UserRuleEditor.cpp:155
-msgid "top"
-msgstr "群组顶部"
-
-#: UserRuleEditor.cpp:156
-msgid "bottom"
-msgstr "群组底部"
-
-#: UserRuleEditor.cpp:195
-msgid "Rule Editor"
-msgstr "规则编辑器"
-
-#: UserRuleEditor.cpp:198
-msgid "For"
-msgstr "对象"
-
-#: UserRuleEditor.cpp:202
-msgid "Sort Item"
-msgstr "排序对象"
-
-#: UserRuleEditor.cpp:205
-msgid "Sort"
-msgstr "排序"
-
-#: UserRuleEditor.cpp:211
-msgid "Insert at the"
-msgstr "插入到"
-
-#: UserRuleEditor.cpp:213
-msgid "of"
-msgstr "群组："
-
-#: UserRuleEditor.cpp:221
-msgid "Replace existing messages"
-msgstr "替换已存在的信息"
-
-#: UserRuleEditor.cpp:225
-msgid "Default Plugin Messages"
-msgstr "插件默认信息"
-
-#: UserRuleEditor.cpp:245
-msgid "Installed Plugins"
-msgstr "已安装的插件"
-
-#: UserRuleEditor.cpp:246
-msgid "Masterlist"
-msgstr "masterlist"
-
-#: UserRuleEditor.cpp:253
-msgid "Create New Rule"
-msgstr "新建规则"
-
-#: UserRuleEditor.cpp:254
-msgid "Save Edited Rule"
-msgstr "保存修改的规则"
-
-#: UserRuleEditor.cpp:255
-msgid "Delete Rule"
-msgstr "删除规则"
-
-#: UserRuleEditor.cpp:257
-msgid "Move Rule Up"
-msgstr "上移规则"
-
-#: UserRuleEditor.cpp:258
-msgid "Move Rule Down"
-msgstr "下移规则"
-
-#: UserRuleEditor.cpp:260
-msgid "Save and Exit"
-msgstr "保存并退出"
-
-#: UserRuleEditor.cpp:280
-msgid ""
-"Messages must be entered in the correct format. See the User Rules Readme "
-"for more information."
-msgstr "信息必须以正确的格式输入。更多信息查看Userlist Syntax帮助文档。"
-
-#: UserRuleEditor.cpp:456 UserRuleEditor.cpp:483
-msgid "Rule Syntax Error: %1% Please correct the mistake before continuing."
-msgstr "规则语法错误：%1% 请调整错误再继续。"
-
-#: UserRuleEditor.cpp:472
-msgid "Are you sure you want to save your changes to the selected rule?"
-msgstr "您确定要保存对所选规则的修改？"
-
-#: UserRuleEditor.cpp:494
-msgid "Are you sure you want to delete the selected rule?"
-msgstr "您确定要删除所选规则？"
-
-#: UserRuleEditor.cpp:572 UserRuleEditor.cpp:591 UserRuleEditor.cpp:860
-msgid "User Rules Manager"
-msgstr "用户规则管理工具"
-
-#: UserRuleEditor.cpp:607
-msgid "No mod is specified to sort relative to."
-msgstr "没有定义排序参考对象。"
-
-#: UserRuleEditor.cpp:609
-msgid "Cannot sort a plugin relative to a group."
-msgstr "无法定义插件的排序参考对象为群组。"
-
-#: UserRuleEditor.cpp:612
-msgid "No group is specified to insert into."
-msgstr "未定义要插入的群组。"
-
-#: UserRuleEditor.cpp:614
-msgid "Cannot insert into a plugin."
-msgstr "无法插入到插件中。"
-
-#: UserRuleEditor.cpp:618
-msgid "Cannot add messages when none are given."
-msgstr "无法添加空白信息。"
-
-#: UserRuleEditor.cpp:621
-msgid "No rule mod is specified."
-msgstr "未定义规则对象。"
-
-#: UserRuleEditor.cpp:625
-msgid "No group is specified to sort relative to."
-msgstr "没有定义排序参考对象。"
-
-#: UserRuleEditor.cpp:627
-msgid "Cannot sort a group relative to a plugin."
-msgstr "不能设置群组的排序参考对象为插件。"
-
-#: UserRuleEditor.cpp:629
-msgid "Cannot insert groups."
-msgstr "无法插入群组。"
-
-#: UserRuleEditor.cpp:632
-msgid "Cannot add messages to groups."
-msgstr "无法给群组添加信息。"
-
-#: UserRuleEditor.cpp:635
-msgid ""
-"The rule mod is not being sorted nor having its attached messages altered."
-msgstr "规则对象未排序或者没有捆绑信息未修改。"
-
-#: UserRuleEditor.cpp:752
-msgid "Rule Syntax Error: Cannot sort a plugin relative to a group."
-msgstr "规则语法错误：不能设置群组的排序参考对象为插件。"
-
-#: UserRuleEditor.cpp:760
-msgid "Rule Syntax Error: Cannot insert into a plugin."
-msgstr "规则语法错误：无法插入到插件中。"
-
-#: UserRuleEditor.cpp:770
-msgid "Rule Syntax Error: Cannot sort a group relative to a plugin."
-msgstr "规则语法错误：不能设置群组的排序参考对象为插件。"
-
-#: UserRuleEditor.cpp:778
-msgid "Rule Syntax Error: Cannot insert groups."
-msgstr "规则语法错误：无法插入群组。"
-
-#: UserRuleEditor.cpp:871
-msgid ""
-"The rule sorting the unrecognised plugin \"%1%\" has been disabled as the "
-"plugin is now recognised. If you wish to override its position in the "
-"masterlist, re-enable the rule."
-msgstr ""
-"因插件\"%1%\"已经可以识别，现在禁止该插件的排序规则。如果您希望修改该插件在"
-"masterlist的位置，您可以重新开启该规则。"
-
-#: UserRuleEditor.cpp:872
-msgid "BOSS: Rule Disabled"
-msgstr "BOSS：规则已禁止"
+msgid   ""
+msgstr  "Project-Id-Version: Better Oblivion Mod Manager 2.1\n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2015-12-18 09:34-0500\n"
+        "PO-Revision-Date: 2012-09-11 17:25+0800\n"
+        "Last-Translator: icedream <icedream@tesfans.org>\n"
+        "Language-Team: 上古卷轴爱好者 <icedream@tesfans.org>\n"
+        "Language: Simplified Chinese\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=UTF-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+
+#: src/common/error.h:102
+#, boost-format
+msgid   "Masterlist Parsing Error: Expected a %1% at:"
+msgstr  "解析Masterlist出错: 预计%1%于:"
+
+#: src/common/error.h:104
+#, boost-format
+msgid   "Ini Parsing Error: Expected a %1% at:"
+msgstr  "解析Ini出错: 预计%1%于:"
+
+#: src/common/error.h:106
+#, boost-format
+msgid   "Userlist Parsing Error: Expected a %1% at:"
+msgstr  "解析Userlist出错: 预计%1%于:"
+
+#: src/common/error.h:108
+#, boost-format
+msgid   "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+msgstr  "Userlist语法出错: 规则起始于\"%1%: %2%\" %3%"
+
+#: src/common/error.h:110
+msgid   "Masterlist parsing aborted. Utility will end now."
+msgstr  "Masterlist解析已终止。程序即将关闭。"
+
+#: src/common/error.h:112
+msgid   "Ini parsing aborted. Some or all of the options may not have been "
+        "set correctly."
+msgstr  "Ini解析已终止。多个或者全部选项可能没有设置正确。"
+
+#: src/common/error.h:114
+msgid   "Userlist parsing aborted. No rules will be applied."
+msgstr  "Userlist解析已终止。未应用任何规则。"
+
+#: src/common/error.h:119
+msgid   "includes a sort line in a rule with a FOR rule keyword."
+msgstr  "含一条带For规则关键词的排序行。"
+
+#: src/common/error.h:121
+msgid   "tries to add a group."
+msgstr  "试图添加群组。"
+
+#: src/common/error.h:123
+msgid   "tries to sort the group \"ESMs\"."
+msgstr  "试图排序群组\"ESMs\"。"
+
+#: src/common/error.h:125
+msgid   "tries to sort the master .ESM file."
+msgstr  "试图排序.ESM文件。"
+
+#: src/common/error.h:127
+msgid   "references a mod and a group."
+msgstr  "引用mod和群组。"
+
+#: src/common/error.h:129
+msgid   "tries to sort a group before the group \"ESMs\"."
+msgstr  "试图将一个群组排到群组\"ESMs\"前面。"
+
+#: src/common/error.h:131
+msgid   "tries to sort a mod before the master .ESM file."
+msgstr  "试图将一个mod排到.ESM文件前面。"
+
+#: src/common/error.h:133
+msgid   "tries to insert a mod into the top of the group \"ESMs\", before the "
+        "master .ESM file."
+msgstr  "试图将一个mod插入群组\"ESMs\"顶部，位于.ESM文件前面。"
+
+#: src/common/error.h:135
+msgid   "tries to insert a group or insert something into a mod."
+msgstr  "试图插入群组或者其他到mod内。"
+
+#: src/common/error.h:137
+msgid   "tries to attach a message to a group."
+msgstr  "试图给群组添加信息。"
+
+#: src/common/error.h:139
+msgid   "has more than one sort line."
+msgstr  "含不止一个排序行。"
+
+#: src/common/error.h:141
+msgid   "has more than one REPLACE-using message line."
+msgstr  "含不止一个REPLACE消息行。"
+
+#: src/common/error.h:143
+msgid   "has a REPLACE-using message line that is not the first message line."
+msgstr  "含一个非首个信息行的REPLACE信息行。"
+
+#: src/common/error.h:145
+msgid   "has a sort line that is not the second line of the rule."
+msgstr  "含一个非规则第二行的排序行。"
+
+#: src/common/error.h:147
+msgid   "tries to sort a mod or group relative to itself."
+msgstr  "视图修改mod或者群组到本来的位置。"
+
+#: src/common/error.h:149
+msgid   "tries to attach an malformatted message."
+msgstr  "视图添加非法格式的信息。"
+
+#: src/common/error.h:151
+msgid   "tries to sort a plugin before a master file."
+msgstr  "试图将.ESP排在.ESM文件前面。"
+
+#: src/common/error.h:153
+msgid   "tries to sort a master file before a plugin."
+msgstr  "试图将.ESM排在.ESP文件前面。"
+
+#: src/common/settings.cpp:93
+msgid   "# Settings with names starting with 'b' are boolean and accept "
+        "values of 'true' or 'false'."
+msgstr  ""
+
+#: src/common/settings.cpp:94
+msgid   "# Settings with names starting with 'i' are unsigned integers and "
+        "accept varying ranges of whole numbers."
+msgstr  ""
+
+#: src/common/settings.cpp:95
+msgid   "# Settings with names starting with 's' are strings and their "
+        "accepted values vary."
+msgstr  ""
+
+#: src/common/settings.cpp:96
+msgid   "# See the BOSS ReadMe for details on what each setting does and the "
+        "accepted values for integer and string settings."
+msgstr  ""
+
+#: src/common/error.cpp:107 src/common/error.cpp:146
+msgid   "No error."
+msgstr  "未出现错误。"
+
+#: src/common/error.cpp:109
+#, boost-format
+msgid   "\"%1%\" cannot be read!"
+msgstr  "\"%1%\" 无法读取！"
+
+#: src/common/error.cpp:111
+#, boost-format
+msgid   "\"%1%\" cannot be written to!"
+msgstr  "\"%1%\" 无法写入！"
+
+#: src/common/error.cpp:113
+#, boost-format
+msgid   "\"%1%\" is not encoded in valid UTF-8!"
+msgstr  "\"%1%\" 未以UTF-8编码！"
+
+#: src/common/error.cpp:115
+#, boost-format
+msgid   "\"%1%\" cannot be found!"
+msgstr  "\"%1%\" 无法找到！"
+
+#: src/common/error.cpp:117
+#, boost-format
+msgid   "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
+msgstr  "对象\"%2%\"的条件\"%1%\"评估出错！"
+
+#: src/common/error.cpp:119
+#, boost-format
+msgid   "\"%1%\" is not a valid regular expression. Item skipped."
+msgstr  "\"%1%\" 不是有效的正则表达式。已跳过。"
+
+#: src/common/error.cpp:121
+msgid   "No game detected!"
+msgstr  "未检测游戏！"
+
+#: src/common/error.cpp:123
+#, boost-format
+msgid   "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
+msgstr  "无法将\"%1%\"由UTF-8转换为\"%2%\"。"
+
+#: src/common/error.cpp:125
+#, boost-format
+msgid   "Master file \"%1%\" loading after non-master plugins!"
+msgstr  "master文件\"%1%\"排在一个非Mater文件后面！"
+
+#: src/common/error.cpp:129
+#, fuzzy, boost-format
+#| msgid        "Critical Error: %1%"
+msgid           "Git operation failed. Error: %1%"
+msgstr          "严重错误：%1%"
+
+#: src/common/error.cpp:131
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be read! Filesystem "
+        "response: \"%2%\"."
+msgstr  "无法获取文件\"%1%\"的修改时间！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:133
+#, boost-format
+msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
+msgstr  "无法重命名文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:135
+#, boost-format
+msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
+msgstr  "无法删除文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:137
+#, boost-format
+msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
+msgstr  "无法创建文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:139
+#, boost-format
+msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
+msgstr  "无法扫描文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:141
+#, boost-format
+msgid   "Parsing of \"%1%\" failed!"
+msgstr  "解析\"%1%\"失败！"
+
+#: src/common/error.cpp:143
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be written! Filesystem "
+        "response: \"%2%\"."
+msgstr  "\"%1%\"的修改时间无法写入！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:145
+#, boost-format
+msgid   "The window \"%1%\" failed to initialise. Details: \"%2%\"."
+msgstr  "窗口\"%1%\"初始化失败。详细信息：\"%2%\"。"
+
+#: src/common/game.cpp:500
+msgid   "Rule is disabled."
+msgstr  "规则已禁止。"
+
+#: src/common/game.cpp:524 src/common/game.cpp:587 src/common/game.cpp:640
+msgid   " is not installed or in the masterlist."
+msgstr  "未安装或者已存在于masterlist中。"
+
+#: src/common/game.cpp:531 src/common/game.cpp:594
+msgid   " is already in the masterlist."
+msgstr  "已存在于masterlist中。"
+
+#: src/common/game.cpp:537 src/common/game.cpp:601
+msgid   " is not in the masterlist, cannot override."
+msgstr  "不存在于masterlist中，不能覆盖。"
+
+#: src/common/game.cpp:551
+msgid   " is not installed, and is not in the masterlist."
+msgstr  "未安装，并且不存在于masterlist中。"
+
+#: src/common/game.cpp:557
+msgid   " is not in the masterlist and has not been sorted by a rule."
+msgstr  "不存在于masterlist中并且未定义排序规则。"
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   "The group "
+msgstr  "群组"
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   " is not in the masterlist or is malformatted."
+msgstr  "不存在于masterlist中或者格式错误。"
+
+#: src/common/game.cpp:748 src/common/game.cpp:766
+msgid   "Version: "
+msgstr  "版本："
+
+#: src/common/game.cpp:750 src/common/game.cpp:768 src/common/game.cpp:854
+#: src/common/game.cpp:856
+msgid   "Checksum: "
+msgstr  "CRC："
+
+#: src/common/game.cpp:824
+msgid   "The order of plugins set by BOSS differs from their order in its "
+        "masterlist, as one or more of the installed plugins is false-"
+        "flagged. For more information, see \"file:../Docs/BOSS%20Readme."
+        "html#appendix-c False-Flagged Plugins\"."
+msgstr  "由BOSS调整的排序与masterlist中的排序不一致，因为一个或者多个已安装的"
+        "插件标记错误。更新信息可以查看\"file:../Docs/BOSS%20Readme."
+        "html#appendix-c False-Flagged Plugins\"。"
+
+#: src/common/game.cpp:827
+msgid   "Could not enforce load order master/plugin partition. Details: "
+msgstr  "无法运行.ESM、.ESP排序比较。详细信息："
+
+#: src/common/game.cpp:848 src/output/boss_log.cpp:388
+#: src/output/boss_log.cpp:392 src/boss_cli.cpp:88
+msgid   "Version "
+msgstr  "版本 "
+
+#: src/common/game.cpp:850
+msgid   "Active"
+msgstr  "已激活"
+
+#: src/common/game.cpp:872
+msgid   "Error: "
+msgstr  "错误："
+
+#: src/common/game.cpp:907 src/boss_cli.cpp:356
+msgid   "Critical Error: "
+msgstr  "严重错误："
+
+#: src/common/game.cpp:908 src/gui/main_window.cpp:551
+#: src/gui/main_window.cpp:608 src/gui/main_window.cpp:661 src/boss_cli.cpp:357
+#: src/boss_cli.cpp:424 src/boss_cli.cpp:470 src/boss_cli.cpp:512
+msgid   "Check the Troubleshooting section of the ReadMe for more information "
+        "and possible solutions."
+msgstr  "请检查说明文档中问题解决部分的介绍，获取更多相关信息以及可能的解决办"
+        "法。"
+
+#: src/common/game.cpp:909 src/gui/main_window.cpp:552
+#: src/gui/main_window.cpp:609 src/gui/main_window.cpp:662 src/boss_cli.cpp:358
+#: src/boss_cli.cpp:425 src/boss_cli.cpp:471 src/boss_cli.cpp:513
+msgid   "Utility will end now."
+msgstr  "程序即将关闭。"
+
+#: src/gui/settings_window.cpp:48
+msgid   "Standard (0)"
+msgstr  "标准(0)"
+
+#: src/gui/settings_window.cpp:49
+msgid   "Level 1"
+msgstr  "级别 1"
+
+#: src/gui/settings_window.cpp:50
+msgid   "Level 2"
+msgstr  "级别 2"
+
+#: src/gui/settings_window.cpp:51
+msgid   "Level 3"
+msgstr  "级别 3"
+
+#: src/gui/settings_window.cpp:53
+msgid   "Autodetect"
+msgstr  "自动检测"
+
+#: src/gui/settings_window.cpp:75
+msgid   "Use User Rules Manager"
+msgstr  "使用用户规则管理工具"
+
+#: src/gui/settings_window.cpp:77
+msgid   "Close the GUI after running BOSS"
+msgstr  "排序完成后关闭GUI"
+
+#: src/gui/settings_window.cpp:97
+msgid   "Default Game:"
+msgstr  "默认游戏："
+
+#: src/gui/settings_window.cpp:99
+msgid   "Language:"
+msgstr  "界面语言："
+
+#: src/gui/settings_window.cpp:101
+msgid   "Debug Output Verbosity:"
+msgstr  "调试输出冗长程度："
+
+#: src/gui/settings_window.cpp:103
+msgid   "Oblivion Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:105
+#, fuzzy
+#| msgid        "Masterlist"
+msgid           "Nehrim Masterlist URL:"
+msgstr          "masterlist"
+
+#: src/gui/settings_window.cpp:107
+#, fuzzy
+#| msgid        "Masterlist"
+msgid           "Skyrim Masterlist URL:"
+msgstr          "masterlist"
+
+#: src/gui/settings_window.cpp:109
+#, fuzzy
+#| msgid        "Update Masterlist"
+msgid           "Fallout 3 Masterlist URL:"
+msgstr          "更新masterlist"
+
+#: src/gui/settings_window.cpp:111
+#, fuzzy
+#| msgid        "&Fallout: New Vegas"
+msgid           "Falllout: New Vegas Masterlist URL:"
+msgstr          "Fallout: New Vegas"
+
+#: src/gui/settings_window.cpp:118
+msgid   "Language settings will be applied after the BOSS GUI is restarted."
+msgstr  "* 界面语言的修改必须重启才能生效。"
+
+#: src/gui/settings_window.cpp:123
+msgid   "OK"
+msgstr  "确定"
+
+#: src/gui/settings_window.cpp:124 src/gui/user_rule_editor.cpp:563
+msgid   "Cancel"
+msgstr  "取消"
+
+#: src/gui/settings_window.cpp:131
+#, fuzzy
+#| msgid        "The higher the verbosity level, the more information is "
+#|      "outputted to the command line."
+msgid           "The higher the verbosity level, the more information is "
+        "outputted to BOSSDebugLog.txt."
+msgstr          "冗长级别越高，输出到命令栏的内容越多。"
+
+#: src/gui/main_window.cpp:125
+#, boost-format
+msgid   "Error: %1% Details: %2%"
+msgstr  "错误：%1% 详细信息：%2%"
+
+#: src/gui/main_window.cpp:126 src/gui/main_window.cpp:176
+#: src/gui/main_window.cpp:190 src/gui/main_window.cpp:692
+#: src/gui/main_window.cpp:715 src/gui/main_window.cpp:850
+#: src/gui/main_window.cpp:865 src/gui/user_rule_editor.cpp:123
+#: src/gui/user_rule_editor.cpp:130 src/gui/user_rule_editor.cpp:139
+#: src/gui/user_rule_editor.cpp:146 src/gui/user_rule_editor.cpp:283
+#: src/gui/user_rule_editor.cpp:442 src/gui/user_rule_editor.cpp:480
+#: src/gui/user_rule_editor.cpp:759 src/gui/user_rule_editor.cpp:786
+msgid   "BOSS: Error"
+msgstr  "BOSS：错误"
+
+#: src/gui/main_window.cpp:175
+#, boost-format
+msgid   "Error: could not apply translation: %1%"
+msgstr  "错误：无法加载翻译包：%1%"
+
+#: src/gui/main_window.cpp:189
+msgid   "Error: The BOSS GUI is already running. This instance will now quit."
+msgstr  "错误：BOSS GUI 正在运行。当前操作即将退出。"
+
+#: src/gui/main_window.cpp:215
+msgid   " (not detected)"
+msgstr  "(未检测到)"
+
+#: src/gui/main_window.cpp:221 src/boss_cli.cpp:338
+msgid   "Please pick which game to run BOSS for:"
+msgstr  "请选择您要BOSS管理的游戏："
+
+#: src/gui/main_window.cpp:222
+msgid   "BOSS: Select Game"
+msgstr  "BOSS：选择游戏"
+
+#: src/gui/main_window.cpp:260
+msgid   "Plain Text"
+msgstr  "纯文本"
+
+#: src/gui/main_window.cpp:262
+msgid   "Last Run"
+msgstr  "最近一次运行"
+
+#: src/gui/main_window.cpp:263
+msgid   "2nd Last Run"
+msgstr  "上上一次运行"
+
+#: src/gui/main_window.cpp:270
+msgid   "&View BOSS Log"
+msgstr  "查看BOSS日志"
+
+#: src/gui/main_window.cpp:271
+msgid   "Opens your BOSSlog."
+msgstr  "打开BOSS日志。"
+
+#: src/gui/main_window.cpp:273
+msgid   "&Run BOSS"
+msgstr  "运行BOSS"
+
+#: src/gui/main_window.cpp:274
+msgid   "Runs BOSS with the options you have chosen."
+msgstr  "按上面的设置运行BOSS。"
+
+#: src/gui/main_window.cpp:277
+msgid   "&Quit"
+msgstr  "退出"
+
+#: src/gui/main_window.cpp:278
+msgid   "Quit BOSS."
+msgstr  "退出BOSS。"
+
+#: src/gui/main_window.cpp:279
+msgid   "&File"
+msgstr  "文件"
+
+#: src/gui/main_window.cpp:283
+msgid   "&User Rules..."
+msgstr  "用户规则"
+
+#: src/gui/main_window.cpp:284
+msgid   "Opens your userlist in your default text editor."
+msgstr  "在系统文本编辑器中打开userlist。"
+
+#: src/gui/main_window.cpp:286
+msgid   "&Settings..."
+msgstr  "设置..."
+
+#: src/gui/main_window.cpp:287
+msgid   "Opens the Settings window."
+msgstr  "打开设置窗口。"
+
+#: src/gui/main_window.cpp:288
+msgid   "&Edit"
+msgstr  "编辑"
+
+#: src/gui/main_window.cpp:292
+msgid   "Switch to running BOSS for Oblivion."
+msgstr  "对Oblivion运行BOSS排序。"
+
+#: src/gui/main_window.cpp:294
+msgid   "Switch to running BOSS for Nehrim."
+msgstr  "对Nehrim运行BOSS排序。"
+
+#: src/gui/main_window.cpp:296
+msgid   "Switch to running BOSS for Skyrim."
+msgstr  "对Skyrim运行BOSS排序。"
+
+#: src/gui/main_window.cpp:298
+msgid   "Switch to running BOSS for Fallout 3."
+msgstr  "对Fallout 3运行BOSS排序。"
+
+#: src/gui/main_window.cpp:300
+msgid   "Switch to running BOSS for Fallout: New Vegas."
+msgstr  "对Fallout: New Vegas运行BOSS排序。"
+
+#: src/gui/main_window.cpp:301
+msgid   "&Active Game"
+msgstr  "当前游戏"
+
+#: src/gui/main_window.cpp:305
+msgid   "Open &Main Readme"
+msgstr  "打开说明文档"
+
+#: src/gui/main_window.cpp:306
+msgid   "Opens the main BOSS readme in your default web browser."
+msgstr  "浏览器打开说明文档。"
+
+#: src/gui/main_window.cpp:308
+msgid   "Open &Userlist Syntax Doc"
+msgstr  "打开Userlist Syntax"
+
+#: src/gui/main_window.cpp:309
+msgid   "Opens the BOSS userlist syntax documentation in your default web "
+        "browser."
+msgstr  "浏览器打开用户规则语法说明。"
+
+#: src/gui/main_window.cpp:311
+msgid   "Open &Masterlist Syntax Doc"
+msgstr  "打开Masterlist Syntax"
+
+#: src/gui/main_window.cpp:312
+msgid   "Opens the BOSS masterlist syntax documentation in your default web "
+        "browser."
+msgstr  "浏览器打开masterlist语法说明。"
+
+#: src/gui/main_window.cpp:314
+msgid   "Open &Version History"
+msgstr  "打开Version History"
+
+#: src/gui/main_window.cpp:315
+msgid   "Opens the BOSS version history in your default web browser."
+msgstr  "浏览器打开BOSS版本历史。"
+
+#: src/gui/main_window.cpp:317
+msgid   "View &Copyright Licenses"
+msgstr  "查看版权许可"
+
+#: src/gui/main_window.cpp:318
+msgid   "View the GNU General Public License v3.0 and GNU Free Documentation "
+        "License v1.3."
+msgstr  "浏览器打开GNU General Public License v3.0和GNU Free Documentation "
+        "License v1.3。"
+
+#: src/gui/main_window.cpp:321
+msgid   "&About BOSS..."
+msgstr  "关于..."
+
+#: src/gui/main_window.cpp:322
+msgid   "Shows information about BOSS."
+msgstr  "显示BOSS相关信息。"
+
+#: src/gui/main_window.cpp:323
+msgid   "&Help"
+msgstr  "帮助"
+
+#: src/gui/main_window.cpp:337
+msgid   "Output Options"
+msgstr  "输出选项"
+
+#: src/gui/main_window.cpp:342
+msgid   "Show BOSS Log On Completion"
+msgstr  "完成后显示BOSS日志"
+
+#: src/gui/main_window.cpp:343
+msgid   "Display File CRCs"
+msgstr  "显示文件CRC"
+
+#: src/gui/main_window.cpp:344
+msgid   "BOSS Log Format: "
+msgstr  "BOSS日志格式："
+
+#: src/gui/main_window.cpp:352
+msgid   "Edit User Rules"
+msgstr  " 编辑用户规则 "
+
+#: src/gui/main_window.cpp:353
+msgid   "Run BOSS"
+msgstr  "   运行BOSS   "
+
+#: src/gui/main_window.cpp:354
+msgid   "View BOSS Log"
+msgstr  "查看BOSS日志"
+
+#: src/gui/main_window.cpp:363
+msgid   "Run Options"
+msgstr  "运行选项"
+
+#: src/gui/main_window.cpp:369
+msgid   "Sort Plugins"
+msgstr  "调整排序"
+
+#: src/gui/main_window.cpp:372
+msgid   "Update Masterlist"
+msgstr  "更新masterlist"
+
+#: src/gui/main_window.cpp:373
+msgid   "Perform Trial Run"
+msgstr  "试运行"
+
+#: src/gui/main_window.cpp:378
+msgid   "Update Masterlist Only"
+msgstr  "仅更新masterlist"
+
+#: src/gui/main_window.cpp:382
+msgid   "Undo Changes"
+msgstr  "恢复修改"
+
+#: src/gui/main_window.cpp:383
+msgid   "Undo Level: "
+msgstr  "恢复级别："
+
+#: src/gui/main_window.cpp:392
+msgid   "This decides both the format of BOSSlog generated when you click the "
+        "\"Run BOSS\" button and the BOSSlog format opened when you click the "
+        "\"View BOSSlog\" button."
+msgstr  "决定单击\"运行BOSS\"按钮后生成的BOSS日志与单击\"查看BOSS日志\"按钮后"
+        "打开的BOSS日志的格式。"
+
+#: src/gui/main_window.cpp:393
+msgid   "The format of BOSSlog this opens is decided by the setting of the "
+        "\"BOSSlog Format\" Output Option above."
+msgstr  "从这边打开的BOSS日志的格式取决于上面\"BOSS日志格式\"的设定。"
+
+#: src/gui/main_window.cpp:394
+msgid   "Runs BOSS, simulating its changes to your load order, but doesn't "
+        "actually reorder your mods."
+msgstr  "运行BOSS，模拟修改排序，但不改变mod的顺序。"
+
+#: src/gui/main_window.cpp:446
+msgid   "Ready"
+msgstr  "已就绪"
+
+#: src/gui/main_window.cpp:454
+msgid   "BOSS: Settings"
+msgstr  "BOSS：设置"
+
+#: src/gui/main_window.cpp:470 src/gui/user_rule_editor.cpp:408
+#: src/gui/user_rule_editor.cpp:430
+msgid   "BOSS: Working..."
+msgstr  "BOSS：正在排序..."
+
+#: src/gui/main_window.cpp:471 src/gui/main_window.cpp:530 src/boss_cli.cpp:413
+msgid   "BOSS working..."
+msgstr  "BOSS正在排序..."
+
+#: src/gui/main_window.cpp:496 src/gui/user_rule_editor.cpp:414
+#: src/boss_cli.cpp:377
+#, fuzzy
+#| msgid        "Updating to the latest masterlist from the Google Code "
+#|      "repository..."
+msgid           "Updating to the latest masterlist from the online "
+        "repository..."
+msgstr          "正从Google Code repository下载最新masterlist...."
+
+#: src/gui/main_window.cpp:500 src/boss_cli.cpp:381
+#, fuzzy, boost-format
+#| msgid        "Your masterlist has been updated to revision %1% (%2%)."
+msgid           "Masterlist updated; at revision: %1%."
+msgstr          "您的masterlist已更新到版本%1% (%2%)。"
+
+#: src/gui/main_window.cpp:504 src/gui/user_rule_editor.cpp:423
+#: src/boss_cli.cpp:385
+msgid   "Error: masterlist update failed."
+msgstr  "错误：masterlist更新失败。"
+
+#: src/gui/main_window.cpp:505 src/gui/user_rule_editor.cpp:424
+#: src/boss_cli.cpp:386
+#, boost-format
+msgid   "Details: %1%"
+msgstr  "详细信息：%1%"
+
+#: src/gui/main_window.cpp:511 src/boss_cli.cpp:392
+#, fuzzy, boost-format
+#| msgid        "Your masterlist has been updated to revision %1% (%2%)."
+msgid           "Masterlist updating disabled; at revision: %1%."
+msgstr          "您的masterlist已更新到版本%1% (%2%)。"
+
+#: src/gui/main_window.cpp:550 src/gui/main_window.cpp:607
+#: src/gui/main_window.cpp:660 src/boss_cli.cpp:423 src/boss_cli.cpp:469
+#: src/boss_cli.cpp:511
+#, boost-format
+msgid   "Critical Error: %1%"
+msgstr  "严重错误：%1%"
+
+#: src/gui/main_window.cpp:691 src/gui/main_window.cpp:714
+#, boost-format
+msgid   "Error: \"%1%\" cannot be found."
+msgstr  "错误：找不到\"%1%\"。"
+
+#: src/gui/main_window.cpp:726
+msgid   "Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New "
+        "Vegas."
+msgstr  ""
+
+#: src/gui/main_window.cpp:834 src/gui/user_rule_editor.cpp:401
+#: src/gui/user_rule_editor.cpp:775 src/gui/user_rule_editor.cpp:796
+msgid   "BOSS: User Rules Manager"
+msgstr  "BOSS：用户规则管理工具"
+
+#: src/gui/main_window.cpp:849 src/gui/main_window.cpp:864
+#: src/gui/user_rule_editor.cpp:282 src/gui/user_rule_editor.cpp:441
+#: src/gui/user_rule_editor.cpp:479
+#, boost-format
+msgid   "Error: %1%"
+msgstr  "错误：%1%"
+
+#: src/gui/element_ids.cpp:67
+#, boost-format
+msgid   "Downloading masterlist: %1% of %2% objects (%3% KB)"
+msgstr  ""
+
+#: src/gui/element_ids.cpp:69
+msgid   "Are you sure you want to cancel?"
+msgstr  "您确定要取消？"
+
+#: src/gui/element_ids.cpp:70
+msgid   "BOSS: Updater"
+msgstr  "BOSS：更新工具"
+
+#: src/gui/user_rule_editor.cpp:122
+msgid   "Rule Syntax Error: Cannot sort a plugin relative to a group."
+msgstr  "规则语法错误：不能设置群组的排序参考对象为插件。"
+
+#: src/gui/user_rule_editor.cpp:129
+msgid   "Rule Syntax Error: Cannot insert into a plugin."
+msgstr  "规则语法错误：无法插入到插件中。"
+
+#: src/gui/user_rule_editor.cpp:138
+msgid   "Rule Syntax Error: Cannot sort a group relative to a plugin."
+msgstr  "规则语法错误：不能设置群组的排序参考对象为插件。"
+
+#: src/gui/user_rule_editor.cpp:145
+msgid   "Rule Syntax Error: Cannot insert groups."
+msgstr  "规则语法错误：无法插入群组。"
+
+#: src/gui/user_rule_editor.cpp:238 src/gui/user_rule_editor.cpp:892
+#: src/gui/user_rule_editor.cpp:914
+msgid   "User Rules Manager"
+msgstr  "用户规则管理工具"
+
+#: src/gui/user_rule_editor.cpp:250
+#, boost-format
+msgid   "The rule sorting the unrecognised plugin \"%1%\" has been disabled "
+        "as the plugin is now recognised. If you wish to override its "
+        "position in the masterlist, re-enable the rule."
+msgstr  "因插件\"%1%\"已经可以识别，现在禁止该插件的排序规则。如果您希望修改该"
+        "插件在masterlist的位置，您可以重新开启该规则。"
+
+#: src/gui/user_rule_editor.cpp:251
+msgid   "BOSS: Rule Disabled"
+msgstr  "BOSS：规则已禁止"
+
+#: src/gui/user_rule_editor.cpp:264 src/output/boss_log.cpp:160
+#: src/output/boss_log.cpp:295
+msgid   "User Rules"
+msgstr  "用户规则"
+
+#: src/gui/user_rule_editor.cpp:400
+#, boost-format
+msgid   "The User Rules Manager requires the BOSS masterlist for %1% to have "
+        "been downloaded, but it cannot be detected. Do you wish to download "
+        "the latest masterlist now?"
+msgstr  "用户规则管理器的运行需要先下载游戏%1%的masterlist才能运行，但当前未检"
+        "测到该文件。是否马上下载最新版的masterlist？"
+
+#: src/gui/user_rule_editor.cpp:409 src/gui/user_rule_editor.cpp:431
+msgid   "Initialising User Rules Manager..."
+msgstr  "正在初始化用户规则管理工具..."
+
+#: src/gui/user_rule_editor.cpp:419
+#, boost-format
+msgid   "Masterlist revision: %1%."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "before"
+msgstr  "早于"
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "after"
+msgstr  "晚于"
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "top"
+msgstr  "群组顶部"
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "bottom"
+msgstr  "群组底部"
+
+#: src/gui/user_rule_editor.cpp:496
+msgid   "Rule Editor"
+msgstr  "规则编辑器"
+
+#: src/gui/user_rule_editor.cpp:499
+msgid   "For"
+msgstr  "对象"
+
+#: src/gui/user_rule_editor.cpp:503
+msgid   "Sort Item"
+msgstr  "排序对象"
+
+#: src/gui/user_rule_editor.cpp:506
+msgid   "Sort"
+msgstr  "排序"
+
+#: src/gui/user_rule_editor.cpp:512
+msgid   "Insert at the"
+msgstr  "插入到"
+
+#: src/gui/user_rule_editor.cpp:514
+msgid   "of"
+msgstr  "群组："
+
+#: src/gui/user_rule_editor.cpp:518 src/output/output.cpp:565
+msgid   "Add the following messages:"
+msgstr  "添加以下信息："
+
+#: src/gui/user_rule_editor.cpp:522
+msgid   "Replace existing messages"
+msgstr  "替换已存在的信息"
+
+#: src/gui/user_rule_editor.cpp:527
+msgid   "Default Plugin Messages"
+msgstr  "插件默认信息"
+
+#: src/gui/user_rule_editor.cpp:547
+msgid   "Installed Plugins"
+msgstr  "已安装的插件"
+
+#: src/gui/user_rule_editor.cpp:548
+msgid   "Masterlist"
+msgstr  "masterlist"
+
+#: src/gui/user_rule_editor.cpp:555
+msgid   "Create New Rule"
+msgstr  "新建规则"
+
+#: src/gui/user_rule_editor.cpp:556
+msgid   "Save Edited Rule"
+msgstr  "保存修改的规则"
+
+#: src/gui/user_rule_editor.cpp:557
+msgid   "Delete Rule"
+msgstr  "删除规则"
+
+#: src/gui/user_rule_editor.cpp:559
+msgid   "Move Rule Up"
+msgstr  "上移规则"
+
+#: src/gui/user_rule_editor.cpp:560
+msgid   "Move Rule Down"
+msgstr  "下移规则"
+
+#: src/gui/user_rule_editor.cpp:562
+msgid   "Save and Exit"
+msgstr  "保存并退出"
+
+#: src/gui/user_rule_editor.cpp:582
+msgid   "Messages must be entered in the correct format. See the User Rules "
+        "Readme for more information."
+msgstr  "信息必须以正确的格式输入。更多信息查看Userlist Syntax帮助文档。"
+
+#: src/gui/user_rule_editor.cpp:758 src/gui/user_rule_editor.cpp:785
+#, boost-format
+msgid   "Rule Syntax Error: %1% Please correct the mistake before continuing."
+msgstr  "规则语法错误：%1% 请调整错误再继续。"
+
+#: src/gui/user_rule_editor.cpp:774
+msgid   "Are you sure you want to save your changes to the selected rule?"
+msgstr  "您确定要保存对所选规则的修改？"
+
+#: src/gui/user_rule_editor.cpp:795
+msgid   "Are you sure you want to delete the selected rule?"
+msgstr  "您确定要删除所选规则？"
+
+#: src/gui/user_rule_editor.cpp:934
+msgid   "No mod is specified to sort relative to."
+msgstr  "没有定义排序参考对象。"
+
+#: src/gui/user_rule_editor.cpp:937
+msgid   "Cannot sort a plugin relative to a group."
+msgstr  "无法定义插件的排序参考对象为群组。"
+
+#: src/gui/user_rule_editor.cpp:943
+msgid   "No group is specified to insert into."
+msgstr  "未定义要插入的群组。"
+
+#: src/gui/user_rule_editor.cpp:946
+msgid   "Cannot insert into a plugin."
+msgstr  "无法插入到插件中。"
+
+#: src/gui/user_rule_editor.cpp:953
+msgid   "Cannot add messages when none are given."
+msgstr  "无法添加空白信息。"
+
+#: src/gui/user_rule_editor.cpp:958
+msgid   "No rule mod is specified."
+msgstr  "未定义规则对象。"
+
+#: src/gui/user_rule_editor.cpp:964
+msgid   "No group is specified to sort relative to."
+msgstr  "没有定义排序参考对象。"
+
+#: src/gui/user_rule_editor.cpp:967
+msgid   "Cannot sort a group relative to a plugin."
+msgstr  "不能设置群组的排序参考对象为插件。"
+
+#: src/gui/user_rule_editor.cpp:971
+msgid   "Cannot insert groups."
+msgstr  "无法插入群组。"
+
+#: src/gui/user_rule_editor.cpp:976
+msgid   "Cannot add messages to groups."
+msgstr  "无法给群组添加信息。"
+
+#: src/gui/user_rule_editor.cpp:982
+msgid   "The rule mod is not being sorted nor having its attached messages "
+        "altered."
+msgstr  "规则对象未排序或者没有捆绑信息未修改。"
+
+#: src/output/boss_log.cpp:157 src/output/boss_log.cpp:188
+msgid   "Summary"
+msgstr  "总结"
+
+#: src/output/boss_log.cpp:163
+#, boost-format
+msgid   "%1% Plugins"
+msgstr  "%1%插件"
+
+#: src/output/boss_log.cpp:167 src/output/boss_log.cpp:336
+msgid   "Recognised Plugins"
+msgstr  "已识别插件"
+
+#: src/output/boss_log.cpp:169
+msgid   "Restored Load Order"
+msgstr  "已恢复排序"
+
+#: src/output/boss_log.cpp:173 src/output/boss_log.cpp:359
+msgid   "Unrecognised Plugins"
+msgstr  "无法识别插件"
+
+#: src/output/boss_log.cpp:205
+msgid   "Plugin Type"
+msgstr  "插件类型"
+
+#: src/output/boss_log.cpp:206 src/output/boss_log.cpp:232
+msgid   "Count"
+msgstr  "总数"
+
+#: src/output/boss_log.cpp:209
+msgid   "Recognised (or sorted by user rules)"
+msgstr  "已识别(或者由用户规则排序)"
+
+#: src/output/boss_log.cpp:213 src/output/boss_log.cpp:217
+msgid   "Unrecognised"
+msgstr  "无法识别"
+
+#: src/output/boss_log.cpp:221
+msgid   "Inactive"
+msgstr  "未激活"
+
+#: src/output/boss_log.cpp:224 src/output/boss_log.cpp:253
+msgid   "All"
+msgstr  "全部"
+
+#: src/output/boss_log.cpp:231
+msgid   "Plugin Message Type"
+msgstr  "信息类型"
+
+#: src/output/boss_log.cpp:236 src/output/boss_log.cpp:240
+#: src/output/output.cpp:497 src/output/output.cpp:499
+msgid   "Warning"
+msgstr  "警告"
+
+#: src/output/boss_log.cpp:245 src/output/boss_log.cpp:249
+#: src/output/output.cpp:502 src/output/output.cpp:504
+msgid   "Error"
+msgstr  "错误"
+
+#: src/output/boss_log.cpp:263
+msgid   "No change in recognised plugin list since last run."
+msgstr  "与上一次操作相比，可识别插件的排序未发生变化。"
+
+#: src/output/boss_log.cpp:299
+msgid   "Rule"
+msgstr  "规则"
+
+#: src/output/boss_log.cpp:300
+msgid   "Applied"
+msgstr  "已应用"
+
+#: src/output/boss_log.cpp:301
+msgid   "Details (if applicable)"
+msgstr  "详细信息(如果可用)"
+
+#: src/output/boss_log.cpp:318
+msgid   " Plugins"
+msgstr  " 个插件"
+
+#: src/output/boss_log.cpp:338
+msgid   "Restored Load Order (Using modlist.txt)"
+msgstr  "已恢复排序(使用modlist.txt)"
+
+#: src/output/boss_log.cpp:340
+msgid   "Restored Load Order (Using modlist.old)"
+msgstr  "已恢复排序(使用modlist.old)"
+
+#: src/output/boss_log.cpp:343
+msgid   "These plugins are recognised by BOSS and have been sorted according "
+        "to its masterlist. Please read any attached messages and act on any "
+        "that require action."
+msgstr  "以下插件已被BOSS识别并且根据masterlist调整了排序。请阅读提示信息做出"
+        "相应调整。"
+
+#: src/output/boss_log.cpp:361
+msgid   "The following plugins were not found in the masterlist, and must be "
+        "positioned manually, using your favourite mod manager or by using "
+        "BOSS's user rules functionality."
+msgstr  "以下插件masterlist中不存在，所以需要手动排序，您可以使用mod管理工具或"
+        "者再使用BOSS用户规则的功能修改这些插件的排序。"
+
+#: src/output/boss_log.cpp:362
+msgid   " You can submit unrecognised plugins for addition to the masterlist "
+        "directly from this log by clicking on a plugin and supplying a link "
+        "and/or description of its contents in the panel that is displayed."
+msgstr  " 您还可以提交无法识别的插件到masterlist中，只需要点击插件然后在窗口中"
+        "输入插件的下载地址或者内容介绍。"
+
+#: src/output/boss_log.cpp:401
+msgid   "Log Feature Support"
+msgstr  "日志功能支持"
+
+#: src/output/boss_log.cpp:402
+msgid   "Filters"
+msgstr  "过滤配置"
+
+#: src/output/boss_log.cpp:405
+msgid   "The BOSS Log requires Javascript to be enabled in order to function."
+msgstr  "BOSS日志需要开启Javascript才能运行函数。"
+
+#: src/output/boss_log.cpp:417
+msgid   "Colours must be specified using lowercase hex codes."
+msgstr  "颜色代码必须使用小写十六进制数。"
+
+#: src/output/boss_log.cpp:421
+msgid   "Support for the BOSS Log's more advanced features varies. Here's "
+        "what your browser supports:"
+msgstr  "不同浏览器对BOSS日志高级功能的支持有所不同。以下是您的浏览器支持的功"
+        "能："
+
+#: src/output/boss_log.cpp:422
+msgid   "Functionality"
+msgstr  "功能"
+
+#: src/output/boss_log.cpp:427
+msgid   "In-Log Plugin Submission"
+msgstr  "内置插件提交功能"
+
+#: src/output/boss_log.cpp:428
+msgid   "Allows unrecognised plugins to be anonymously submitted to the BOSS "
+        "team directly from the BOSS Log."
+msgstr  "允许直接从BOSS日志中匿名提交无法识别的插件给BOSS团队。"
+
+#: src/output/boss_log.cpp:431
+msgid   "Settings Memory"
+msgstr  "保存设置"
+
+#: src/output/boss_log.cpp:432
+#, fuzzy
+#| msgid        "Allows the BOSS Log to automatically restore the display "
+#|      "settings and filter configuration last used, and to hide this panel, "
+#|      "whenever the BOSS Log is opened."
+msgid           "Allows the BOSS Log to automatically restore the filter "
+        "configuration last used whenever the BOSS Log is opened."
+msgstr          "允许每次打开BOSS日志时，自动应用上一次的显示设置、过滤配置或"
+        "者隐藏此面板。"
+
+#: src/output/boss_log.cpp:435
+msgid   "Input Placeholders"
+msgstr  "输入占位符"
+
+#: src/output/boss_log.cpp:438
+msgid   "Form Validation"
+msgstr  "格式检查"
+
+#: src/output/boss_log.cpp:443
+msgid   "Hide Version Numbers"
+msgstr  "隐藏版本信息"
+
+#: src/output/boss_log.cpp:444
+msgid   "Hide 'Active' Label"
+msgstr  "隐藏文字“已激活”"
+
+#: src/output/boss_log.cpp:445
+msgid   "Hide Checksums"
+msgstr  "隐藏CRC数据"
+
+#: src/output/boss_log.cpp:446
+msgid   "Hide Notes"
+msgstr  "隐藏注意事项"
+
+#: src/output/boss_log.cpp:447
+msgid   "Hide Bash Tag Suggestions"
+msgstr  "隐藏Bash标签建议"
+
+#: src/output/boss_log.cpp:448
+msgid   "Hide Requirements"
+msgstr  "隐藏需求信息"
+
+#: src/output/boss_log.cpp:449
+msgid   "Hide Incompatibilities"
+msgstr  "隐藏不兼容信息"
+
+#: src/output/boss_log.cpp:450
+msgid   "Hide 'Do Not Clean' Messages"
+msgstr  "隐藏 'Do Not Clean'(不要清理)信息"
+
+#: src/output/boss_log.cpp:451
+msgid   "Hide All Plugin Messages"
+msgstr  "隐藏所有插件信息"
+
+#: src/output/boss_log.cpp:452
+msgid   "Hide Inactive Plugins"
+msgstr  "隐藏未激活插件"
+
+#: src/output/boss_log.cpp:453
+msgid   "Hide Messageless Plugins"
+msgstr  "隐藏无信息的插件"
+
+#: src/output/boss_log.cpp:455
+#, boost-format
+msgid   "%1% of %2% recognised plugins hidden."
+msgstr  "%1%/%2%可识别插件已隐藏。"
+
+#: src/output/boss_log.cpp:456
+#, boost-format
+msgid   "%1% of %2% messages hidden."
+msgstr  "%1%/%2%信息已隐藏。"
+
+#: src/output/boss_log.cpp:462
+msgid   "Submit Plugin"
+msgstr  "提交插件"
+
+#: src/output/boss_log.cpp:463
+msgid   "Plugin"
+msgstr  "插件名"
+
+#: src/output/boss_log.cpp:465
+msgid   "Download Location"
+msgstr  "下载地址"
+
+#: src/output/boss_log.cpp:466
+msgid   "Additional Notes"
+msgstr  "补充信息"
+
+#: src/output/boss_log.cpp:466
+msgid   "Any additional information, such as recommended Bash Tags, load "
+        "order suggestions, ITM/UDR counts and dirty CRCs, can be supplied "
+        "here. If no download link is available, this information is crucial."
+msgstr  "任何补充信息，比如推荐的Bash标签、排序建议、ITM/UDR数量以及需要清理的"
+        "插件的CRC数值，你都可以填在这边。如果没有下载地址的话，此数据就十分重"
+        "要！"
+
+#: src/output/boss_log.cpp:468
+msgid   "Submit"
+msgstr  "提交"
+
+#: src/output/boss_log.cpp:469
+msgid   "Close"
+msgstr  "关闭"
+
+#: src/output/boss_log.cpp:477
+msgid   "Checking for existing submission..."
+msgstr  "正在检查已存在的提案..."
+
+#: src/output/boss_log.cpp:478
+msgid   "Matching submission already exists."
+msgstr  ""
+
+#: src/output/boss_log.cpp:479
+msgid   "Plugin already submitted. Submission updated with new comment."
+msgstr  ""
+
+#: src/output/boss_log.cpp:480
+msgid   "Plugin submitted!"
+msgstr  "插件已提交！"
+
+#: src/output/boss_log.cpp:481
+msgid   "Plugin submission failed! Authorisation failure. Please report this "
+        "to the BOSS team."
+msgstr  ""
+
+#: src/output/boss_log.cpp:482
+#, boost-format
+msgid   "Plugin submission failed! GitHub API rate limit exceeded. Please try "
+        "again after %1%."
+msgstr  ""
+
+#: src/output/boss_log.cpp:483
+#, fuzzy
+#| msgid        "Plugin submission updated!"
+msgid           "Plugin submission failed!"
+msgstr          "插件提案已更新！"
+
+#: src/output/boss_log.cpp:484
+#, fuzzy
+#| msgid        "Web storage quota for this document has been exceeded. "
+#|      "Please empty your browser\\'s cache. Note that this will delete all "
+#|      "locally stored data."
+msgid           "Web storage quota for this document has been exceeded.Please "
+        "empty your browser\\'s cache. Note that this will delete all locally "
+        "stored data."
+msgstr          "文档网络存储空间不足。请清空您的浏览器缓存。注意此步骤将删除"
+        "所有本地保存的数据。"
+
+#: src/output/boss_log.cpp:485
+msgid   "Please supply at least a link or some notes."
+msgstr  "请至少提供一个链接或者一些补充信息。"
+
+#: src/output/boss_log.cpp:486
+msgid   "Do not clean."
+msgstr  ""
+
+#: src/output/boss_log.cpp:511
+msgid   "Please read any attached messages and act on any that require action."
+msgstr  "请阅读相关的信息并且适时做出相应调整。"
+
+#: src/output/output.cpp:477 src/output/output.cpp:479
+#: src/output/output.cpp:512 src/output/output.cpp:514
+msgid   "Note"
+msgstr  "注意"
+
+#: src/output/output.cpp:482 src/output/output.cpp:484
+msgid   "Bash Tag suggestion(s)"
+msgstr  "Bash标签建议"
+
+#: src/output/output.cpp:487 src/output/output.cpp:489
+msgid   "Requires"
+msgstr  "需要"
+
+#: src/output/output.cpp:492 src/output/output.cpp:494
+msgid   "Incompatible with"
+msgstr  "冲突："
+
+#: src/output/output.cpp:507 src/output/output.cpp:509
+msgid   "Contains dirty edits"
+msgstr  "含dirty edits"
+
+#: src/output/output.cpp:553
+#, boost-format
+msgid   "Sort %1% before %2%"
+msgstr  "将%1%排在%2%前面"
+
+#: src/output/output.cpp:555
+#, boost-format
+msgid   "Sort %1% after %2%"
+msgstr  "将%1%排在%2%后面"
+
+#: src/output/output.cpp:557
+#, boost-format
+msgid   "Insert %1% at the top of %2%"
+msgstr  "将%1%插到%2%顶部"
+
+#: src/output/output.cpp:559
+#, boost-format
+msgid   "Insert %1% at the bottom of %2%"
+msgstr  "将%1%插到%2%底部"
+
+#: src/output/output.cpp:563
+#, boost-format
+msgid   "Add the following messages to %1%:"
+msgstr  "添加以下信息到%1%："
+
+#: src/output/output.cpp:572
+#, boost-format
+msgid   "Replace the messages attached to %1% with:"
+msgstr  "替换%1%的信息为："
+
+#: src/output/output.cpp:574
+msgid   "Replace the attached messages with:"
+msgstr  "替换信息为："
+
+#: src/boss_cli.cpp:100
+msgid   "Description:"
+msgstr  "介绍："
+
+#: src/boss_cli.cpp:101
+msgid   "  BOSS is a utility that sorts the mod load order of TESIV: "
+        "Oblivion, Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim "
+        "according to a frequently updated  masterlist to minimise "
+        "incompatibilities between mods."
+msgstr  " BOSS是一个可以帮忙调整 TESIV: Oblivion, Nehrim,  Fallout 3, "
+        "Fallout: New Vegas 与 TESV: Skyrim 等游戏插件的排序的工具。主要依靠长"
+        "期更新的masterlist以达到mod之间最小的冲突。"
+
+#: src/boss_cli.cpp:105
+msgid   "Examples:"
+msgstr  "例："
+
+#: src/boss_cli.cpp:107
+msgid   "    updates the masterlist, sorts your mods, and shows the log"
+msgstr  "    更新masterlist，排序，然后显示日志"
+
+#: src/boss_cli.cpp:109
+msgid   "    reverts your load order 1 level and skips showing the log"
+msgstr  "    恢复到上一次的排序，然后显示日志"
+
+#: src/boss_cli.cpp:111
+msgid   "    reverts your load order 2 levels and shows the log"
+msgstr  "    恢复到上上一次的排序，然后显示日志"
+
+#: src/boss_cli.cpp:123
+#, c-format, boost-format
+msgid   "Downloading masterlist: %i of %i objects (%i KB)"
+msgstr  ""
+
+#: src/boss_cli.cpp:199
+msgid   "produces this help message"
+msgstr  "生成此帮助信息"
+
+#: src/boss_cli.cpp:200
+msgid   "prints the version banner"
+msgstr  "打印版本标语"
+
+#: src/boss_cli.cpp:202
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web before sorting"
+msgstr  "排序之前自动更新本地masterlist副本到网络上的最新版本"
+
+#: src/boss_cli.cpp:205
+msgid   "inhibit the automatic masterlist updater"
+msgstr  "禁止自动更新masterlist"
+
+#: src/boss_cli.cpp:207
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web but don't sort right now"
+msgstr  "自动更新本地masterlist副本到网络上的最新版本但不立即更新排序"
+
+#: src/boss_cli.cpp:212
+msgid   "don't launch a browser to show the HTML log at program completion"
+msgstr  "完成排序后不在浏览器中显示HTML格式日志。"
+
+#: src/boss_cli.cpp:215
+msgid   "revert to a previous load order.  this parameter optionally accepts "
+        "values of 1 or 2, indicating how many undo steps to apply.  if no "
+        "option value is specified, it defaults to 1"
+msgstr  "恢复到旧的版本呢。此参数可设置为1或者2，分别表示恢复的等级。如果未输"
+        "入数值，将使用默认值1。"
+
+#: src/boss_cli.cpp:221
+msgid   "specify verbosity level (0-3) of the debugging output.  0 is the "
+        "default, showing only WARN and ERROR messges. 1 (INFO and above) is "
+        "implied if this option is specified without an argument.  higher "
+        "values increase the verbosity further"
+msgstr  "定义调试输出内容的冗长级别。0为默认值，仅显示警告与错误信息。如果未设"
+        "置此项，将使用数值1(显示提示警告、错误、提示信息)。数值越高，输出内容"
+        "越冗长。"
+
+#: src/boss_cli.cpp:227
+msgid   "override game autodetection.  valid values are: 'Oblivion', "
+        "'Nehrim', 'Fallout3', 'FalloutNV', and 'Skyrim'"
+msgstr  "覆盖游戏检测。有效数值"
+        "为：'Oblivion'、'Nehrim'、'Fallout3'、'FalloutNV'和'Skyrim'"
+
+#: src/boss_cli.cpp:231
+msgid   "show mod file CRCs, so that a file's CRC can be added to the "
+        "masterlist in a conditional"
+msgstr  "显示插件的CRC，这样文件的CRC将有条件的添加到masterlist中"
+
+#: src/boss_cli.cpp:234
+msgid   "select output format. valid values are: 'html', 'text'"
+msgstr  "选择输出格式。有效数值为：'html'或者'text'"
+
+#: src/boss_cli.cpp:237
+msgid   "run BOSS without actually making any changes to load order"
+msgstr  "运行BOSS，但不修改排序"
+
+#: src/boss_cli.cpp:344
+msgid   "Invalid selection."
+msgstr  "选项无效。"
+
+#~ msgid        "No game master .esm file found!"
+#~ msgstr       "找不到游戏.ESM文件！"
+
+#~ msgid        "Cannot find online masterlist revision number!"
+#~ msgstr       "找不到在线masterlist修订编号！"
+
+#~ msgid        "Cannot find online masterlist revision date!"
+#~ msgstr       "找不到在线masterlist修订日期！"
+
+#~ msgid        "Cannot read list of files to be updated!"
+#~ msgstr       "无法读取需要更新的文件列表！"
+
+#~ msgid        "Downloaded file \"%1%\" failed verification test!"
+#~ msgstr       "已下载的文件\"%1%\"验证失败！"
+
+#~ msgid        "cURL cannot be initialised!"
+#~ msgstr       "cURL无法初始化！"
+
+#~ msgid        "cURL's error buffer could not be set! cURL response: \"%1%\"."
+#~ msgstr       "cURL错误缓冲器无法设置！cURL错误提示：\"%1%\"。"
+
+#~ msgid        "A cURL option could not be set! cURL response: \"%1%\"."
+#~ msgstr       "一个cURL选项无法设置！cURL错误提示：\"%1%\"。"
+
+#~ msgid        "Proxy hostname or port invalid! cURL response: \"%1%\"."
+#~ msgstr       "代理服务器或者端口无效！cURL错误提示：\"%1%\"。"
+
+#~ msgid        "Failed to set proxy type! cURL response: \"%1%\"."
+#~ msgstr       "无法设置代理类型！cURL错误提示：\"%1%\"。"
+
+#~ msgid        "Proxy authentication username or password invalid! cURL "
+#~      "response: \"%1%\"."
+#~ msgstr       "代理用户名或者密码无效！cURL错误提示：\"%1%\"."
+
+#~ msgid        "Failed to set proxy authentication type! cURL response: \"%1%"
+#~      "\"."
+#~ msgstr       "代理验证类型无法设置！cURL错误提示：\"%1%\"。"
+
+#~ msgid        "cURL could not perform task! cURL response: \"%1%\"."
+#~ msgstr       "cURL无法运行任务！cURL错误提示：\"%1%\"。"
+
+#~ msgid        "Cancelled by user."
+#~ msgstr       "用户已取消。"
+
+#~ msgid        "Memory allocation failed."
+#~ msgstr       "记忆分配出错。"
+
+#~ msgid        "No Internet connection detected."
+#~ msgstr       "未检测到可用网络。"
+
+#~ msgid        "No tag map has yet been initialised."
+#~ msgstr       "标签映射未初始化。"
+
+#~ msgid        "The requested change to the active plugins list would result "
+#~      "in over 255 plugins being active."
+#~ msgstr       "对已激活插件列表的修改将导致超过255个插件被激活。"
+
+#~ msgid        "\tVersion "
+#~ msgstr       "由<a href=\"http://www.tesfans.org/boss-chinese-translator/"
+#~      "\" target=\"_blank\">icedream</a>汉化<br />\t版本 "
+
+#~ msgid        "Display Settings"
+#~ msgstr       "显示设置"
+
+#~ msgid        "The BOSS Log can be displayed using an alternative colour "
+#~      "scheme, which can be enabled and customised using the options below. "
+#~      "Colours must be specified using their lowercase hex codes. The "
+#~      "default value for each element is displayed as the placeholder for "
+#~      "its text box, and this value is used if the text box is left empty."
+#~ msgstr       "您可以在下面开启并且自定义BOSS日志主题颜色。<br />颜色代码必"
+#~      "须使用小写十六进制数。每个元素的默认数值已显示在文本框背景中，文本框"
+#~      "放空时，该数值将被使用。<br />"
+
+#~ msgid        " Some examples of colour codes that can be used may be found "
+#~      "<a href='http://en.wikipedia.org/wiki/Web_colors#Color_table'>here</"
+#~      "a>."
+#~ msgstr       "常见颜色代码可以在<a href='http://en.wikipedia.org/wiki/"
+#~      "Web_colors#Color_table'>此处</a>查看。"
+
+#~ msgid        "Use Alternative Colour Scheme"
+#~ msgstr       "使用自定义颜色主题"
+
+#~ msgid        "Element"
+#~ msgstr       "元素"
+
+#~ msgid        "Colour"
+#~ msgstr       "颜色"
+
+#~ msgid        "General Text"
+#~ msgstr       "普通文本"
+
+#~ msgid        "Window Backgrounds"
+#~ msgstr       "窗口背景"
+
+#~ msgid        "Menu Background"
+#~ msgstr       "菜单背景"
+
+#~ msgid        "Menu Button Hover"
+#~ msgstr       "菜单按钮（鼠标经过）"
+
+#~ msgid        "Active Menu Button"
+#~ msgstr       "菜单按钮（已选择）"
+
+#~ msgid        "Links"
+#~ msgstr       "超链接"
+
+#~ msgid        "Visited Links"
+#~ msgstr       "超链接（已浏览）"
+
+#~ msgid        "CRC Labels"
+#~ msgstr       "文字“CRC”"
+
+#~ msgid        "Active Labels"
+#~ msgstr       "文字“已激活”"
+
+#~ msgid        "Version Labels"
+#~ msgstr       "文字“版本”"
+
+#~ msgid        "Errors"
+#~ msgstr       "错误"
+
+#~ msgid        "Warnings"
+#~ msgstr       "警告"
+
+#~ msgid        "Dirty Messages"
+#~ msgstr       "Dirty Edit信息"
+
+#~ msgid        "Bash Tag Suggestion Prefixes"
+#~ msgstr       "Bash标签建议"
+
+#~ msgid        "CSS Settings Panel File Drag Highlight"
+#~ msgstr       "CSS设置菜单面板文件拖拽高亮"
+
+#~ msgid        "Filters Background"
+#~ msgstr       "过滤工具背景"
+
+#~ msgid        "Success Messages"
+#~ msgstr       "成功信息"
+
+#~ msgid        "Quoted Userlist Messages"
+#~ msgstr       "Userlist调用信息"
+
+#~ msgid        "Summary Messages Default Background"
+#~ msgstr       "总结信息默认背景"
+
+#~ msgid        "Table Headings"
+#~ msgstr       "表格标题"
+
+#~ msgid        "You can <span class='button' id='cssButtonBackup'>back up</"
+#~      "span> your display settings to avoid losing them when you <span "
+#~      "id='loseSettingsClose'>close the BOSS Log</span><span "
+#~      "id='loseSettingsCacheClear'>clear your browser's cache</span>."
+#~ msgstr       "您可以<span class='button' id='cssButtonBackup'>备份</span>您"
+#~      "的显示设置避免<span id='loseSettingsClose'>关闭BOSS日志</span><span "
+#~      "id='loseSettingsCacheClear'>清理浏览器缓存</span>后丢失设置。<br />"
+
+#~ msgid        "Backup files are given nonsensical names by your browser, "
+#~      "but you can rename them to whatever you want. Drag and drop a backup "
+#~      "file into this panel to restore the settings it contains."
+#~ msgstr       "备份文件的名字由浏览器自动设置，但您可以把他修改成您容易识别"
+#~      "的名字。<br />拖拽文件到菜单面板可以恢复备份文件内保存的设置。"
+
+#~ msgid        "Apply"
+#~ msgstr       "应用"
+
+#~ msgid        "Backup/Restore of Display Settings"
+#~ msgstr       "备份/恢复显示设置"
+
+#~ msgid        "Allows the backup and restore of custom display settings."
+#~ msgstr       "允许备份与恢复自定义显示设置。"
+
+#~ msgid        "Appearance"
+#~ msgstr       "外观"
+
+#~ msgid        "Opacity"
+#~ msgstr       "透明度"
+
+#~ msgid        "Shadows"
+#~ msgstr       "阴影"
+
+#~ msgid        "Transitions"
+#~ msgstr       "过渡"
+
+#~ msgid        "Transforms"
+#~ msgstr       "变换"
+
+#~ msgid        "Do not display this panel again for this browser. If this "
+#~      "checkbox is left unchecked, this panel will be displayed every time "
+#~      "you open the BOSS Log."
+#~ msgstr       "不再在此浏览器显示此面板。如果不勾选此选项，您每次打开BOSS日"
+#~      "志都会看到此面板。"
+
+#~ msgid        "Hide Clean Plugins"
+#~ msgstr       "隐藏不需清理的插件"
+
+#~ msgctxt      "Label for text box. Do not use a single quote in "
+#~      "translation, use '&#x27;' instead"
+#~ msgid        "A link to the plugin&#x27;s download location."
+#~ msgstr       "插件的下载地址。"
+
+#~ msgid        "Error: Existing submission check failed!"
+#~ msgstr       "错误：已存在提案检查失败！"
+
+#~ msgid        "Previous submission found, updating with supplied details..."
+#~ msgstr       "找到旧版的提案，正在更新详细信息..."
+
+#~ msgid        "Error: Plugin submission could not be updated."
+#~ msgstr       "错误：插件提案无法更新。"
+
+#~ msgid        "No previous submission found, creating new submission..."
+#~ msgstr       "未找到旧版的提案数据，正在创建新提案..."
+
+#~ msgid        "Error: Plugin could not be submitted."
+#~ msgstr       "错误：插件无法提交。"
+
+#~ msgid        "Error: Data transfer failed."
+#~ msgstr       "错误：Data转换失败。"
+
+#~ msgid        "Exception occurred:"
+#~ msgstr       "发生例外："
+
+#~ msgid        "Downloading: %s; %3.0f%% of %3.0f KB"
+#~ msgstr       "正在下载: %s; %3.0f%% 总大小 %3.0f KB"
+
+#~ msgid        "add source file references to debug statements"
+#~ msgstr       "添加源代码信息到调试报告中"
+
+#~ msgid        "sets the proxy hostname for the masterlist updater"
+#~ msgstr       "设置masterlist更新的代理服务器"
+
+#~ msgid        "sets the proxy port number for the masterlist updater"
+#~ msgstr       "设置masterlist更新的代理端口"
+
+#~ msgid        "logs the debug output to the BOSSDebugLog.txt file instead "
+#~      "of the command line."
+#~ msgstr       "将调试报告输出到BOSSDebugLog.txt，而不是显示在命令栏中。"
+
+#~ msgid        "Checking for BOSS updates..."
+#~ msgstr       "正在检查BOSS更新..."
+
+#~ msgid        "You are already using the latest version of BOSS."
+#~ msgstr       "您正在使用的BOSS已是最新版。"
+
+#~ msgid        "Update available! New version: %s"
+#~ msgstr       "检测到新版本：%s"
+
+#~ msgid        "The update may be downloaded from any of the locations "
+#~      "listed in the BOSS Log."
+#~ msgstr       "您可以从BOSS日志中所列举的下载链接中任选一个下载最新版。"
+
+#~ msgid        "Release notes:"
+#~ msgstr       "发行说明："
+
+#~ msgid        "Do you want to download and install the update? (y/n)"
+#~ msgstr       "您确定要下载并安装该更新？(是/否)"
+
+#~ msgid        "No update has been downloaded or installed."
+#~ msgstr       "未下载或者安装任何更新。"
+
+#~ msgid        "New installer successfully downloaded!"
+#~ msgstr       "已成功下载新版安装程序！"
+
+#~ msgid        "BOSS will now launch the downloaded installer and exit. "
+#~      "Complete the installer to complete the update."
+#~ msgstr       "BOSS现在将退出并运行已下载的安装程序。您只要运行完安装程序即"
+#~      "可更新BOSS。"
+
+#~ msgid        "Update cancelled."
+#~ msgstr       "更新已取消。"
+
+#~ msgid        "BOSS Update check failed. No Internet connection detected."
+#~ msgstr       "BOSS检查更新出错。未检测到可用网络。"
+
+#~ msgid        "Your masterlist is already at the latest revision (r%1%; "
+#~      "%2%). No update necessary."
+#~ msgstr       "您的masterlist已是最新版本(r%1%; %2%)，不需要更新。"
+
+#~ msgid        "No internet connection detected. Masterlist auto-updater "
+#~      "could not check for updates."
+#~ msgstr       "未检测到可用网络。无法检查masterlist的更新。"
+
+#~ msgid        "Downloading: %1%"
+#~ msgstr       "正在下载：%1%"
+
+#~ msgid        "&Oblivion"
+#~ msgstr       "Oblivion"
+
+#~ msgid        "&Nehrim"
+#~ msgstr       "Nehrim"
+
+#~ msgid        "&Skyrim"
+#~ msgstr       "Skyrim"
+
+#~ msgid        "&Fallout 3"
+#~ msgstr       "Fallout 3"
+
+#~ msgid        "&Morrowind"
+#~ msgstr       "Morrowind"
+
+#~ msgid        "Switch to running BOSS for Morrowind."
+#~ msgstr       "对Morrowind运行BOSS排序。"
+
+#~ msgid        "&Open API Readme"
+#~ msgstr       "打开API Readme"
+
+#~ msgid        "Opens the BOSS API readme in your default web browser."
+#~ msgstr       "浏览器打开API说明。"
+
+#~ msgid        "&Check For Updates..."
+#~ msgstr       "检查更新..."
+
+#~ msgid        "Checks for updates to BOSS."
+#~ msgstr       "检查BOSS的更新。"
+
+#~ msgid        "Masterlist already up-to-date."
+#~ msgstr       "masterlist已是最新版本。"
+
+#~ msgid        "Masterlist updated successfully."
+#~ msgstr       "masterlist更新成功。"
+
+#~ msgid        "A \"one-click\" program for users that quickly optimises and "
+#~      "avoids detrimental conflicts in their\n"
+#~      "TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 "
+#~      "and Fallout: New Vegas mod load orders."
+#~ msgstr       "         “一键”调整MOD顺序，帮助用户优化并减少MOD间的冲突，当"
+#~      "前支持的游戏有：         \n"
+#~      "TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 "
+#~      "与 Fallout: New Vegas。"
+
+#~ msgid        "The automatic updater will download the installer for the "
+#~      "new version to this BOSS folder.\n"
+#~      "\n"
+#~ msgstr       "自动更新工具将下载最新安装程序到此文件夹中。\n"
+#~      "\n"
+
+#~ msgid        "It will then launch the installer before exiting. Complete "
+#~      "the installer to complete the update."
+#~ msgstr       "退出之前将运行安装程序。您只要运行完安装程序即可更新BOSS。"
+
+#~ msgid        "BOSS: Automatic Updater"
+#~ msgstr       "BOSS：自动更新工具"
+
+#~ msgid        "Automatic updater cancelled."
+#~ msgstr       "自动更新已取消。"
+
+#~ msgid        "Initialising download..."
+#~ msgstr       "正在初始化下载功能..."
+
+#~ msgid        "New installer successfully downloaded! When you click 'OK', "
+#~      "BOSS will launch the downloaded installer and exit. Complete the "
+#~      "installer to complete the update."
+#~ msgstr       "新安装包已成功下载！单击“确定”，BOSS将运行安装包并退出程序。"
+#~      "您只要运行完安装程序即可更新BOSS。"
+
+#~ msgid        "Update failed. Details: %1%\n"
+#~      "\n"
+#~      "Update cancelled."
+#~ msgstr       "更新失败。详细信息：%1%\n"
+#~      "\n"
+#~      "更新已取消。"
+
+#~ msgid        "Update failed. Details: %1%; %2%\n"
+#~      "\n"
+#~      "Update cancelled."
+#~ msgstr       "更新失败。详细信息：%1%; %2%\n"
+#~      "\n"
+#~      "更新已取消。"
+
+#~ msgid        "Update check failed. Details: %1%"
+#~ msgstr       "检查更新失败。详细信息：%1%"
+
+#~ msgid        "Update check failed. No Internet connection detected."
+#~ msgstr       "BOSS检查更新出错。未检测到可用网络。"
+
+#~ msgid        "BOSS: Check For Updates"
+#~ msgstr       "BOSS：检查更新"
+
+#~ msgid        "Update available! New version: %1%\n"
+#~      "The update may be downloaded from any of the locations listed in the "
+#~      "BOSS Log."
+#~ msgstr       "有可用更新！新版本：%1%\n"
+#~      "您可以从BOSS日志中所列举的下载链接中任选一个下载最新版。"
+
+#~ msgid        "Failed to get release notes. Details: %1%"
+#~ msgstr       "无法获取发行说明。详细信息：%1%"
+
+#~ msgid        "Update available! New version: %1%\n"
+#~      "Release notes:\n"
+#~      "\n"
+#~      "%2%\n"
+#~      "\n"
+#~      "Do you want to download and install the update?"
+#~ msgstr       "Update available! New version: %1%\n"
+#~      "发行说明:\n"
+#~      "\n"
+#~      "%2%\n"
+#~      "\n"
+#~      "是否下载并安装此更新？"
+
+#~ msgid        "Check for BOSS updates on startup"
+#~ msgstr       "启动BOSS时检查更新"
+
+#~ msgid        "Proxy Hostname:"
+#~ msgstr       "代理服务器："
+
+#~ msgid        "Proxy Port Number:"
+#~ msgstr       "代理端口："
+
+#~ msgid        "Proxy Username:"
+#~ msgstr       "代理用户名："
+
+#~ msgid        "Proxy Password:"
+#~ msgstr       "代理密码："
+
+#~ msgid        "Include Source Code References"
+#~ msgstr       "包含源代码信息"
+
+#~ msgid        "Log Debug Output"
+#~ msgstr       "输出调试日志"
+
+#~ msgid        "General"
+#~ msgstr       "常规"
+
+#~ msgid        "Internet"
+#~ msgstr       "网络"
+
+#~ msgid        "Debugging"
+#~ msgstr       "调试"
+
+#~ msgid        "The output is logged to the BOSSDebugLog.txt file"
+#~ msgstr       "调试报告输出到BOSSDebugLog.txt中。"
+
+#~ msgid        "Adds source code references to command line output."
+#~ msgstr       "添加源代码信息到命令栏输出。"
+
+#~ msgid        "Error: No internet connection detected. Masterlist could not "
+#~      "be downloaded."
+#~ msgstr       "错误：未检测到可用网络。无法下载masterlist。"

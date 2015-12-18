@@ -1,1567 +1,1935 @@
-msgid ""
-msgstr ""
-"Project-Id-Version: BOSS 2.1.0\n"
-"Report-Msgid-Bugs-To: Daniel Holmes <danielhmpdx16@gmail.com>\n"
-"POT-Creation-Date: 2012-08-13 14:23-0700\n"
-"PO-Revision-Date: 2012-16-08 21:32-0700\n"
-"Last-Translator: Daniel Holmes <danielhmpdx16@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: spanish\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
-msgid "\tVersion "
-msgstr "\tVersion "
-
-msgid "    reverts your load order 1 level and skips showing the log"
-msgstr ""
-"    vuelve a su orden de carga de un nivel y salte que mostrar el registro"
-
-msgid "    reverts your load order 2 levels and shows the log"
-msgstr "    vuelve a su orden de carga de un nivel y mostrar el registro"
-
-msgid "    updates the masterlist, sorts your mods, and shows the log"
-msgstr "    actualiza el masterlist, ordena a sus mods, y muestra el registro"
-
-msgid ""
-"  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, "
-"Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a "
-"frequently updated  masterlist to minimise incompatibilities between mods."
-msgstr ""
-"  BOSS es una utilidad que esta de carga de ordenar modificaciones de TESIV: "
-"Oblivion, Nehrim, Fallout 3, Fallout: New Vegas y TESV: Skyrim de acuerdo "
-"con una lista actualizada con frecuencia para minimizar las "
-"incompatibilidades entre modificaciones al Skyrim."
-
-msgid " (not detected)"
-msgstr " (no detectado)"
-
-msgid " Plugins"
-msgstr " Plugins"
-
-msgid ""
-" Some examples of colour codes that can be used may be found <a href='http://"
-"en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>."
-msgstr ""
-" Algunos ejemplos de códigos de colores que se pueden utilizar se puede "
-"encontrar <a href='http://en.wikipedia.org/wiki/"
-"Web_colors#Color_table'>aquí</a>."
-
-msgid ""
-" You can submit unrecognised plugins for addition to the masterlist directly "
-"from this log by clicking on a plugin and supplying a link and/or "
-"description of its contents in the panel that is displayed."
-msgstr ""
-"Puede enviar los plugins desconocidos para la adición a la masterlist "
-"directamente de este registro haciendo clic en un plugin y el suministro de "
-"un enlace y/odescripción de su contenido en el panel que se muestra."
-
-msgid " is already in the masterlist."
-msgstr " ya esta agregado al archivo 'master'."
-
-msgid " is not in the masterlist and has not been sorted by a rule."
-msgstr ""
-" no esta en el archivo 'master' y no ha sido ordenado por alguna regla."
-
-msgid " is not in the masterlist or is malformatted."
-msgstr " no está en la masterlist o es mal es formada"
-
-msgid " is not in the masterlist, cannot override."
-msgstr " no está en el archivo 'master'. No se puede re-definir."
-
-msgid " is not installed or in the masterlist."
-msgstr " no está instalado o no está en el archivo 'master'."
-
-msgid " is not installed, and is not in the masterlist."
-msgstr " no está instalado, ni está en el archivo 'master'."
-
-msgid "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
-msgstr "No se puede convertir \"%1%\" de UTF-8 a \"%2%\"."
-
-msgid "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
-msgstr "¡No se puede crear \"%1%\"! Respuesta del sistema: \"%2%\"."
-
-msgid "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
-msgstr "¡No se pudo borrar \"%1%\"! Respuesta del sistema: \"%2%\"."
-
-msgid "\"%1%\" cannot be found!"
-msgstr "¡\"%1%\" no existe!"
-
-msgid "\"%1%\" cannot be read!"
-msgstr "¡No se puede leer de \"%1%\"!"
-
-msgid "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
-msgstr "¡No se pudo renombrar \"%1%\"! Respuesta del sistema: \"%2%\"."
-
-msgid "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
-msgstr "¡No se pudo explorar \"%1%\"! Respuesta del sistema: \"%2%\"."
-
-msgid "\"%1%\" cannot be written to!"
-msgstr "¡No se puede escribir en \"%1%\"!"
-
-msgid "\"%1%\" is not a valid regular expression. Item skipped."
-msgstr "\"%1%\" no es una expresión regular válida. Elemento ignorado."
-
-msgid "\"%1%\" is not encoded in valid UTF-8!"
-msgstr "¡\"%1%\" no está codificado en UTF-8 válido!"
-
-msgid "%1% Plugins"
-msgstr "%1% Plugins"
-
-msgid "%1% of %2% messages hidden."
-msgstr "%1% de %2% los mensajes ocultos."
-
-msgid "%1% of %2% recognised plugins hidden."
-msgstr "%1% de %2% los reconocidos plugins ocultos."
-
-msgid "&About BOSS..."
-msgstr "&Acerca de BOSS..."
-
-msgid "&Active Game"
-msgstr "&Activar Juego"
-
-msgid "&Check For Updates..."
-msgstr "&Buscar actualizaciones ..."
-
-msgid "&Edit"
-msgstr "&Editar"
-
-msgid "&Fallout 3"
-msgstr "&Fallout 3"
-
-msgid "&Fallout: New Vegas"
-msgstr "&Fallout: New Vegas"
-
-msgid "&File"
-msgstr "&Archivo"
-
-msgid "&Help"
-msgstr "&Ayuda"
-
-msgid "&Morrowind"
-msgstr "&Morrowind"
-
-msgid "&Nehrim"
-msgstr "&Nehrim"
-
-msgid "&Oblivion"
-msgstr "&Oblivion"
-
-msgid "&Open API Readme"
-msgstr "&Abre API Léame"
-
-msgid "&Quit"
-msgstr "&Cerrar"
-
-msgid "&Run BOSS"
-msgstr "&Ejecutar BOSS"
-
-msgid "&Settings..."
-msgstr "&Configuración..."
-
-msgid "&Skyrim"
-msgstr "&Skyrim"
-
-msgid "&User Rules..."
-msgstr "&Reglas de Usuario..."
-
-msgid "&View BOSS Log"
-msgstr "&Ver registro BOSS"
-
-msgid "2nd Last Run"
-msgstr "El segundo paso"
-
-msgid ""
-"A \"one-click\" program for users that quickly optimises and avoids "
-"detrimental conflicts in their\n"
-"TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and "
-"Fallout: New Vegas mod load orders."
-msgstr ""
-"Un programa \"de un solo clic\" para usuarios, que rápidamente optimiza, "
-"ordena, y evita los conflictos perjudiciales en sus listas de mods para "
-"sus:\n"
-"TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 y "
-"Fallout: New Vegas."
-
-msgid "A cURL option could not be set! cURL response: \"%1%\"."
-msgstr "¡No se pudo asignar una opcion de cURL! Respuesta: \"%1%\"."
-
-msgid "Active"
-msgstr "Activo"
-
-msgid "Active Labels"
-msgstr "Las etiquetas activas"
-
-msgid "Active Menu Button"
-msgstr "Botón de Menú de activo"
-
-msgid "Add the following messages to %1%:"
-msgstr "Añadir los siguientes mensajes de %1%:"
-
-msgid "Add the following messages:"
-msgstr "Añadir los siguientes mensajes:"
-
-msgid "Additional Notes"
-msgstr "Notas Adicionales"
-
-msgid "Adds source code references to command line output."
-msgstr ""
-"Añade las referencias al código fuente de BOSS a la salida de línea de "
-"comandos."
-
-msgid "All"
-msgstr "Todo"
-
-msgid ""
-"Allows the BOSS Log to automatically restore the display settings and filter "
-"configuration last used, and to hide this panel, whenever the BOSS Log is "
-"opened."
-msgstr ""
-"Permite el registro de BOSS para restaurar automáticamente la configuración "
-"de pantalla y filtro la última configuración utilizada, y para ocultar este "
-"panel, cada vez que el registro de BOSS es generado."
-
-msgid "Allows the backup and restore of custom display settings."
-msgstr ""
-"Permite guardar y restaurar la configuración de pantalla personalizados."
-
-msgid ""
-"Allows unrecognised plugins to be anonymously submitted to the BOSS team "
-"directly from the BOSS Log."
-msgstr ""
-"Permite presentar a los plugins desconocidos de forma anónima al equipo de "
-"BOSS directamente desde el registro de BOSS."
-
-msgid ""
-"Any additional information, such as recommended Bash Tags, load order "
-"suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no "
-"download link is available, this information is crucial."
-msgstr ""
-"Cualquier información adicional, como Bash Etiquetas recomendadas, "
-"sugerencias de carga de pedidos, recuentos de ITM/UDR y CRCs erróneo, puede "
-"ser suministrada aquí. Si no hay enlace de descarga que está disponible, "
-"esta información es crucial."
-
-msgid "Appearance"
-msgstr "Apariencia"
-
-msgid "Applied"
-msgstr "Solicitado"
-
-msgid "Apply"
-msgstr "Aplicar"
-
-msgid "Are you sure you want to cancel?"
-msgstr "¿Está seguro que desea cancelar?"
-
-msgid "Are you sure you want to delete the selected rule?"
-msgstr "¿Está seguro que desea eliminar la regla seleccionada?"
-
-msgid "Are you sure you want to save your changes to the selected rule?"
-msgstr "¿Está seguro que desea guardar los cambios en la regla seleccionada?"
-
-msgid "Autodetect"
-msgstr "Detección automática"
-
-msgid "Automatic updater cancelled."
-msgstr "Actualizador automático cancelado."
-
-msgid "BOSS Log Format: "
-msgstr "Formato de registro BOSS: "
-
-msgid "BOSS Update check failed. No Internet connection detected."
-msgstr ""
-"Error en la actualización de BOSS. Conexión al Internet no era detectado."
-
-msgid ""
-"BOSS will now launch the downloaded installer and exit. Complete the "
-"installer to complete the update."
-msgstr ""
-"BOSS ahora se iniciará el instalador de descargo y salir. Completa el "
-"Instalador para completar la actualización."
-
-msgid "BOSS working..."
-msgstr "BOSS trabajando..."
-
-msgid "BOSS: Automatic Updater"
-msgstr "BOSS: Actualizador automático "
-
-msgid "BOSS: Check For Updates"
-msgstr "BOSS: Buscar actualizaciones"
-
-msgid "BOSS: Error"
-msgstr "Error de BOSS:"
-
-msgid "BOSS: Rule Disabled"
-msgstr "BOSS: Regla Desabilitada"
-
-msgid "BOSS: Select Game"
-msgstr "BOSS: Selecionar Juego"
-
-msgid "BOSS: Settings"
-msgstr "BOSS: Configuracion"
-
-msgid "BOSS: Updater"
-msgstr "BOSS: Actualizador"
-
-msgid "BOSS: User Rules Manager"
-msgstr "BOSS: Administrador de Reglas de Usuario"
-
-msgid "BOSS: Working..."
-msgstr "BOSS: Trabajando..."
-
-msgid ""
-"Backup files are given nonsensical names by your browser, but you can rename "
-"them to whatever you want. Drag and drop a backup file into this panel to "
-"restore the settings it contains."
-msgstr ""
-"Los archivos de copia de seguridad se les dan nombres sin sentido en su "
-"navegador, pero usted puede cambiar el nombre a lo que quieras. Arrastre y "
-"suelte un archivo de copia de seguridad en este panel para restaurar los "
-"valores que contiene."
-
-msgid "Backup/Restore of Display Settings"
-msgstr "Guardar/Restaurar la configuración de la pantalla"
-
-msgid "Bash Tag Suggestion Prefixes"
-msgstr "Sugerencia de etiqueta Prefijos de Bash"
-
-msgid "Bash Tag suggestion(s)"
-msgstr "Bash sugerencia de Tag(s)"
-
-msgid "CRC Labels"
-msgstr "Las etiquetas de CRC"
-
-msgid "CSS Settings Panel File Drag Highlight"
-msgstr "CSS, Panel de Configuración de archivos Arrastrar Resaltar"
-
-msgid "Cancel"
-msgstr "Cancelar"
-
-msgid "Cancelled by user."
-msgstr "Cancelado por el usuario."
-
-msgid "Cannot add messages to groups."
-msgstr "No se puede añadir mensajes a los grupos."
-
-msgid "Cannot add messages when none are given."
-msgstr "No se puede agregar mensajes cuando no se da ninguno."
-
-msgid "Cannot find online masterlist revision date!"
-msgstr ""
-"¡No se pudo encontrar la fecha en el archivo de reglas 'master' obtenido del "
-"repositorio!"
-
-msgid "Cannot find online masterlist revision number!"
-msgstr ""
-"¡No se pudo encontrar el número de revisión en el archivo de reglas 'master' "
-"obtenido del repositorio!"
-
-msgid "Cannot insert groups."
-msgstr "No se puede insertar grupos."
-
-msgid "Cannot insert into a plugin."
-msgstr "No se puede insertar en un plug-in."
-
-msgid "Cannot read list of files to be updated!"
-msgstr "¡No se pudo leer la lista de archivos a actualizar!"
-
-msgid "Cannot sort a group relative to a plugin."
-msgstr "No se puede ordenar a un grupo en relación con un plug-in."
-
-msgid "Cannot sort a plugin relative to a group."
-msgstr "No se puede ordenar un plugin en relación con un grupo."
-
-msgid "Check for BOSS updates on startup"
-msgstr "Buscar actualizaciones en el inicio de BOSS"
-
-msgid ""
-"Check the Troubleshooting section of the ReadMe for more information and "
-"possible solutions."
-msgstr ""
-"Revise la sección de solución de problemas de la Léame para obtener más "
-"información y soluciones posibles."
-
-msgid "Checking for BOSS updates..."
-msgstr "Verificando si hay actualizaciones a BOSS ..."
-
-msgid "Checking for existing submission..."
-msgstr "Verificando si presentación existente ..."
-
-msgid "Checks for updates to BOSS."
-msgstr "Comprueba si hay actualizaciones de BOSS."
-
-msgid "Checksum: "
-msgstr "Suma de verificación: "
-
-msgid "Close"
-msgstr "Cerrar"
-
-msgid "Close the GUI after running BOSS"
-msgstr "Cierrar la interfaz gráfica de usuario después de ejecutar BOSS"
-
-msgid "Colour"
-msgstr "Color"
-
-msgid "Colours must be specified using lowercase hex codes."
-msgstr ""
-"Colores se debe especificar el uso de códigos hexadecimales en minúsculas."
-
-msgid "Contains dirty edits"
-msgstr "Contiene ediciones sucia"
-
-msgid "Could not enforce load order master/plugin partition. Details: "
-msgstr ""
-"No se puede exigir la carga principal para la partición/plug-in Details: "
-
-msgid "Count"
-msgstr "Cantidad"
-
-msgid "Create New Rule"
-msgstr "Crear Nueva Regla"
-
-msgid "Critical Error: "
-msgstr "Error Crítico: "
-
-msgid "Critical Error: %1%"
-msgstr "Error crítico: %1%"
-
-msgid "Debug Output Verbosity:"
-msgstr "Nivel de detalle de la salida de depuración:"
-
-msgid "Debugging"
-msgstr "Depuración"
-
-msgid "Default Game:"
-msgstr "Juego por defecto:"
-
-msgid "Default Plugin Messages"
-msgstr "Mensajes por defecto para Plugin"
-
-msgid "Delete Rule"
-msgstr "Borrar Regla"
-
-msgid "Description:"
-msgstr "Descripción:"
-
-msgid "Details (if applicable)"
-msgstr "Detalles (si procede)"
-
-msgid "Details: %1%"
-msgstr "Detalles: %1%"
-
-msgid "Dirty Messages"
-msgstr "Mensajes Erróneos"
-
-msgid "Display File CRCs"
-msgstr "Mostrar CRCs de archivos"
-
-msgid "Display Settings"
-msgstr "Configuración de pantalla"
-
-msgid ""
-"Do not display this panel again for this browser. If this checkbox is left "
-"unchecked, this panel will be displayed every time you open the BOSS Log."
-msgstr ""
-"No muestra este panel de nuevo para este navegador. Si esta casilla la "
-"izquierdase queda deseleccionada, este panel se mostrará cada vez que abra "
-"el registro de BOSS"
-
-msgid "Do you want to download and install the update? (y/n)"
-msgstr "¿Quiere descargar e instalar la actualización? (Si/no)"
-
-msgid "Download Location"
-msgstr "Ubicación de la descarga"
-
-msgid "Downloaded file \"%1%\" failed verification test!"
-msgstr "¡El archivo \"%1%\" recibido no pasó la prueba de verificación!"
-
-msgid "Downloading: %1%"
-msgstr "Descargaando: %1%"
-
-msgid "Downloading: %s; %3.0f%% of %3.0f KB"
-msgstr "Descargando: %s; %3.0f%% of %3.0f KB"
-
-msgid "Edit User Rules"
-msgstr " Editar Reglas de Usuario"
-
-msgid "Element"
-msgstr "Elemento"
-
-msgid "Error"
-msgstr "Errores"
-
-msgid "Error: "
-msgstr "Error: "
-
-msgid "Error: \"%1%\" cannot be found."
-msgstr "Error: \"%1%\" no se puede encontrar."
-
-msgid "Error: %1%"
-msgstr "Error: %1%"
-
-msgid "Error: %1% Details: %2%"
-msgstr "Error: %1% Detalles: %2%"
-
-msgid "Error: Data transfer failed."
-msgstr "Error: La transferencia de datos ha fallado."
-
-msgid "Error: Existing submission check failed!"
-msgstr "Error: Era falla Verificando si la presentación existente!"
-
-msgid ""
-"Error: No internet connection detected. Masterlist could not be downloaded."
-msgstr ""
-"Error: Sin conexión a Internet detectada. No se pudo descargar Masterlist."
-
-msgid "Error: Plugin could not be submitted."
-msgstr "Error: Plugin no ha sido Actualicado!"
-
-msgid "Error: Plugin submission could not be updated."
-msgstr "Error: Actualizacacion de Plugin no ha sido terminada!"
-
-msgid "Error: The BOSS GUI is already running. This instance will now quit."
-msgstr ""
-"Error: La interfaz gráfica de usuario de BOSS ya se está ejecutando. Esta "
-"instancia ahora se cerrará."
-
-msgid "Error: could not apply translation: %1%"
-msgstr "Error: No se pudo aplicar la traducción: %1%"
-
-msgid "Error: masterlist update failed."
-msgstr "Error: falló actualización del masterlist."
-
-msgid "Errors"
-msgstr "Errores"
-
-msgid "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
-msgstr "¡Falló la evaluación del condicional \"%1%\" para el elemento \"%2%\"!"
-
-msgid "Examples:"
-msgstr "Ejemplos:"
-
-msgid "Exception occurred:"
-msgstr "Excepción se ocurrio:"
-
-msgid "Failed to get release notes. Details: %1%"
-msgstr "Error al obtener notas de la versión. Detalles: %1%"
-
-msgid "Failed to set proxy authentication type! cURL response: \"%1%\"."
-msgstr ""
-"¡No se puede configurar el tipo de autenticación con el proxy! Respuesta: "
-"\"%1%\"."
-
-msgid "Failed to set proxy type! cURL response: \"%1%\"."
-msgstr "¡No se pudo configurar el tipo de proxy! Respuesta: \"%1%\"."
-
-msgid "Filters"
-msgstr "Filtros"
-
-msgid "Filters Background"
-msgstr "Filtros de Fondo"
-
-msgid "For"
-msgstr "Para"
-
-msgid "Form Validation"
-msgstr "Formulario de Validación"
-
-msgid "Functionality"
-msgstr "Funcionalidad"
-
-msgid "General"
-msgstr "General"
-
-msgid "General Text"
-msgstr "Texto General"
-
-msgid "Hide 'Active' Label"
-msgstr "Ocultar Label 'Activado'"
-
-msgid "Hide 'Do Not Clean' Messages"
-msgstr "Ocultar mensajes 'No Se Limpia'"
-
-msgid "Hide All Plugin Messages"
-msgstr "Ocultar todos los mensajes de los Plugins"
-
-msgid "Hide Bash Tag Suggestions"
-msgstr "Ocultar Sugerencias Bash Tag(s)"
-
-msgid "Hide Checksums"
-msgstr "Ocultar las sumas de comprobación"
-
-msgid "Hide Clean Plugins"
-msgstr "Ocultar Plugins Limpios"
-
-msgid "Hide Inactive Plugins"
-msgstr "Ocultar Plugins Inactivados"
-
-msgid "Hide Incompatibilities"
-msgstr "Ocultar Incompatibilidades"
-
-msgid "Hide Messageless Plugins"
-msgstr "Ocultar Plugins sin mensajes"
-
-msgid "Hide Notes"
-msgstr "Ocultar Notas"
-
-msgid "Hide Requirements"
-msgstr "Ocultar Requisitos"
-
-msgid "Hide Version Numbers"
-msgstr "Ocultar los números de versión"
-
-msgid "In-Log Plugin Submission"
-msgstr "En-Log Plugin de Presentación"
-
-msgid "Inactive"
-msgstr "Desactivado"
-
-msgid "Include Source Code References"
-msgstr "incluir referencias de código fuente"
-
-msgid "Incompatible with"
-msgstr "Incompatible con"
-
-msgid "Ini Parsing Error: Expected a %1% at:"
-msgstr ""
-"Error en lectura del archivo de configuración: Se esperaba un %1% en la "
-"posición:"
-
-msgid ""
-"Ini parsing aborted. Some or all of the options may not have been set "
-"correctly."
-msgstr ""
-"Lectura de la configuracion fallida. Algunas de las opciones pueden no haber "
-"sido tomadas correctamente."
-
-msgid "Initialising User Rules Manager..."
-msgstr "Iniciando Administrador de Reglas de Usuario..."
-
-msgid "Initialising download..."
-msgstr "Iniciando descarga ..."
-
-msgid "Input Placeholders"
-msgstr "Marcadores de posición dispositivos"
-
-msgid "Insert %1% at the bottom of %2%"
-msgstr "Insertar %1% en la parte inferior de %2%"
-
-msgid "Insert %1% at the top of %2%"
-msgstr "Insertar %1% en la parte superior de %2%"
-
-msgid "Insert at the"
-msgstr "Insertar en el"
-
-msgid "Installed Plugins"
-msgstr "Plugins Instalados"
-
-msgid "Internet"
-msgstr "Internet"
-
-msgid "Invalid selection."
-msgstr "Selección Inválida."
-
-msgid ""
-"It will then launch the installer before exiting. Complete the installer to "
-"complete the update."
-msgstr ""
-"A continuación, se iniciará el instalador antes de salir.  Completar el "
-"programa de instalación para completar la actualización."
-
-msgid "Language settings will be applied after the BOSS GUI is restarted."
-msgstr ""
-"La configuración de idioma se aplicará después de que la interfaz gráfica de "
-"BOSS se reinicie."
-
-msgid "Language:"
-msgstr "Idioma:"
-
-msgid "Last Run"
-msgstr "Última ejecución"
-
-msgid "Level 1"
-msgstr "Nivel 1"
-
-msgid "Level 2"
-msgstr "Nivel 2"
-
-msgid "Level 3"
-msgstr "Nivel 3"
-
-msgid "Links"
-msgstr "Enlaces"
-
-msgid "Log Debug Output"
-msgstr "Registro de la salida de depuración"
-
-msgid "Log Feature Support"
-msgstr "Apoyo a la función de registro de"
-
-msgid "Master file \"%1%\" loading after non-master plugins!"
-msgstr ""
-"¡El archivo master \"%1%\" esta siendo cargado despues de los archivos no-"
-"master!"
-
-msgid "Masterlist"
-msgstr "Masterlist"
-
-msgid "Masterlist Parsing Error: Expected a %1% at:"
-msgstr ""
-"Error en lectura del archivo de reglas 'master': Se esperaba un %1% en la "
-"posición:"
-
-msgid "Masterlist already up-to-date."
-msgstr "Masterlist ya hasta al día."
-
-msgid "Masterlist parsing aborted. Utility will end now."
-msgstr ""
-"Lectura del archivo de reglas 'master' fallido. El programa no puede "
-"continuar."
-
-msgid "Masterlist updated successfully."
-msgstr "Masterlist actualizado con éxito."
-
-msgid "Memory allocation failed."
-msgstr "La Asignación de memoria falló."
-
-msgid "Menu Background"
-msgstr "Menú de fondo"
-
-msgid "Menu Button Hover"
-msgstr "Botón de Menu activable"
-
-msgid ""
-"Messages must be entered in the correct format. See the User Rules Readme "
-"for more information."
-msgstr ""
-"Los mensajes se deben introducir en el formato correcto. Consulte el 'Léame' "
-"de las Reglas del Usuario (en Docs\\BOSS Userlist Syntax.html) para obtener "
-"más información."
-
-msgid "Move Rule Down"
-msgstr "Mover Regla hacia abajo"
-
-msgid "Move Rule Up"
-msgstr "Mover Regla hacia arriba"
-
-msgid "New installer successfully downloaded!"
-msgstr "¡Nuevo instalador descargado correctamente!"
-
-msgid ""
-"New installer successfully downloaded! When you click 'OK', BOSS will launch "
-"the downloaded installer and exit. Complete the installer to complete the "
-"update."
-msgstr ""
-"¡El nuevo instalador se descargó correctamente! Al hacer clic en 'Aceptar', "
-"BOSS iniciará el archivo instalador obtenido y se cerrará. Para completar la "
-"actualizacion se debe ejecutar por completo el programa de instalación."
-
-msgid "No Internet connection detected."
-msgstr "No se ha detectado la conexión de Internet."
-
-msgid "No change in recognised plugin list since last run."
-msgstr "Ningún cambio reconocido en la lista desde la última ejecución."
-
-msgid "No error."
-msgstr "Sin errores."
-
-msgid "No game detected!"
-msgstr "No se ha detectado ningun juego soportado."
-
-msgid "No game master .esm file found!"
-msgstr "¡No se detecta ningún archivo master (ESM)!"
-
-msgid "No group is specified to insert into."
-msgstr "No has especificado ningún grupo en el que insertar."
-
-msgid "No group is specified to sort relative to."
-msgstr "Ningún grupo se ha especificado para ordenar en relación con."
-
-msgid ""
-"No internet connection detected. Masterlist auto-updater could not check for "
-"updates."
-msgstr ""
-"Sin conexión a Internet detectada. Actualizador automático de Masterlist no "
-"pudo buscar actualizaciones."
-
-msgid "No mod is specified to sort relative to."
-msgstr "No has especificado un 'mod' para poder ordenar en relación a él."
-
-msgid "No previous submission found, creating new submission..."
-msgstr "Actualizacacion anterior encontrado, creando nueva presentación..."
-
-msgid "No rule mod is specified."
-msgstr "No se especifica la regla mod."
-
-msgid "No tag map has yet been initialised."
-msgstr "Todovia no se ha inicializado la mapa de etiqueta."
-
-msgid "No update has been downloaded or installed."
-msgstr "No actualización se ha descargado o instalado."
-
-msgid "Note"
-msgstr "Nota"
-
-msgid "OK"
-msgstr "Aceptar"
-
-msgid "Opacity"
-msgstr "Opacidad"
-
-msgid "Open &Main Readme"
-msgstr "Abre &Léame Principal"
-
-msgid "Open &Masterlist Syntax Doc"
-msgstr "Abre &Masterlist Documento de Sintaxis"
-
-msgid "Open &Userlist Syntax Doc"
-msgstr "Abre Doc s/Sintaxis &Reglas de usuario"
-
-msgid "Open &Version History"
-msgstr "Abrir historial de versión"
-
-msgid "Opens the BOSS API readme in your default web browser."
-msgstr "Abre el 'BOSS API readme' en su navegador web por defecto."
-
-msgid ""
-"Opens the BOSS masterlist syntax documentation in your default web browser."
-msgstr ""
-"Abre la documentación de la sintaxis del masterlist BOSS en su navegador web "
-"por defecto."
-
-msgid ""
-"Opens the BOSS userlist syntax documentation in your default web browser."
-msgstr ""
-"Abre documentación de la sintaxis de las reglas de usuario BOSS en su "
-"navegador web por defecto."
-
-msgid "Opens the BOSS version history in your default web browser."
-msgstr "Abre el historial de versiones BOSS en su navegador web por defecto."
-
-msgid "Opens the Settings window."
-msgstr "Abre la ventana de Configuración."
-
-msgid "Opens the main BOSS readme in your default web browser."
-msgstr ""
-"Abre el archivo léame de BOSS en su principal navegador web por defecto."
-
-msgid "Opens your BOSSlog."
-msgstr "Se Abre el BOSSlog."
-
-msgid "Opens your userlist in your default text editor."
-msgstr "Abre tu lista de usuarios en tu editor de texto predeterminado."
-
-msgid "Output Options"
-msgstr "Opciones de salida"
-
-msgid "Parsing of \"%1%\" failed!"
-msgstr "¡Ha fallado la lectura de \"%1%\"!"
-
-msgid "Perform Trial Run"
-msgstr "Realizar Ejecución de prueba"
-
-msgid "Plain Text"
-msgstr "Textp Plano"
-
-msgid "Please pick which game to run BOSS for:"
-msgstr "Por favor, elegir qué juego se ejecute de BOSS para:"
-
-msgid "Please read any attached messages and act on any that require action."
-msgstr ""
-"Por favor, lea los mensajes adjuntos y toma cualquier acción que les "
-"requieren."
-
-msgid "Please supply at least a link or some notes."
-msgstr "Por favor, proveer al menos un enlace al plugin o algunas notas"
-
-msgid "Plugin"
-msgstr "Plugin"
-
-msgid "Plugin Message Type"
-msgstr "Tipo de mensaje de Plugin"
-
-msgid "Plugin Type"
-msgstr "Tipo de Plugin"
-
-msgid "Plugin submission updated!"
-msgstr "Actualizacacion de Plugin ha sido terminada!"
-
-msgid "Plugin submitted!"
-msgstr "Plugin Actualicado!"
-
-msgid "Previous submission found, updating with supplied details..."
-msgstr ""
-"Presentación anterior encontrado, actualizacando los datos facilitados..."
-
-msgid "Proxy Hostname:"
-msgstr "Nombre del Host Proxy:"
-
-msgid "Proxy Password:"
-msgstr "Contraseña de proxy:"
-
-msgid "Proxy Port Number:"
-msgstr "Número de puerto proxy:"
-
-msgid "Proxy Username:"
-msgstr "Nombre de usuario Proxy:"
-
-msgid ""
-"Proxy authentication username or password invalid! cURL response: \"%1%\"."
-msgstr "¡Autenticacion de usuario con el proxy incorrecta! Respuesta: \"%1%\"."
-
-msgid "Proxy hostname or port invalid! cURL response: \"%1%\"."
-msgstr "¡Nombre o puerto de proxy inválidos! Respuesta: \"%1%\"."
-
-msgid "Quit BOSS."
-msgstr "Cerrar BOSS."
-
-msgid "Quoted Userlist Messages"
-msgstr "Mensajes Citados del Lista de usuarios"
-
-msgid "Ready"
-msgstr "Listo"
-
-msgid "Recognised (or sorted by user rules)"
-msgstr "Reconocido (u ordenados por las reglas del usuarios)"
-
-msgid "Recognised Plugins"
-msgstr "Plugins Reconocidos"
-
-msgid "Release notes:"
-msgstr "Notas de Version:"
-
-msgid "Replace existing messages"
-msgstr "Reemplazar los mensajes existentes"
-
-msgid "Replace the attached messages with:"
-msgstr "Vuelva a colocar los mensajes adjuntos con:"
-
-msgid "Replace the messages attached to %1% with:"
-msgstr "Vuelva a colocar los mensajes que acompañan a %1% con:"
-
-msgid "Requires"
-msgstr "Requiere"
-
-msgid "Restored Load Order"
-msgstr "Antiguo la orden de archivos"
-
-msgid "Restored Load Order (Using modlist.old)"
-msgstr "Orden restaurado (Con modlist.old)"
-
-msgid "Restored Load Order (Using modlist.txt)"
-msgstr "Orden restaurado (Con modlist.txt)"
-
-msgid "Rule"
-msgstr "Regla"
-
-msgid "Rule Editor"
-msgstr "Editor de Reglas"
-
-msgid "Rule Syntax Error: %1% Please correct the mistake before continuing."
-msgstr ""
-"Error de sintáxis de Regla: %1%. Por favor, corrija el error antes de "
-"continuar."
-
-msgid "Rule Syntax Error: Cannot insert groups."
-msgstr "Error de sintaxis de Regla: No se puede insertar grupos."
-
-msgid "Rule Syntax Error: Cannot insert into a plugin."
-msgstr "Error de sintaxis de Regla: No se puede insertar en un plug-in."
-
-msgid "Rule Syntax Error: Cannot sort a group relative to a plugin."
-msgstr ""
-"Error de sintaxis de Regla: No se puede ordenar a un grupo en relación con "
-"un plug-in."
-
-msgid "Rule Syntax Error: Cannot sort a plugin relative to a group."
-msgstr ""
-"Error de sintaxis de Regla: No se puede ordenar un plugin en relación con un "
-"grupo."
-
-msgid "Rule is disabled."
-msgstr "La regla esta deshabilitada."
-
-msgid "Run BOSS"
-msgstr "Ejecutar BOSS"
-
-msgid "Run Options"
-msgstr "Opciones de ejecución"
-
-msgid "Runs BOSS with the options you have chosen."
-msgstr "Ejecutar BOSS con las opciones que ha elegido."
-
-msgid ""
-"Runs BOSS, simulating its changes to your load order, but doesn't actually "
-"reorder your mods."
-msgstr ""
-"Ejecuta BOSS, simulando sus cambios en el orden de carga, pero en realidad "
-"no aplica el nuevo orden a los mods."
-
-msgid "Save Edited Rule"
-msgstr "Guardar Regla Editada"
-
-msgid "Save and Exit"
-msgstr "Guardar y salir"
-
-msgid "Settings Memory"
-msgstr "Opciones de la memoria"
-
-msgid "Shadows"
-msgstr "Sombras/Opacidad"
-
-msgid "Show BOSS Log On Completion"
-msgstr "Mostrar BOSS Log al terminar"
-
-msgid "Shows information about BOSS."
-msgstr "Muestra información sobre BOSS."
-
-msgid "Sort"
-msgstr "Ordenar"
-
-msgid "Sort %1% after %2%"
-msgstr "Ordanar %1% después de %2%"
-
-msgid "Sort %1% before %2%"
-msgstr "Ordanar %1% antes de %2%"
-
-msgid "Sort Item"
-msgstr "Ordenar Elemento"
-
-msgid "Sort Plugins"
-msgstr "Ordenar Plugins"
-
-msgid "Standard (0)"
-msgstr "Estándar (0)"
-
-msgid "Submit"
-msgstr "Enviar"
-
-msgid "Submit Plugin"
-msgstr "Enviar Plugin"
-
-msgid "Success Messages"
-msgstr "Mensajes de éxito"
-
-msgid "Summary"
-msgstr "Resumen"
-
-msgid "Summary Messages Default Background"
-msgstr "Resumen de mensajes por defecto de fondo"
-
-msgid ""
-"Support for the BOSS Log's more advanced features varies. Here's what your "
-"browser supports:"
-msgstr ""
-"Apoyo a la sesión de BOSS características más avanzadas varía. Esto es lo "
-"que tu Explorador admite:"
-
-msgid "Switch to running BOSS for Fallout 3."
-msgstr "Cambiar a correr de BOSS a Fallout 3."
-
-msgid "Switch to running BOSS for Fallout: New Vegas."
-msgstr "Cambiar a la ejecución de BOSS a Fallout: New Vegas."
-
-msgid "Switch to running BOSS for Morrowind."
-msgstr "Cambiar a la ejecución de BOSS a Morrowind."
-
-msgid "Switch to running BOSS for Nehrim."
-msgstr "Cambiar a la ejecución de BOSS a Nehrim."
-
-msgid "Switch to running BOSS for Oblivion."
-msgstr "Cambiar a la ejecución de BOSS a Oblivion"
-
-msgid "Switch to running BOSS for Skyrim."
-msgstr "Cambiar a la ejecución de BOSS a Skyrim."
-
-msgid "Table Headings"
-msgstr "Tabla de títulos"
-
-msgid ""
-"The BOSS Log can be displayed using an alternative colour scheme, which can "
-"be enabled and customised using the options below. Colours must be specified "
-"using their lowercase hex codes. The default value for each element is "
-"displayed as the placeholder for its text box, and this value is used if the "
-"text box is left empty."
-msgstr ""
-"El registro de BOSS puede visualizarse mediante un esquema de color "
-"alternativo, que puede estar habilitado y personalizar usando las opciones. "
-"Colores se debe especificar por medio de sus códigos hexadecimales en "
-"minúsculas. El valor predeterminado para cada elemento es muestra como el "
-"marcador de posición para el cuadro de texto, y este valor se utiliza si el "
-"cuadro de texto se deja en blanco."
-
-msgid "The BOSS Log requires Javascript to be enabled in order to function."
-msgstr ""
-"El registro de BOSS requiere que Javascript esté habilitado para funcionar."
-
-msgid ""
-"The User Rules Manager requires the BOSS masterlist for %1% to have been "
-"downloaded, but it cannot be detected. Do you wish to download the latest "
-"masterlist now?"
-msgstr ""
-"El Administrador de Reglas de Usuario requiere que el masterlist de BOSS "
-"haya sido descargado para '%1%', pero no se puede detectar ¿Desea descargar "
-"la última versión del masterlist ahora?"
-
-msgid ""
-"The automatic updater will download the installer for the new version to "
-"this BOSS folder.\n"
-"\n"
-msgstr ""
-"El programa de actualización automática descargará el instalador de la nueva "
-"versión a esta carpeta de BOSS.\n"
-"\n"
-
-msgid ""
-"The following plugins were not found in the masterlist, and must be "
-"positioned manually, using your favourite mod manager or by using BOSS's "
-"user rules functionality."
-msgstr ""
-"Los siguientes plugins no fueron encontrados en el masterlist, y debe ser "
-"posicionados de forma manual, utilizando el gestor favorito o mediante "
-"creando sus propias reglas del usuario usando la funcionalidad de BOSS."
-
-msgid ""
-"The format of BOSSlog this opens is decided by the setting of the \"BOSSlog "
-"Format\" Output Option above."
-msgstr ""
-"El formato de BOSSlog que se abre se decide por el valor de la opción "
-"\"Formato de registro BOSS\" que está más arriba."
-
-msgid "The group "
-msgstr "El grupo"
-
-msgid ""
-"The higher the verbosity level, the more information is outputted to the "
-"command line."
-msgstr ""
-"Cuanto más alto sea el nivel de detalle, cuanta más información se emite a "
-"la línea de comandos."
-
-msgid ""
-"The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%"
-"\"."
-msgstr ""
-"¡No se pudo leer la fecha de modificación de \"%1%\"! Respuesta devuelta por "
-"el sistema: \"%2%\"."
-
-msgid ""
-"The modification date of \"%1%\" cannot be written! Filesystem response: "
-"\"%2%\"."
-msgstr ""
-"¡La fecha de modificacion de \"%1%\" no puede ser asignada. Respuesta del "
-"sistema: \"%2%\"."
-
-msgid ""
-"The order of plugins set by BOSS differs from their order in its masterlist, "
-"as one or more of the installed plugins is false-flagged. For more "
-"information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged "
-"Plugins\"."
-msgstr ""
-"El orden de los plugins creado por BOSS difiere de su orden en su "
-"masterlist, como uno o más de los plugins instalados es de bandera falsa.  "
-"Para más información, consulte \"file:../Docs/BOSS%20Readme.html#appendix-c "
-"False-Flagged Plugins\"."
-
-msgid "The output is logged to the BOSSDebugLog.txt file"
-msgstr "La salida se registra en el archivo BOSSDebugLog.txt"
-
-msgid ""
-"The requested change to the active plugins list would result in over 255 "
-"plugins being active."
-msgstr ""
-"El cambio solicitado a la lista de plugins activos se traduciría en más de "
-"255 plugins activos."
-
-msgid ""
-"The rule mod is not being sorted nor having its attached messages altered."
-msgstr ""
-"La regla 'mod' no será ordenada ni tendrá sus mensajes adjuntos alterados."
-
-msgid ""
-"The rule sorting the unrecognised plugin \"%1%\" has been disabled as the "
-"plugin is now recognised. If you wish to override its position in the "
-"masterlist, re-enable the rule."
-msgstr ""
-"La regla de clasificación del plugin no reconocido \"%1%\" ha sido "
-"inhabilitado como el plug-in es ahora reconocido. Si quieres cambiar su "
-"posición en el masterlist, re-activa la regla."
-
-msgid ""
-"The update may be downloaded from any of the locations listed in the BOSS "
-"Log."
-msgstr ""
-"La actualización puede ser descargada desde cualquiera de los lugares "
-"indicados en el registro de BOSS."
-
-msgid "The window \"%1%\" failed to initialise. Details: \"%2%\"."
-msgstr "La ventana \"%1%\" falló en inicializarse. Detalles: \"%2%\"."
-
-msgid ""
-"These plugins are recognised by BOSS and have been sorted according to its "
-"masterlist. Please read any attached messages and act on any that require "
-"action."
-msgstr ""
-"Estos plugins son ordanados por BOSS y han sido ordenados de acuerdo a su "
-"masterlist.  Por favor lea los mensajes adjuntos y se pronunciará quales que "
-"requieren atención."
-
-msgid ""
-"This decides both the format of BOSSlog generated when you click the \"Run "
-"BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog"
-"\" button."
-msgstr ""
-"Este decide el formato de BOSSlog que se genera cuando se haga clic en el "
-"botón \"Ejecutar BOSS\" y el formato de BOSSlog que se abre al hacer clic en "
-"el botón \"Ver BOSSlog\"."
-
-msgid "Transforms"
-msgstr "Transformas"
-
-msgid "Transitions"
-msgstr "Transiciones"
-
-msgid "Undo Changes"
-msgstr "Deshacer cambios"
-
-msgid "Undo Level: "
-msgstr "Deshacer Nivel: "
-
-msgid "Unrecognised"
-msgstr "Desconocida"
-
-msgid "Unrecognised Plugins"
-msgstr "Plugins Desconocidos"
-
-msgid "Update Masterlist"
-msgstr "Actualizar Masterlist"
-
-msgid "Update Masterlist Only"
-msgstr "Actualizar Masterlist Solo"
-
-msgid ""
-"Update available! New version: %1%\n"
-"Release notes:\n"
-"\n"
-"%2%\n"
-"\n"
-"Do you want to download and install the update?"
-msgstr ""
-"Actualización a Nueva versión disponible: %1%\n"
-"Notas de la versión:\n"
-"\n"
-"%2%\n"
-"\n"
-"¿Quieres descargar e instalar la actualización? "
-
-msgid ""
-"Update available! New version: %1%\n"
-"The update may be downloaded from any of the locations listed in the BOSS "
-"Log."
-msgstr ""
-"Actualización disponible Nueva versión: %1%\n"
-"La actualización puede ser descargada desde cualquiera de los lugares "
-"indicados en el BOSS Log."
-
-msgid "Update available! New version: %s"
-msgstr "Actualización disponible Nueva versión: %s"
-
-msgid "Update cancelled."
-msgstr "Actualización cancelada."
-
-msgid "Update check failed. Details: %1%"
-msgstr "Update Fallido. Detalles: %1%"
-
-msgid "Update check failed. No Internet connection detected."
-msgstr ""
-"Error en la comprobación de actualización. No detecta conexión a Internet."
-
-msgid ""
-"Update failed. Details: %1%\n"
-"\n"
-"Update cancelled."
-msgstr ""
-"Actualización Fallida.  Información: %1%\n"
-"\n"
-"Actualización cancelada."
-
-msgid ""
-"Update failed. Details: %1%; %2%\n"
-"\n"
-"Update cancelled."
-msgstr ""
-"Actualización fallida.  Información: %1%; %2%\n"
-"\n"
-"Actualización cancelada."
-
-msgid "Updating to the latest masterlist from the Google Code repository..."
-msgstr ""
-"Actualizando a la última masterlist desde el repositorio de Google Code ..."
-
-msgid "Use Alternative Colour Scheme"
-msgstr "Plan de Uso del color alternativo"
-
-msgid "Use User Rules Manager"
-msgstr "Usar el Administrador de Reglas de Usuario"
-
-msgid "User Rules"
-msgstr "Reglas del usuario"
-
-msgid "User Rules Manager"
-msgstr "Administrador de Reglas de Usuario"
-
-msgid "Userlist Parsing Error: Expected a %1% at:"
-msgstr ""
-"Error en lectura del archivo de reglas de usuario: Se esperaba un %1% en la "
-"posición:"
-
-msgid "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-msgstr ""
-"Error de sintaxis en el archivo de reglas de usuario: La regla que empieza "
-"\"%1%: %2%\" %3%"
-
-msgid "Userlist parsing aborted. No rules will be applied."
-msgstr "Lectura de reglas del usuario fallida. No se procesara ninguna regla."
-
-msgid "Utility will end now."
-msgstr "Utilidad terminará ahora."
-
-msgid "Version "
-msgstr "Version"
-
-msgid "Version Labels"
-msgstr "Version etiquetas"
-
-msgid "Version: "
-msgstr "Version:"
-
-msgid "View &Copyright Licenses"
-msgstr "Ver Licencias de &derechos de autor"
-
-msgid "View BOSS Log"
-msgstr "Ver Boss Log"
-
-msgid ""
-"View the GNU General Public License v3.0 and GNU Free Documentation License "
-"v1.3."
-msgstr ""
-"Ver la versión 3.0 de Licencia Pública General GNU y la Licencia de "
-"Documentación Libre GNU v1.3."
-
-msgid "Visited Links"
-msgstr "Enlaces visitados"
-
-msgid "Warning"
-msgstr "Avisos"
-
-msgid "Warnings"
-msgstr "Advertencias"
-
-msgid ""
-"Web storage quota for this document has been exceeded. Please empty your "
-"browser\\'s cache. Note that this will delete all locally stored data."
-msgstr ""
-"La Cuota de web de almacenamiento de este documento se ha excedido. Por "
-"favor, vaciar el caché de su navegador. Tenga en cuenta que esto borrará "
-"todos los de datos almacenados localmente."
-
-msgid "Window Backgrounds"
-msgstr "Fondos de la ventana"
-
-msgid "You are already using the latest version of BOSS."
-msgstr "Usted ya está usando la versión más reciente de BOSS."
-
-msgid ""
-"You can <span class='button' id='cssButtonBackup'>back up</span> your "
-"display settings to avoid losing them when you <span "
-"id='loseSettingsClose'>close the BOSS Log</span><span "
-"id='loseSettingsCacheClear'>clear your browser's cache</span>."
-msgstr ""
-"Puede <span class='button' id='cssButtonBackup'>copiar</span> su "
-"configuración de la pantalla para evitar de perderlos cuando usted <span "
-"id='loseSettingsClose'>cerrar el registro de BOSS</span><span "
-"id='loseSettingsCacheClear'>borrar la memoria caché de su navegador</span>."
-
-msgid "Your masterlist has been updated to revision %1% (%2%)."
-msgstr "Su masterlist ha sido actualizado a la revisión %1% (%2%)."
-
-msgid ""
-"Your masterlist is already at the latest revision (r%1%; %2%). No update "
-"necessary."
-msgstr ""
-"Su masterlist ya se encuentra en la última revisión (r%1%; %2%). No se "
-"requiere actualización."
-
-msgid "add source file references to debug statements"
-msgstr "agregar referencias al archivo para depurar las declaraciones"
-
-msgid "after"
-msgstr "después de"
-
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web before sorting"
-msgstr ""
-"automáticamente actualizar la copia local de la masterlist a la última "
-"versióndisponible en la web antes de ordenar los plugins."
-
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web but don't sort right now"
-msgstr ""
-"automáticamente actualizar la copia local de la masterlist a la última "
-"versióndisponible en la web, sin ordenando los plugins."
-
-msgid "before"
-msgstr "antes de"
-
-msgid "bottom"
-msgstr "Inferior"
-
-msgid "cURL cannot be initialised!"
-msgstr "¡No se pudo inicializar cURL!"
-
-msgid "cURL could not perform task! cURL response: \"%1%\"."
-msgstr "¡cURL falló en ejecutar una tarea! Respuesta: \"%1%\"."
-
-msgid "cURL's error buffer could not be set! cURL response: \"%1%\"."
-msgstr "¡No se pudo asignar el buffer de errores de cURL! Respuesta: \"%1%\"."
-
-msgid "don't launch a browser to show the HTML log at program completion"
-msgstr ""
-"no lanzar un navegador para mostrar el registro de HTML despues que termine "
-"el programa."
-
-msgid "has a REPLACE-using message line that is not the first message line."
-msgstr "tiene una linea de reemplazo que no es la primera linea de la regla."
-
-msgid "has a sort line that is not the second line of the rule."
-msgstr "tiene una línea de ordenar que no es la segunda línea de la regla."
-
-msgid "has more than one REPLACE-using message line."
-msgstr "tiene más de una linea de reemplazo de mensaje (REPLACE)"
-
-msgid "has more than one sort line."
-msgstr "tiene más de una linea de ordenamiento (SORT)."
-
-msgid "includes a sort line in a rule with a FOR rule keyword."
-msgstr "incluye un ordenamiento (SORT) en una regla 'PARA' (FOR)"
-
-msgid "inhibit the automatic masterlist updater"
-msgstr "Restringir la actualización automática del master list"
-
-msgid ""
-"logs the debug output to the BOSSDebugLog.txt file instead of the command "
-"line."
-msgstr ""
-"registra el resultado de la depuración en el archivo de BOSSDebugLog.txt en "
-"lugar del comando línea."
-
-msgid "of"
-msgstr "de"
-
-msgid ""
-"override game autodetection.  valid values are: 'Oblivion', 'Nehrim', "
-"'Fallout3', 'FalloutNV', and 'Skyrim'"
-msgstr ""
-"Autodetección de juego de anulación de los valores válidos son: 'Oblivion', "
-"'Nehrim', 'Fallout3', 'FalloutNV' y 'Skyrim'"
-
-msgid "prints the version banner"
-msgstr "imprime la bandera de la versión"
-
-msgid "produces this help message"
-msgstr "produce este mensaje de ayuda"
-
-msgid "references a mod and a group."
-msgstr "referencia un mod y un grupo."
-
-msgid ""
-"revert to a previous load order.  this parameter optionally accepts values "
-"of 1 or 2, indicating how many undo steps to apply.  if no option value is "
-"specified, it defaults to 1"
-msgstr ""
-"volver a una orden de carga previa. Este parámetro opcional acepta valores "
-"de 1 o 2, indica la cantidad de pasos atrás que se aplican. Si no hay valor, "
-"el opción defecto es 1."
-
-msgid "run BOSS without actually making any changes to load order"
-msgstr ""
-"ejecutar BOSS sin tener que realizar ningún cambio del orden de ficheros MOD"
-
-msgid "select output format. valid values are: 'html', 'text'"
-msgstr ""
-"Seleccione el formato de salida,  los valores válidos son: 'html', 'text'"
-
-msgid "sets the proxy hostname for the masterlist updater"
-msgstr ""
-"establece el nombre de host del servidor proxy para la actualización del "
-"masterlist"
-
-msgid "sets the proxy port number for the masterlist updater"
-msgstr ""
-"establece el número de puerto del servidor proxy para la actualización del "
-"masterlist"
-
-msgid ""
-"show mod file CRCs, so that a file's CRC can be added to the masterlist in a "
-"conditional"
-msgstr ""
-"mostrar el CRC de ficheros MOD, que el CRC de un archivo puede ser añadido a "
-"la masterlist en un condicional"
-
-msgid ""
-"specify verbosity level (0-3) of the debugging output.  0 is the default, "
-"showing only WARN and ERROR messges. 1 (INFO and above) is implied if this "
-"option is specified without an argument.  higher values increase the "
-"verbosity further"
-msgstr ""
-"Especificar el nivel de detalle (0-3) de depuración de la salida. 0 es el "
-"valor predeterminado, mostrando sólo WARN y mesnajes de ERROR. 1 (INFO y por "
-"encima) es implícito si especifica este opción sin ningún otro argumento. "
-"Los valores más altos aumentan el nivel de detalle mayor."
-
-msgid "top"
-msgstr "Superior"
-
-msgid "tries to add a group."
-msgstr "intenta agregar un grupo"
-
-msgid "tries to attach a message to a group."
-msgstr "intenta asociar un mensaje a un grupo."
-
-msgid "tries to attach an malformatted message."
-msgstr "intenta asociar un mensaje mal formado."
-
-msgid "tries to insert a group or insert something into a mod."
-msgstr "intenta insertar un grupo, o agregar algo a un mod."
-
-msgid ""
-"tries to insert a mod into the top of the group \"ESMs\", before the master ."
-"ESM file."
-msgstr ""
-"intenta posicionar un mod al inicio del grupo \"ESMs\", antes del .ESM "
-"principal."
-
-msgid "tries to sort a group before the group \"ESMs\"."
-msgstr "intenta dar un orden anterior que el grupo \"ESMs\"."
-
-msgid "tries to sort a master file before a plugin."
-msgstr "intenta ordenar un archivo master (ESM) antes que un plugin (ESP)"
-
-msgid "tries to sort a mod before the master .ESM file."
-msgstr "intenta ordenar un mod antes que el archivo .ESM principal."
-
-msgid "tries to sort a mod or group relative to itself."
-msgstr "Intenta ordenar un mod (o un grupo) respecto de su mismo."
-
-msgid "tries to sort a plugin before a master file."
-msgstr "intenta ordenar un plugin (ESP) antes que un archivo master (ESM)"
-
-msgid "tries to sort the group \"ESMs\"."
-msgstr "intenta dar orden al grupo \"ESMs\"."
-
-msgid "tries to sort the master .ESM file."
-msgstr "intenta cambiar el orden del archivo .ESM principal."
+msgid   ""
+msgstr  "Project-Id-Version: BOSS 2.1.0\n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2015-12-18 09:34-0500\n"
+        "PO-Revision-Date: 2012-16-08 21:32-0700\n"
+        "Last-Translator: Daniel Holmes <danielhmpdx16@gmail.com>\n"
+        "Language-Team: LANGUAGE <LL@li.org>\n"
+        "Language: spanish\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=UTF-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+
+#: src/common/error.h:102
+#, boost-format
+msgid   "Masterlist Parsing Error: Expected a %1% at:"
+msgstr  "Error en lectura del archivo de reglas 'master': Se esperaba un %1% "
+        "en la posición:"
+
+#: src/common/error.h:104
+#, boost-format
+msgid   "Ini Parsing Error: Expected a %1% at:"
+msgstr  "Error en lectura del archivo de configuración: Se esperaba un %1% en "
+        "la posición:"
+
+#: src/common/error.h:106
+#, boost-format
+msgid   "Userlist Parsing Error: Expected a %1% at:"
+msgstr  "Error en lectura del archivo de reglas de usuario: Se esperaba un "
+        "%1% en la posición:"
+
+#: src/common/error.h:108
+#, boost-format
+msgid   "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+msgstr  "Error de sintaxis en el archivo de reglas de usuario: La regla que "
+        "empieza \"%1%: %2%\" %3%"
+
+#: src/common/error.h:110
+msgid   "Masterlist parsing aborted. Utility will end now."
+msgstr  "Lectura del archivo de reglas 'master' fallido. El programa no puede "
+        "continuar."
+
+#: src/common/error.h:112
+msgid   "Ini parsing aborted. Some or all of the options may not have been "
+        "set correctly."
+msgstr  "Lectura de la configuracion fallida. Algunas de las opciones pueden "
+        "no haber sido tomadas correctamente."
+
+#: src/common/error.h:114
+msgid   "Userlist parsing aborted. No rules will be applied."
+msgstr  "Lectura de reglas del usuario fallida. No se procesara ninguna regla."
+
+#: src/common/error.h:119
+msgid   "includes a sort line in a rule with a FOR rule keyword."
+msgstr  "incluye un ordenamiento (SORT) en una regla 'PARA' (FOR)"
+
+#: src/common/error.h:121
+msgid   "tries to add a group."
+msgstr  "intenta agregar un grupo"
+
+#: src/common/error.h:123
+msgid   "tries to sort the group \"ESMs\"."
+msgstr  "intenta dar orden al grupo \"ESMs\"."
+
+#: src/common/error.h:125
+msgid   "tries to sort the master .ESM file."
+msgstr  "intenta cambiar el orden del archivo .ESM principal."
+
+#: src/common/error.h:127
+msgid   "references a mod and a group."
+msgstr  "referencia un mod y un grupo."
+
+#: src/common/error.h:129
+msgid   "tries to sort a group before the group \"ESMs\"."
+msgstr  "intenta dar un orden anterior que el grupo \"ESMs\"."
+
+#: src/common/error.h:131
+msgid   "tries to sort a mod before the master .ESM file."
+msgstr  "intenta ordenar un mod antes que el archivo .ESM principal."
+
+#: src/common/error.h:133
+msgid   "tries to insert a mod into the top of the group \"ESMs\", before the "
+        "master .ESM file."
+msgstr  "intenta posicionar un mod al inicio del grupo \"ESMs\", antes del ."
+        "ESM principal."
+
+#: src/common/error.h:135
+msgid   "tries to insert a group or insert something into a mod."
+msgstr  "intenta insertar un grupo, o agregar algo a un mod."
+
+#: src/common/error.h:137
+msgid   "tries to attach a message to a group."
+msgstr  "intenta asociar un mensaje a un grupo."
+
+#: src/common/error.h:139
+msgid   "has more than one sort line."
+msgstr  "tiene más de una linea de ordenamiento (SORT)."
+
+#: src/common/error.h:141
+msgid   "has more than one REPLACE-using message line."
+msgstr  "tiene más de una linea de reemplazo de mensaje (REPLACE)"
+
+#: src/common/error.h:143
+msgid   "has a REPLACE-using message line that is not the first message line."
+msgstr  "tiene una linea de reemplazo que no es la primera linea de la regla."
+
+#: src/common/error.h:145
+msgid   "has a sort line that is not the second line of the rule."
+msgstr  "tiene una línea de ordenar que no es la segunda línea de la regla."
+
+#: src/common/error.h:147
+msgid   "tries to sort a mod or group relative to itself."
+msgstr  "Intenta ordenar un mod (o un grupo) respecto de su mismo."
+
+#: src/common/error.h:149
+msgid   "tries to attach an malformatted message."
+msgstr  "intenta asociar un mensaje mal formado."
+
+#: src/common/error.h:151
+msgid   "tries to sort a plugin before a master file."
+msgstr  "intenta ordenar un plugin (ESP) antes que un archivo master (ESM)"
+
+#: src/common/error.h:153
+msgid   "tries to sort a master file before a plugin."
+msgstr  "intenta ordenar un archivo master (ESM) antes que un plugin (ESP)"
+
+#: src/common/settings.cpp:93
+msgid   "# Settings with names starting with 'b' are boolean and accept "
+        "values of 'true' or 'false'."
+msgstr  ""
+
+#: src/common/settings.cpp:94
+msgid   "# Settings with names starting with 'i' are unsigned integers and "
+        "accept varying ranges of whole numbers."
+msgstr  ""
+
+#: src/common/settings.cpp:95
+msgid   "# Settings with names starting with 's' are strings and their "
+        "accepted values vary."
+msgstr  ""
+
+#: src/common/settings.cpp:96
+msgid   "# See the BOSS ReadMe for details on what each setting does and the "
+        "accepted values for integer and string settings."
+msgstr  ""
+
+#: src/common/error.cpp:107 src/common/error.cpp:146
+msgid   "No error."
+msgstr  "Sin errores."
+
+#: src/common/error.cpp:109
+#, boost-format
+msgid   "\"%1%\" cannot be read!"
+msgstr  "¡No se puede leer de \"%1%\"!"
+
+#: src/common/error.cpp:111
+#, boost-format
+msgid   "\"%1%\" cannot be written to!"
+msgstr  "¡No se puede escribir en \"%1%\"!"
+
+#: src/common/error.cpp:113
+#, boost-format
+msgid   "\"%1%\" is not encoded in valid UTF-8!"
+msgstr  "¡\"%1%\" no está codificado en UTF-8 válido!"
+
+#: src/common/error.cpp:115
+#, boost-format
+msgid   "\"%1%\" cannot be found!"
+msgstr  "¡\"%1%\" no existe!"
+
+#: src/common/error.cpp:117
+#, boost-format
+msgid   "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
+msgstr  "¡Falló la evaluación del condicional \"%1%\" para el elemento \"%2%"
+        "\"!"
+
+#: src/common/error.cpp:119
+#, boost-format
+msgid   "\"%1%\" is not a valid regular expression. Item skipped."
+msgstr  "\"%1%\" no es una expresión regular válida. Elemento ignorado."
+
+#: src/common/error.cpp:121
+msgid   "No game detected!"
+msgstr  "No se ha detectado ningun juego soportado."
+
+#: src/common/error.cpp:123
+#, boost-format
+msgid   "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
+msgstr  "No se puede convertir \"%1%\" de UTF-8 a \"%2%\"."
+
+#: src/common/error.cpp:125
+#, boost-format
+msgid   "Master file \"%1%\" loading after non-master plugins!"
+msgstr  "¡El archivo master \"%1%\" esta siendo cargado despues de los "
+        "archivos no-master!"
+
+#: src/common/error.cpp:129
+#, fuzzy, boost-format
+#| msgid        "Critical Error: %1%"
+msgid           "Git operation failed. Error: %1%"
+msgstr          "Error crítico: %1%"
+
+#: src/common/error.cpp:131
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be read! Filesystem "
+        "response: \"%2%\"."
+msgstr  "¡No se pudo leer la fecha de modificación de \"%1%\"! Respuesta "
+        "devuelta por el sistema: \"%2%\"."
+
+#: src/common/error.cpp:133
+#, boost-format
+msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
+msgstr  "¡No se pudo renombrar \"%1%\"! Respuesta del sistema: \"%2%\"."
+
+#: src/common/error.cpp:135
+#, boost-format
+msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
+msgstr  "¡No se pudo borrar \"%1%\"! Respuesta del sistema: \"%2%\"."
+
+#: src/common/error.cpp:137
+#, boost-format
+msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
+msgstr  "¡No se puede crear \"%1%\"! Respuesta del sistema: \"%2%\"."
+
+#: src/common/error.cpp:139
+#, boost-format
+msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
+msgstr  "¡No se pudo explorar \"%1%\"! Respuesta del sistema: \"%2%\"."
+
+#: src/common/error.cpp:141
+#, boost-format
+msgid   "Parsing of \"%1%\" failed!"
+msgstr  "¡Ha fallado la lectura de \"%1%\"!"
+
+#: src/common/error.cpp:143
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be written! Filesystem "
+        "response: \"%2%\"."
+msgstr  "¡La fecha de modificacion de \"%1%\" no puede ser asignada. "
+        "Respuesta del sistema: \"%2%\"."
+
+#: src/common/error.cpp:145
+#, boost-format
+msgid   "The window \"%1%\" failed to initialise. Details: \"%2%\"."
+msgstr  "La ventana \"%1%\" falló en inicializarse. Detalles: \"%2%\"."
+
+#: src/common/game.cpp:500
+msgid   "Rule is disabled."
+msgstr  "La regla esta deshabilitada."
+
+#: src/common/game.cpp:524 src/common/game.cpp:587 src/common/game.cpp:640
+msgid   " is not installed or in the masterlist."
+msgstr  " no está instalado o no está en el archivo 'master'."
+
+#: src/common/game.cpp:531 src/common/game.cpp:594
+msgid   " is already in the masterlist."
+msgstr  " ya esta agregado al archivo 'master'."
+
+#: src/common/game.cpp:537 src/common/game.cpp:601
+msgid   " is not in the masterlist, cannot override."
+msgstr  " no está en el archivo 'master'. No se puede re-definir."
+
+#: src/common/game.cpp:551
+msgid   " is not installed, and is not in the masterlist."
+msgstr  " no está instalado, ni está en el archivo 'master'."
+
+#: src/common/game.cpp:557
+msgid   " is not in the masterlist and has not been sorted by a rule."
+msgstr  " no esta en el archivo 'master' y no ha sido ordenado por alguna "
+        "regla."
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   "The group "
+msgstr  "El grupo"
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   " is not in the masterlist or is malformatted."
+msgstr  " no está en la masterlist o es mal es formada"
+
+#: src/common/game.cpp:748 src/common/game.cpp:766
+msgid   "Version: "
+msgstr  "Version:"
+
+#: src/common/game.cpp:750 src/common/game.cpp:768 src/common/game.cpp:854
+#: src/common/game.cpp:856
+msgid   "Checksum: "
+msgstr  "Suma de verificación: "
+
+#: src/common/game.cpp:824
+msgid   "The order of plugins set by BOSS differs from their order in its "
+        "masterlist, as one or more of the installed plugins is false-"
+        "flagged. For more information, see \"file:../Docs/BOSS%20Readme."
+        "html#appendix-c False-Flagged Plugins\"."
+msgstr  "El orden de los plugins creado por BOSS difiere de su orden en su "
+        "masterlist, como uno o más de los plugins instalados es de bandera "
+        "falsa.  Para más información, consulte \"file:../Docs/BOSS%20Readme."
+        "html#appendix-c False-Flagged Plugins\"."
+
+#: src/common/game.cpp:827
+msgid   "Could not enforce load order master/plugin partition. Details: "
+msgstr  "No se puede exigir la carga principal para la partición/plug-in "
+        "Details: "
+
+#: src/common/game.cpp:848 src/output/boss_log.cpp:388
+#: src/output/boss_log.cpp:392 src/boss_cli.cpp:88
+msgid   "Version "
+msgstr  "Version"
+
+#: src/common/game.cpp:850
+msgid   "Active"
+msgstr  "Activo"
+
+#: src/common/game.cpp:872
+msgid   "Error: "
+msgstr  "Error: "
+
+#: src/common/game.cpp:907 src/boss_cli.cpp:356
+msgid   "Critical Error: "
+msgstr  "Error Crítico: "
+
+#: src/common/game.cpp:908 src/gui/main_window.cpp:551
+#: src/gui/main_window.cpp:608 src/gui/main_window.cpp:661 src/boss_cli.cpp:357
+#: src/boss_cli.cpp:424 src/boss_cli.cpp:470 src/boss_cli.cpp:512
+msgid   "Check the Troubleshooting section of the ReadMe for more information "
+        "and possible solutions."
+msgstr  "Revise la sección de solución de problemas de la Léame para obtener "
+        "más información y soluciones posibles."
+
+#: src/common/game.cpp:909 src/gui/main_window.cpp:552
+#: src/gui/main_window.cpp:609 src/gui/main_window.cpp:662 src/boss_cli.cpp:358
+#: src/boss_cli.cpp:425 src/boss_cli.cpp:471 src/boss_cli.cpp:513
+msgid   "Utility will end now."
+msgstr  "Utilidad terminará ahora."
+
+#: src/gui/settings_window.cpp:48
+msgid   "Standard (0)"
+msgstr  "Estándar (0)"
+
+#: src/gui/settings_window.cpp:49
+msgid   "Level 1"
+msgstr  "Nivel 1"
+
+#: src/gui/settings_window.cpp:50
+msgid   "Level 2"
+msgstr  "Nivel 2"
+
+#: src/gui/settings_window.cpp:51
+msgid   "Level 3"
+msgstr  "Nivel 3"
+
+#: src/gui/settings_window.cpp:53
+msgid   "Autodetect"
+msgstr  "Detección automática"
+
+#: src/gui/settings_window.cpp:75
+msgid   "Use User Rules Manager"
+msgstr  "Usar el Administrador de Reglas de Usuario"
+
+#: src/gui/settings_window.cpp:77
+msgid   "Close the GUI after running BOSS"
+msgstr  "Cierrar la interfaz gráfica de usuario después de ejecutar BOSS"
+
+#: src/gui/settings_window.cpp:97
+msgid   "Default Game:"
+msgstr  "Juego por defecto:"
+
+#: src/gui/settings_window.cpp:99
+msgid   "Language:"
+msgstr  "Idioma:"
+
+#: src/gui/settings_window.cpp:101
+msgid   "Debug Output Verbosity:"
+msgstr  "Nivel de detalle de la salida de depuración:"
+
+#: src/gui/settings_window.cpp:103
+msgid   "Oblivion Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:105
+#, fuzzy
+#| msgid        "Masterlist"
+msgid           "Nehrim Masterlist URL:"
+msgstr          "Masterlist"
+
+#: src/gui/settings_window.cpp:107
+#, fuzzy
+#| msgid        "Masterlist"
+msgid           "Skyrim Masterlist URL:"
+msgstr          "Masterlist"
+
+#: src/gui/settings_window.cpp:109
+#, fuzzy
+#| msgid        "Update Masterlist"
+msgid           "Fallout 3 Masterlist URL:"
+msgstr          "Actualizar Masterlist"
+
+#: src/gui/settings_window.cpp:111
+#, fuzzy
+#| msgid        "&Fallout: New Vegas"
+msgid           "Falllout: New Vegas Masterlist URL:"
+msgstr          "&Fallout: New Vegas"
+
+#: src/gui/settings_window.cpp:118
+msgid   "Language settings will be applied after the BOSS GUI is restarted."
+msgstr  "La configuración de idioma se aplicará después de que la interfaz "
+        "gráfica de BOSS se reinicie."
+
+#: src/gui/settings_window.cpp:123
+msgid   "OK"
+msgstr  "Aceptar"
+
+#: src/gui/settings_window.cpp:124 src/gui/user_rule_editor.cpp:563
+msgid   "Cancel"
+msgstr  "Cancelar"
+
+#: src/gui/settings_window.cpp:131
+#, fuzzy
+#| msgid        "The higher the verbosity level, the more information is "
+#|      "outputted to the command line."
+msgid           "The higher the verbosity level, the more information is "
+        "outputted to BOSSDebugLog.txt."
+msgstr          "Cuanto más alto sea el nivel de detalle, cuanta más "
+        "información se emite a la línea de comandos."
+
+#: src/gui/main_window.cpp:125
+#, boost-format
+msgid   "Error: %1% Details: %2%"
+msgstr  "Error: %1% Detalles: %2%"
+
+#: src/gui/main_window.cpp:126 src/gui/main_window.cpp:176
+#: src/gui/main_window.cpp:190 src/gui/main_window.cpp:692
+#: src/gui/main_window.cpp:715 src/gui/main_window.cpp:850
+#: src/gui/main_window.cpp:865 src/gui/user_rule_editor.cpp:123
+#: src/gui/user_rule_editor.cpp:130 src/gui/user_rule_editor.cpp:139
+#: src/gui/user_rule_editor.cpp:146 src/gui/user_rule_editor.cpp:283
+#: src/gui/user_rule_editor.cpp:442 src/gui/user_rule_editor.cpp:480
+#: src/gui/user_rule_editor.cpp:759 src/gui/user_rule_editor.cpp:786
+msgid   "BOSS: Error"
+msgstr  "Error de BOSS:"
+
+#: src/gui/main_window.cpp:175
+#, boost-format
+msgid   "Error: could not apply translation: %1%"
+msgstr  "Error: No se pudo aplicar la traducción: %1%"
+
+#: src/gui/main_window.cpp:189
+msgid   "Error: The BOSS GUI is already running. This instance will now quit."
+msgstr  "Error: La interfaz gráfica de usuario de BOSS ya se está ejecutando. "
+        "Esta instancia ahora se cerrará."
+
+#: src/gui/main_window.cpp:215
+msgid   " (not detected)"
+msgstr  " (no detectado)"
+
+#: src/gui/main_window.cpp:221 src/boss_cli.cpp:338
+msgid   "Please pick which game to run BOSS for:"
+msgstr  "Por favor, elegir qué juego se ejecute de BOSS para:"
+
+#: src/gui/main_window.cpp:222
+msgid   "BOSS: Select Game"
+msgstr  "BOSS: Selecionar Juego"
+
+#: src/gui/main_window.cpp:260
+msgid   "Plain Text"
+msgstr  "Textp Plano"
+
+#: src/gui/main_window.cpp:262
+msgid   "Last Run"
+msgstr  "Última ejecución"
+
+#: src/gui/main_window.cpp:263
+msgid   "2nd Last Run"
+msgstr  "El segundo paso"
+
+#: src/gui/main_window.cpp:270
+msgid   "&View BOSS Log"
+msgstr  "&Ver registro BOSS"
+
+#: src/gui/main_window.cpp:271
+msgid   "Opens your BOSSlog."
+msgstr  "Se Abre el BOSSlog."
+
+#: src/gui/main_window.cpp:273
+msgid   "&Run BOSS"
+msgstr  "&Ejecutar BOSS"
+
+#: src/gui/main_window.cpp:274
+msgid   "Runs BOSS with the options you have chosen."
+msgstr  "Ejecutar BOSS con las opciones que ha elegido."
+
+#: src/gui/main_window.cpp:277
+msgid   "&Quit"
+msgstr  "&Cerrar"
+
+#: src/gui/main_window.cpp:278
+msgid   "Quit BOSS."
+msgstr  "Cerrar BOSS."
+
+#: src/gui/main_window.cpp:279
+msgid   "&File"
+msgstr  "&Archivo"
+
+#: src/gui/main_window.cpp:283
+msgid   "&User Rules..."
+msgstr  "&Reglas de Usuario..."
+
+#: src/gui/main_window.cpp:284
+msgid   "Opens your userlist in your default text editor."
+msgstr  "Abre tu lista de usuarios en tu editor de texto predeterminado."
+
+#: src/gui/main_window.cpp:286
+msgid   "&Settings..."
+msgstr  "&Configuración..."
+
+#: src/gui/main_window.cpp:287
+msgid   "Opens the Settings window."
+msgstr  "Abre la ventana de Configuración."
+
+#: src/gui/main_window.cpp:288
+msgid   "&Edit"
+msgstr  "&Editar"
+
+#: src/gui/main_window.cpp:292
+msgid   "Switch to running BOSS for Oblivion."
+msgstr  "Cambiar a la ejecución de BOSS a Oblivion"
+
+#: src/gui/main_window.cpp:294
+msgid   "Switch to running BOSS for Nehrim."
+msgstr  "Cambiar a la ejecución de BOSS a Nehrim."
+
+#: src/gui/main_window.cpp:296
+msgid   "Switch to running BOSS for Skyrim."
+msgstr  "Cambiar a la ejecución de BOSS a Skyrim."
+
+#: src/gui/main_window.cpp:298
+msgid   "Switch to running BOSS for Fallout 3."
+msgstr  "Cambiar a correr de BOSS a Fallout 3."
+
+#: src/gui/main_window.cpp:300
+msgid   "Switch to running BOSS for Fallout: New Vegas."
+msgstr  "Cambiar a la ejecución de BOSS a Fallout: New Vegas."
+
+#: src/gui/main_window.cpp:301
+msgid   "&Active Game"
+msgstr  "&Activar Juego"
+
+#: src/gui/main_window.cpp:305
+msgid   "Open &Main Readme"
+msgstr  "Abre &Léame Principal"
+
+#: src/gui/main_window.cpp:306
+msgid   "Opens the main BOSS readme in your default web browser."
+msgstr  "Abre el archivo léame de BOSS en su principal navegador web por "
+        "defecto."
+
+#: src/gui/main_window.cpp:308
+msgid   "Open &Userlist Syntax Doc"
+msgstr  "Abre Doc s/Sintaxis &Reglas de usuario"
+
+#: src/gui/main_window.cpp:309
+msgid   "Opens the BOSS userlist syntax documentation in your default web "
+        "browser."
+msgstr  "Abre documentación de la sintaxis de las reglas de usuario BOSS en "
+        "su navegador web por defecto."
+
+#: src/gui/main_window.cpp:311
+msgid   "Open &Masterlist Syntax Doc"
+msgstr  "Abre &Masterlist Documento de Sintaxis"
+
+#: src/gui/main_window.cpp:312
+msgid   "Opens the BOSS masterlist syntax documentation in your default web "
+        "browser."
+msgstr  "Abre la documentación de la sintaxis del masterlist BOSS en su "
+        "navegador web por defecto."
+
+#: src/gui/main_window.cpp:314
+msgid   "Open &Version History"
+msgstr  "Abrir historial de versión"
+
+#: src/gui/main_window.cpp:315
+msgid   "Opens the BOSS version history in your default web browser."
+msgstr  "Abre el historial de versiones BOSS en su navegador web por defecto."
+
+#: src/gui/main_window.cpp:317
+msgid   "View &Copyright Licenses"
+msgstr  "Ver Licencias de &derechos de autor"
+
+#: src/gui/main_window.cpp:318
+msgid   "View the GNU General Public License v3.0 and GNU Free Documentation "
+        "License v1.3."
+msgstr  "Ver la versión 3.0 de Licencia Pública General GNU y la Licencia de "
+        "Documentación Libre GNU v1.3."
+
+#: src/gui/main_window.cpp:321
+msgid   "&About BOSS..."
+msgstr  "&Acerca de BOSS..."
+
+#: src/gui/main_window.cpp:322
+msgid   "Shows information about BOSS."
+msgstr  "Muestra información sobre BOSS."
+
+#: src/gui/main_window.cpp:323
+msgid   "&Help"
+msgstr  "&Ayuda"
+
+#: src/gui/main_window.cpp:337
+msgid   "Output Options"
+msgstr  "Opciones de salida"
+
+#: src/gui/main_window.cpp:342
+msgid   "Show BOSS Log On Completion"
+msgstr  "Mostrar BOSS Log al terminar"
+
+#: src/gui/main_window.cpp:343
+msgid   "Display File CRCs"
+msgstr  "Mostrar CRCs de archivos"
+
+#: src/gui/main_window.cpp:344
+msgid   "BOSS Log Format: "
+msgstr  "Formato de registro BOSS: "
+
+#: src/gui/main_window.cpp:352
+msgid   "Edit User Rules"
+msgstr  " Editar Reglas de Usuario"
+
+#: src/gui/main_window.cpp:353
+msgid   "Run BOSS"
+msgstr  "Ejecutar BOSS"
+
+#: src/gui/main_window.cpp:354
+msgid   "View BOSS Log"
+msgstr  "Ver Boss Log"
+
+#: src/gui/main_window.cpp:363
+msgid   "Run Options"
+msgstr  "Opciones de ejecución"
+
+#: src/gui/main_window.cpp:369
+msgid   "Sort Plugins"
+msgstr  "Ordenar Plugins"
+
+#: src/gui/main_window.cpp:372
+msgid   "Update Masterlist"
+msgstr  "Actualizar Masterlist"
+
+#: src/gui/main_window.cpp:373
+msgid   "Perform Trial Run"
+msgstr  "Realizar Ejecución de prueba"
+
+#: src/gui/main_window.cpp:378
+msgid   "Update Masterlist Only"
+msgstr  "Actualizar Masterlist Solo"
+
+#: src/gui/main_window.cpp:382
+msgid   "Undo Changes"
+msgstr  "Deshacer cambios"
+
+#: src/gui/main_window.cpp:383
+msgid   "Undo Level: "
+msgstr  "Deshacer Nivel: "
+
+#: src/gui/main_window.cpp:392
+msgid   "This decides both the format of BOSSlog generated when you click the "
+        "\"Run BOSS\" button and the BOSSlog format opened when you click the "
+        "\"View BOSSlog\" button."
+msgstr  "Este decide el formato de BOSSlog que se genera cuando se haga clic "
+        "en el botón \"Ejecutar BOSS\" y el formato de BOSSlog que se abre al "
+        "hacer clic en el botón \"Ver BOSSlog\"."
+
+#: src/gui/main_window.cpp:393
+msgid   "The format of BOSSlog this opens is decided by the setting of the "
+        "\"BOSSlog Format\" Output Option above."
+msgstr  "El formato de BOSSlog que se abre se decide por el valor de la "
+        "opción \"Formato de registro BOSS\" que está más arriba."
+
+#: src/gui/main_window.cpp:394
+msgid   "Runs BOSS, simulating its changes to your load order, but doesn't "
+        "actually reorder your mods."
+msgstr  "Ejecuta BOSS, simulando sus cambios en el orden de carga, pero en "
+        "realidad no aplica el nuevo orden a los mods."
+
+#: src/gui/main_window.cpp:446
+msgid   "Ready"
+msgstr  "Listo"
+
+#: src/gui/main_window.cpp:454
+msgid   "BOSS: Settings"
+msgstr  "BOSS: Configuracion"
+
+#: src/gui/main_window.cpp:470 src/gui/user_rule_editor.cpp:408
+#: src/gui/user_rule_editor.cpp:430
+msgid   "BOSS: Working..."
+msgstr  "BOSS: Trabajando..."
+
+#: src/gui/main_window.cpp:471 src/gui/main_window.cpp:530 src/boss_cli.cpp:413
+msgid   "BOSS working..."
+msgstr  "BOSS trabajando..."
+
+#: src/gui/main_window.cpp:496 src/gui/user_rule_editor.cpp:414
+#: src/boss_cli.cpp:377
+#, fuzzy
+#| msgid        "Updating to the latest masterlist from the Google Code "
+#|      "repository..."
+msgid           "Updating to the latest masterlist from the online "
+        "repository..."
+msgstr          "Actualizando a la última masterlist desde el repositorio de "
+        "Google Code ..."
+
+#: src/gui/main_window.cpp:500 src/boss_cli.cpp:381
+#, fuzzy, boost-format
+#| msgid        "Your masterlist has been updated to revision %1% (%2%)."
+msgid           "Masterlist updated; at revision: %1%."
+msgstr          "Su masterlist ha sido actualizado a la revisión %1% (%2%)."
+
+#: src/gui/main_window.cpp:504 src/gui/user_rule_editor.cpp:423
+#: src/boss_cli.cpp:385
+msgid   "Error: masterlist update failed."
+msgstr  "Error: falló actualización del masterlist."
+
+#: src/gui/main_window.cpp:505 src/gui/user_rule_editor.cpp:424
+#: src/boss_cli.cpp:386
+#, boost-format
+msgid   "Details: %1%"
+msgstr  "Detalles: %1%"
+
+#: src/gui/main_window.cpp:511 src/boss_cli.cpp:392
+#, fuzzy, boost-format
+#| msgid        "Your masterlist has been updated to revision %1% (%2%)."
+msgid           "Masterlist updating disabled; at revision: %1%."
+msgstr          "Su masterlist ha sido actualizado a la revisión %1% (%2%)."
+
+#: src/gui/main_window.cpp:550 src/gui/main_window.cpp:607
+#: src/gui/main_window.cpp:660 src/boss_cli.cpp:423 src/boss_cli.cpp:469
+#: src/boss_cli.cpp:511
+#, boost-format
+msgid   "Critical Error: %1%"
+msgstr  "Error crítico: %1%"
+
+#: src/gui/main_window.cpp:691 src/gui/main_window.cpp:714
+#, boost-format
+msgid   "Error: \"%1%\" cannot be found."
+msgstr  "Error: \"%1%\" no se puede encontrar."
+
+#: src/gui/main_window.cpp:726
+msgid   "Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New "
+        "Vegas."
+msgstr  ""
+
+#: src/gui/main_window.cpp:834 src/gui/user_rule_editor.cpp:401
+#: src/gui/user_rule_editor.cpp:775 src/gui/user_rule_editor.cpp:796
+msgid   "BOSS: User Rules Manager"
+msgstr  "BOSS: Administrador de Reglas de Usuario"
+
+#: src/gui/main_window.cpp:849 src/gui/main_window.cpp:864
+#: src/gui/user_rule_editor.cpp:282 src/gui/user_rule_editor.cpp:441
+#: src/gui/user_rule_editor.cpp:479
+#, boost-format
+msgid   "Error: %1%"
+msgstr  "Error: %1%"
+
+#: src/gui/element_ids.cpp:67
+#, boost-format
+msgid   "Downloading masterlist: %1% of %2% objects (%3% KB)"
+msgstr  ""
+
+#: src/gui/element_ids.cpp:69
+msgid   "Are you sure you want to cancel?"
+msgstr  "¿Está seguro que desea cancelar?"
+
+#: src/gui/element_ids.cpp:70
+msgid   "BOSS: Updater"
+msgstr  "BOSS: Actualizador"
+
+#: src/gui/user_rule_editor.cpp:122
+msgid   "Rule Syntax Error: Cannot sort a plugin relative to a group."
+msgstr  "Error de sintaxis de Regla: No se puede ordenar un plugin en "
+        "relación con un grupo."
+
+#: src/gui/user_rule_editor.cpp:129
+msgid   "Rule Syntax Error: Cannot insert into a plugin."
+msgstr  "Error de sintaxis de Regla: No se puede insertar en un plug-in."
+
+#: src/gui/user_rule_editor.cpp:138
+msgid   "Rule Syntax Error: Cannot sort a group relative to a plugin."
+msgstr  "Error de sintaxis de Regla: No se puede ordenar a un grupo en "
+        "relación con un plug-in."
+
+#: src/gui/user_rule_editor.cpp:145
+msgid   "Rule Syntax Error: Cannot insert groups."
+msgstr  "Error de sintaxis de Regla: No se puede insertar grupos."
+
+#: src/gui/user_rule_editor.cpp:238 src/gui/user_rule_editor.cpp:892
+#: src/gui/user_rule_editor.cpp:914
+msgid   "User Rules Manager"
+msgstr  "Administrador de Reglas de Usuario"
+
+#: src/gui/user_rule_editor.cpp:250
+#, boost-format
+msgid   "The rule sorting the unrecognised plugin \"%1%\" has been disabled "
+        "as the plugin is now recognised. If you wish to override its "
+        "position in the masterlist, re-enable the rule."
+msgstr  "La regla de clasificación del plugin no reconocido \"%1%\" ha sido "
+        "inhabilitado como el plug-in es ahora reconocido. Si quieres cambiar "
+        "su posición en el masterlist, re-activa la regla."
+
+#: src/gui/user_rule_editor.cpp:251
+msgid   "BOSS: Rule Disabled"
+msgstr  "BOSS: Regla Desabilitada"
+
+#: src/gui/user_rule_editor.cpp:264 src/output/boss_log.cpp:160
+#: src/output/boss_log.cpp:295
+msgid   "User Rules"
+msgstr  "Reglas del usuario"
+
+#: src/gui/user_rule_editor.cpp:400
+#, boost-format
+msgid   "The User Rules Manager requires the BOSS masterlist for %1% to have "
+        "been downloaded, but it cannot be detected. Do you wish to download "
+        "the latest masterlist now?"
+msgstr  "El Administrador de Reglas de Usuario requiere que el masterlist de "
+        "BOSS haya sido descargado para '%1%', pero no se puede detectar "
+        "¿Desea descargar la última versión del masterlist ahora?"
+
+#: src/gui/user_rule_editor.cpp:409 src/gui/user_rule_editor.cpp:431
+msgid   "Initialising User Rules Manager..."
+msgstr  "Iniciando Administrador de Reglas de Usuario..."
+
+#: src/gui/user_rule_editor.cpp:419
+#, boost-format
+msgid   "Masterlist revision: %1%."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "before"
+msgstr  "antes de"
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "after"
+msgstr  "después de"
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "top"
+msgstr  "Superior"
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "bottom"
+msgstr  "Inferior"
+
+#: src/gui/user_rule_editor.cpp:496
+msgid   "Rule Editor"
+msgstr  "Editor de Reglas"
+
+#: src/gui/user_rule_editor.cpp:499
+msgid   "For"
+msgstr  "Para"
+
+#: src/gui/user_rule_editor.cpp:503
+msgid   "Sort Item"
+msgstr  "Ordenar Elemento"
+
+#: src/gui/user_rule_editor.cpp:506
+msgid   "Sort"
+msgstr  "Ordenar"
+
+#: src/gui/user_rule_editor.cpp:512
+msgid   "Insert at the"
+msgstr  "Insertar en el"
+
+#: src/gui/user_rule_editor.cpp:514
+msgid   "of"
+msgstr  "de"
+
+#: src/gui/user_rule_editor.cpp:518 src/output/output.cpp:565
+msgid   "Add the following messages:"
+msgstr  "Añadir los siguientes mensajes:"
+
+#: src/gui/user_rule_editor.cpp:522
+msgid   "Replace existing messages"
+msgstr  "Reemplazar los mensajes existentes"
+
+#: src/gui/user_rule_editor.cpp:527
+msgid   "Default Plugin Messages"
+msgstr  "Mensajes por defecto para Plugin"
+
+#: src/gui/user_rule_editor.cpp:547
+msgid   "Installed Plugins"
+msgstr  "Plugins Instalados"
+
+#: src/gui/user_rule_editor.cpp:548
+msgid   "Masterlist"
+msgstr  "Masterlist"
+
+#: src/gui/user_rule_editor.cpp:555
+msgid   "Create New Rule"
+msgstr  "Crear Nueva Regla"
+
+#: src/gui/user_rule_editor.cpp:556
+msgid   "Save Edited Rule"
+msgstr  "Guardar Regla Editada"
+
+#: src/gui/user_rule_editor.cpp:557
+msgid   "Delete Rule"
+msgstr  "Borrar Regla"
+
+#: src/gui/user_rule_editor.cpp:559
+msgid   "Move Rule Up"
+msgstr  "Mover Regla hacia arriba"
+
+#: src/gui/user_rule_editor.cpp:560
+msgid   "Move Rule Down"
+msgstr  "Mover Regla hacia abajo"
+
+#: src/gui/user_rule_editor.cpp:562
+msgid   "Save and Exit"
+msgstr  "Guardar y salir"
+
+#: src/gui/user_rule_editor.cpp:582
+msgid   "Messages must be entered in the correct format. See the User Rules "
+        "Readme for more information."
+msgstr  "Los mensajes se deben introducir en el formato correcto. Consulte el "
+        "'Léame' de las Reglas del Usuario (en Docs\\BOSS Userlist Syntax."
+        "html) para obtener más información."
+
+#: src/gui/user_rule_editor.cpp:758 src/gui/user_rule_editor.cpp:785
+#, boost-format
+msgid   "Rule Syntax Error: %1% Please correct the mistake before continuing."
+msgstr  "Error de sintáxis de Regla: %1%. Por favor, corrija el error antes "
+        "de continuar."
+
+#: src/gui/user_rule_editor.cpp:774
+msgid   "Are you sure you want to save your changes to the selected rule?"
+msgstr  "¿Está seguro que desea guardar los cambios en la regla seleccionada?"
+
+#: src/gui/user_rule_editor.cpp:795
+msgid   "Are you sure you want to delete the selected rule?"
+msgstr  "¿Está seguro que desea eliminar la regla seleccionada?"
+
+#: src/gui/user_rule_editor.cpp:934
+msgid   "No mod is specified to sort relative to."
+msgstr  "No has especificado un 'mod' para poder ordenar en relación a él."
+
+#: src/gui/user_rule_editor.cpp:937
+msgid   "Cannot sort a plugin relative to a group."
+msgstr  "No se puede ordenar un plugin en relación con un grupo."
+
+#: src/gui/user_rule_editor.cpp:943
+msgid   "No group is specified to insert into."
+msgstr  "No has especificado ningún grupo en el que insertar."
+
+#: src/gui/user_rule_editor.cpp:946
+msgid   "Cannot insert into a plugin."
+msgstr  "No se puede insertar en un plug-in."
+
+#: src/gui/user_rule_editor.cpp:953
+msgid   "Cannot add messages when none are given."
+msgstr  "No se puede agregar mensajes cuando no se da ninguno."
+
+#: src/gui/user_rule_editor.cpp:958
+msgid   "No rule mod is specified."
+msgstr  "No se especifica la regla mod."
+
+#: src/gui/user_rule_editor.cpp:964
+msgid   "No group is specified to sort relative to."
+msgstr  "Ningún grupo se ha especificado para ordenar en relación con."
+
+#: src/gui/user_rule_editor.cpp:967
+msgid   "Cannot sort a group relative to a plugin."
+msgstr  "No se puede ordenar a un grupo en relación con un plug-in."
+
+#: src/gui/user_rule_editor.cpp:971
+msgid   "Cannot insert groups."
+msgstr  "No se puede insertar grupos."
+
+#: src/gui/user_rule_editor.cpp:976
+msgid   "Cannot add messages to groups."
+msgstr  "No se puede añadir mensajes a los grupos."
+
+#: src/gui/user_rule_editor.cpp:982
+msgid   "The rule mod is not being sorted nor having its attached messages "
+        "altered."
+msgstr  "La regla 'mod' no será ordenada ni tendrá sus mensajes adjuntos "
+        "alterados."
+
+#: src/output/boss_log.cpp:157 src/output/boss_log.cpp:188
+msgid   "Summary"
+msgstr  "Resumen"
+
+#: src/output/boss_log.cpp:163
+#, boost-format
+msgid   "%1% Plugins"
+msgstr  "%1% Plugins"
+
+#: src/output/boss_log.cpp:167 src/output/boss_log.cpp:336
+msgid   "Recognised Plugins"
+msgstr  "Plugins Reconocidos"
+
+#: src/output/boss_log.cpp:169
+msgid   "Restored Load Order"
+msgstr  "Antiguo la orden de archivos"
+
+#: src/output/boss_log.cpp:173 src/output/boss_log.cpp:359
+msgid   "Unrecognised Plugins"
+msgstr  "Plugins Desconocidos"
+
+#: src/output/boss_log.cpp:205
+msgid   "Plugin Type"
+msgstr  "Tipo de Plugin"
+
+#: src/output/boss_log.cpp:206 src/output/boss_log.cpp:232
+msgid   "Count"
+msgstr  "Cantidad"
+
+#: src/output/boss_log.cpp:209
+msgid   "Recognised (or sorted by user rules)"
+msgstr  "Reconocido (u ordenados por las reglas del usuarios)"
+
+#: src/output/boss_log.cpp:213 src/output/boss_log.cpp:217
+msgid   "Unrecognised"
+msgstr  "Desconocida"
+
+#: src/output/boss_log.cpp:221
+msgid   "Inactive"
+msgstr  "Desactivado"
+
+#: src/output/boss_log.cpp:224 src/output/boss_log.cpp:253
+msgid   "All"
+msgstr  "Todo"
+
+#: src/output/boss_log.cpp:231
+msgid   "Plugin Message Type"
+msgstr  "Tipo de mensaje de Plugin"
+
+#: src/output/boss_log.cpp:236 src/output/boss_log.cpp:240
+#: src/output/output.cpp:497 src/output/output.cpp:499
+msgid   "Warning"
+msgstr  "Avisos"
+
+#: src/output/boss_log.cpp:245 src/output/boss_log.cpp:249
+#: src/output/output.cpp:502 src/output/output.cpp:504
+msgid   "Error"
+msgstr  "Errores"
+
+#: src/output/boss_log.cpp:263
+msgid   "No change in recognised plugin list since last run."
+msgstr  "Ningún cambio reconocido en la lista desde la última ejecución."
+
+#: src/output/boss_log.cpp:299
+msgid   "Rule"
+msgstr  "Regla"
+
+#: src/output/boss_log.cpp:300
+msgid   "Applied"
+msgstr  "Solicitado"
+
+#: src/output/boss_log.cpp:301
+msgid   "Details (if applicable)"
+msgstr  "Detalles (si procede)"
+
+#: src/output/boss_log.cpp:318
+msgid   " Plugins"
+msgstr  " Plugins"
+
+#: src/output/boss_log.cpp:338
+msgid   "Restored Load Order (Using modlist.txt)"
+msgstr  "Orden restaurado (Con modlist.txt)"
+
+#: src/output/boss_log.cpp:340
+msgid   "Restored Load Order (Using modlist.old)"
+msgstr  "Orden restaurado (Con modlist.old)"
+
+#: src/output/boss_log.cpp:343
+msgid   "These plugins are recognised by BOSS and have been sorted according "
+        "to its masterlist. Please read any attached messages and act on any "
+        "that require action."
+msgstr  "Estos plugins son ordanados por BOSS y han sido ordenados de acuerdo "
+        "a su masterlist.  Por favor lea los mensajes adjuntos y se "
+        "pronunciará quales que requieren atención."
+
+#: src/output/boss_log.cpp:361
+msgid   "The following plugins were not found in the masterlist, and must be "
+        "positioned manually, using your favourite mod manager or by using "
+        "BOSS's user rules functionality."
+msgstr  "Los siguientes plugins no fueron encontrados en el masterlist, y "
+        "debe ser posicionados de forma manual, utilizando el gestor favorito "
+        "o mediante creando sus propias reglas del usuario usando la "
+        "funcionalidad de BOSS."
+
+#: src/output/boss_log.cpp:362
+msgid   " You can submit unrecognised plugins for addition to the masterlist "
+        "directly from this log by clicking on a plugin and supplying a link "
+        "and/or description of its contents in the panel that is displayed."
+msgstr  "Puede enviar los plugins desconocidos para la adición a la "
+        "masterlist directamente de este registro haciendo clic en un plugin "
+        "y el suministro de un enlace y/odescripción de su contenido en el "
+        "panel que se muestra."
+
+#: src/output/boss_log.cpp:401
+msgid   "Log Feature Support"
+msgstr  "Apoyo a la función de registro de"
+
+#: src/output/boss_log.cpp:402
+msgid   "Filters"
+msgstr  "Filtros"
+
+#: src/output/boss_log.cpp:405
+msgid   "The BOSS Log requires Javascript to be enabled in order to function."
+msgstr  "El registro de BOSS requiere que Javascript esté habilitado para "
+        "funcionar."
+
+#: src/output/boss_log.cpp:417
+msgid   "Colours must be specified using lowercase hex codes."
+msgstr  "Colores se debe especificar el uso de códigos hexadecimales en "
+        "minúsculas."
+
+#: src/output/boss_log.cpp:421
+msgid   "Support for the BOSS Log's more advanced features varies. Here's "
+        "what your browser supports:"
+msgstr  "Apoyo a la sesión de BOSS características más avanzadas varía. Esto "
+        "es lo que tu Explorador admite:"
+
+#: src/output/boss_log.cpp:422
+msgid   "Functionality"
+msgstr  "Funcionalidad"
+
+#: src/output/boss_log.cpp:427
+msgid   "In-Log Plugin Submission"
+msgstr  "En-Log Plugin de Presentación"
+
+#: src/output/boss_log.cpp:428
+msgid   "Allows unrecognised plugins to be anonymously submitted to the BOSS "
+        "team directly from the BOSS Log."
+msgstr  "Permite presentar a los plugins desconocidos de forma anónima al "
+        "equipo de BOSS directamente desde el registro de BOSS."
+
+#: src/output/boss_log.cpp:431
+msgid   "Settings Memory"
+msgstr  "Opciones de la memoria"
+
+#: src/output/boss_log.cpp:432
+#, fuzzy
+#| msgid        "Allows the BOSS Log to automatically restore the display "
+#|      "settings and filter configuration last used, and to hide this panel, "
+#|      "whenever the BOSS Log is opened."
+msgid           "Allows the BOSS Log to automatically restore the filter "
+        "configuration last used whenever the BOSS Log is opened."
+msgstr          "Permite el registro de BOSS para restaurar automáticamente "
+        "la configuración de pantalla y filtro la última configuración "
+        "utilizada, y para ocultar este panel, cada vez que el registro de "
+        "BOSS es generado."
+
+#: src/output/boss_log.cpp:435
+msgid   "Input Placeholders"
+msgstr  "Marcadores de posición dispositivos"
+
+#: src/output/boss_log.cpp:438
+msgid   "Form Validation"
+msgstr  "Formulario de Validación"
+
+#: src/output/boss_log.cpp:443
+msgid   "Hide Version Numbers"
+msgstr  "Ocultar los números de versión"
+
+#: src/output/boss_log.cpp:444
+msgid   "Hide 'Active' Label"
+msgstr  "Ocultar Label 'Activado'"
+
+#: src/output/boss_log.cpp:445
+msgid   "Hide Checksums"
+msgstr  "Ocultar las sumas de comprobación"
+
+#: src/output/boss_log.cpp:446
+msgid   "Hide Notes"
+msgstr  "Ocultar Notas"
+
+#: src/output/boss_log.cpp:447
+msgid   "Hide Bash Tag Suggestions"
+msgstr  "Ocultar Sugerencias Bash Tag(s)"
+
+#: src/output/boss_log.cpp:448
+msgid   "Hide Requirements"
+msgstr  "Ocultar Requisitos"
+
+#: src/output/boss_log.cpp:449
+msgid   "Hide Incompatibilities"
+msgstr  "Ocultar Incompatibilidades"
+
+#: src/output/boss_log.cpp:450
+msgid   "Hide 'Do Not Clean' Messages"
+msgstr  "Ocultar mensajes 'No Se Limpia'"
+
+#: src/output/boss_log.cpp:451
+msgid   "Hide All Plugin Messages"
+msgstr  "Ocultar todos los mensajes de los Plugins"
+
+#: src/output/boss_log.cpp:452
+msgid   "Hide Inactive Plugins"
+msgstr  "Ocultar Plugins Inactivados"
+
+#: src/output/boss_log.cpp:453
+msgid   "Hide Messageless Plugins"
+msgstr  "Ocultar Plugins sin mensajes"
+
+#: src/output/boss_log.cpp:455
+#, boost-format
+msgid   "%1% of %2% recognised plugins hidden."
+msgstr  "%1% de %2% los reconocidos plugins ocultos."
+
+#: src/output/boss_log.cpp:456
+#, boost-format
+msgid   "%1% of %2% messages hidden."
+msgstr  "%1% de %2% los mensajes ocultos."
+
+#: src/output/boss_log.cpp:462
+msgid   "Submit Plugin"
+msgstr  "Enviar Plugin"
+
+#: src/output/boss_log.cpp:463
+msgid   "Plugin"
+msgstr  "Plugin"
+
+#: src/output/boss_log.cpp:465
+msgid   "Download Location"
+msgstr  "Ubicación de la descarga"
+
+#: src/output/boss_log.cpp:466
+msgid   "Additional Notes"
+msgstr  "Notas Adicionales"
+
+#: src/output/boss_log.cpp:466
+msgid   "Any additional information, such as recommended Bash Tags, load "
+        "order suggestions, ITM/UDR counts and dirty CRCs, can be supplied "
+        "here. If no download link is available, this information is crucial."
+msgstr  "Cualquier información adicional, como Bash Etiquetas recomendadas, "
+        "sugerencias de carga de pedidos, recuentos de ITM/UDR y CRCs "
+        "erróneo, puede ser suministrada aquí. Si no hay enlace de descarga "
+        "que está disponible, esta información es crucial."
+
+#: src/output/boss_log.cpp:468
+msgid   "Submit"
+msgstr  "Enviar"
+
+#: src/output/boss_log.cpp:469
+msgid   "Close"
+msgstr  "Cerrar"
+
+#: src/output/boss_log.cpp:477
+msgid   "Checking for existing submission..."
+msgstr  "Verificando si presentación existente ..."
+
+#: src/output/boss_log.cpp:478
+msgid   "Matching submission already exists."
+msgstr  ""
+
+#: src/output/boss_log.cpp:479
+msgid   "Plugin already submitted. Submission updated with new comment."
+msgstr  ""
+
+#: src/output/boss_log.cpp:480
+msgid   "Plugin submitted!"
+msgstr  "Plugin Actualicado!"
+
+#: src/output/boss_log.cpp:481
+msgid   "Plugin submission failed! Authorisation failure. Please report this "
+        "to the BOSS team."
+msgstr  ""
+
+#: src/output/boss_log.cpp:482
+#, boost-format
+msgid   "Plugin submission failed! GitHub API rate limit exceeded. Please try "
+        "again after %1%."
+msgstr  ""
+
+#: src/output/boss_log.cpp:483
+#, fuzzy
+#| msgid        "Plugin submission updated!"
+msgid           "Plugin submission failed!"
+msgstr          "Actualizacacion de Plugin ha sido terminada!"
+
+#: src/output/boss_log.cpp:484
+#, fuzzy
+#| msgid        "Web storage quota for this document has been exceeded. "
+#|      "Please empty your browser\\'s cache. Note that this will delete all "
+#|      "locally stored data."
+msgid           "Web storage quota for this document has been exceeded.Please "
+        "empty your browser\\'s cache. Note that this will delete all locally "
+        "stored data."
+msgstr          "La Cuota de web de almacenamiento de este documento se ha "
+        "excedido. Por favor, vaciar el caché de su navegador. Tenga en "
+        "cuenta que esto borrará todos los de datos almacenados localmente."
+
+#: src/output/boss_log.cpp:485
+msgid   "Please supply at least a link or some notes."
+msgstr  "Por favor, proveer al menos un enlace al plugin o algunas notas"
+
+#: src/output/boss_log.cpp:486
+msgid   "Do not clean."
+msgstr  ""
+
+#: src/output/boss_log.cpp:511
+msgid   "Please read any attached messages and act on any that require action."
+msgstr  "Por favor, lea los mensajes adjuntos y toma cualquier acción que les "
+        "requieren."
+
+#: src/output/output.cpp:477 src/output/output.cpp:479
+#: src/output/output.cpp:512 src/output/output.cpp:514
+msgid   "Note"
+msgstr  "Nota"
+
+#: src/output/output.cpp:482 src/output/output.cpp:484
+msgid   "Bash Tag suggestion(s)"
+msgstr  "Bash sugerencia de Tag(s)"
+
+#: src/output/output.cpp:487 src/output/output.cpp:489
+msgid   "Requires"
+msgstr  "Requiere"
+
+#: src/output/output.cpp:492 src/output/output.cpp:494
+msgid   "Incompatible with"
+msgstr  "Incompatible con"
+
+#: src/output/output.cpp:507 src/output/output.cpp:509
+msgid   "Contains dirty edits"
+msgstr  "Contiene ediciones sucia"
+
+#: src/output/output.cpp:553
+#, boost-format
+msgid   "Sort %1% before %2%"
+msgstr  "Ordanar %1% antes de %2%"
+
+#: src/output/output.cpp:555
+#, boost-format
+msgid   "Sort %1% after %2%"
+msgstr  "Ordanar %1% después de %2%"
+
+#: src/output/output.cpp:557
+#, boost-format
+msgid   "Insert %1% at the top of %2%"
+msgstr  "Insertar %1% en la parte superior de %2%"
+
+#: src/output/output.cpp:559
+#, boost-format
+msgid   "Insert %1% at the bottom of %2%"
+msgstr  "Insertar %1% en la parte inferior de %2%"
+
+#: src/output/output.cpp:563
+#, boost-format
+msgid   "Add the following messages to %1%:"
+msgstr  "Añadir los siguientes mensajes de %1%:"
+
+#: src/output/output.cpp:572
+#, boost-format
+msgid   "Replace the messages attached to %1% with:"
+msgstr  "Vuelva a colocar los mensajes que acompañan a %1% con:"
+
+#: src/output/output.cpp:574
+msgid   "Replace the attached messages with:"
+msgstr  "Vuelva a colocar los mensajes adjuntos con:"
+
+#: src/boss_cli.cpp:100
+msgid   "Description:"
+msgstr  "Descripción:"
+
+#: src/boss_cli.cpp:101
+msgid   "  BOSS is a utility that sorts the mod load order of TESIV: "
+        "Oblivion, Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim "
+        "according to a frequently updated  masterlist to minimise "
+        "incompatibilities between mods."
+msgstr  "  BOSS es una utilidad que esta de carga de ordenar modificaciones "
+        "de TESIV: Oblivion, Nehrim, Fallout 3, Fallout: New Vegas y TESV: "
+        "Skyrim de acuerdo con una lista actualizada con frecuencia para "
+        "minimizar las incompatibilidades entre modificaciones al Skyrim."
+
+#: src/boss_cli.cpp:105
+msgid   "Examples:"
+msgstr  "Ejemplos:"
+
+#: src/boss_cli.cpp:107
+msgid   "    updates the masterlist, sorts your mods, and shows the log"
+msgstr  "    actualiza el masterlist, ordena a sus mods, y muestra el registro"
+
+#: src/boss_cli.cpp:109
+msgid   "    reverts your load order 1 level and skips showing the log"
+msgstr  "    vuelve a su orden de carga de un nivel y salte que mostrar el "
+        "registro"
+
+#: src/boss_cli.cpp:111
+msgid   "    reverts your load order 2 levels and shows the log"
+msgstr  "    vuelve a su orden de carga de un nivel y mostrar el registro"
+
+#: src/boss_cli.cpp:123
+#, c-format, boost-format
+msgid   "Downloading masterlist: %i of %i objects (%i KB)"
+msgstr  ""
+
+#: src/boss_cli.cpp:199
+msgid   "produces this help message"
+msgstr  "produce este mensaje de ayuda"
+
+#: src/boss_cli.cpp:200
+msgid   "prints the version banner"
+msgstr  "imprime la bandera de la versión"
+
+#: src/boss_cli.cpp:202
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web before sorting"
+msgstr  "automáticamente actualizar la copia local de la masterlist a la "
+        "última versióndisponible en la web antes de ordenar los plugins."
+
+#: src/boss_cli.cpp:205
+msgid   "inhibit the automatic masterlist updater"
+msgstr  "Restringir la actualización automática del master list"
+
+#: src/boss_cli.cpp:207
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web but don't sort right now"
+msgstr  "automáticamente actualizar la copia local de la masterlist a la "
+        "última versióndisponible en la web, sin ordenando los plugins."
+
+#: src/boss_cli.cpp:212
+msgid   "don't launch a browser to show the HTML log at program completion"
+msgstr  "no lanzar un navegador para mostrar el registro de HTML despues que "
+        "termine el programa."
+
+#: src/boss_cli.cpp:215
+msgid   "revert to a previous load order.  this parameter optionally accepts "
+        "values of 1 or 2, indicating how many undo steps to apply.  if no "
+        "option value is specified, it defaults to 1"
+msgstr  "volver a una orden de carga previa. Este parámetro opcional acepta "
+        "valores de 1 o 2, indica la cantidad de pasos atrás que se aplican. "
+        "Si no hay valor, el opción defecto es 1."
+
+#: src/boss_cli.cpp:221
+msgid   "specify verbosity level (0-3) of the debugging output.  0 is the "
+        "default, showing only WARN and ERROR messges. 1 (INFO and above) is "
+        "implied if this option is specified without an argument.  higher "
+        "values increase the verbosity further"
+msgstr  "Especificar el nivel de detalle (0-3) de depuración de la salida. 0 "
+        "es el valor predeterminado, mostrando sólo WARN y mesnajes de ERROR. "
+        "1 (INFO y por encima) es implícito si especifica este opción sin "
+        "ningún otro argumento. Los valores más altos aumentan el nivel de "
+        "detalle mayor."
+
+#: src/boss_cli.cpp:227
+msgid   "override game autodetection.  valid values are: 'Oblivion', "
+        "'Nehrim', 'Fallout3', 'FalloutNV', and 'Skyrim'"
+msgstr  "Autodetección de juego de anulación de los valores válidos son: "
+        "'Oblivion', 'Nehrim', 'Fallout3', 'FalloutNV' y 'Skyrim'"
+
+#: src/boss_cli.cpp:231
+msgid   "show mod file CRCs, so that a file's CRC can be added to the "
+        "masterlist in a conditional"
+msgstr  "mostrar el CRC de ficheros MOD, que el CRC de un archivo puede ser "
+        "añadido a la masterlist en un condicional"
+
+#: src/boss_cli.cpp:234
+msgid   "select output format. valid values are: 'html', 'text'"
+msgstr  "Seleccione el formato de salida,  los valores válidos son: 'html', "
+        "'text'"
+
+#: src/boss_cli.cpp:237
+msgid   "run BOSS without actually making any changes to load order"
+msgstr  "ejecutar BOSS sin tener que realizar ningún cambio del orden de "
+        "ficheros MOD"
+
+#: src/boss_cli.cpp:344
+msgid   "Invalid selection."
+msgstr  "Selección Inválida."
+
+#~ msgid        "\tVersion "
+#~ msgstr       "\tVersion "
+
+#~ msgid        " Some examples of colour codes that can be used may be found "
+#~      "<a href='http://en.wikipedia.org/wiki/Web_colors#Color_table'>here</"
+#~      "a>."
+#~ msgstr       " Algunos ejemplos de códigos de colores que se pueden "
+#~      "utilizar se puede encontrar <a href='http://en.wikipedia.org/wiki/"
+#~      "Web_colors#Color_table'>aquí</a>."
+
+#~ msgid        "&Check For Updates..."
+#~ msgstr       "&Buscar actualizaciones ..."
+
+#~ msgid        "&Fallout 3"
+#~ msgstr       "&Fallout 3"
+
+#~ msgid        "&Morrowind"
+#~ msgstr       "&Morrowind"
+
+#~ msgid        "&Nehrim"
+#~ msgstr       "&Nehrim"
+
+#~ msgid        "&Oblivion"
+#~ msgstr       "&Oblivion"
+
+#~ msgid        "&Open API Readme"
+#~ msgstr       "&Abre API Léame"
+
+#~ msgid        "&Skyrim"
+#~ msgstr       "&Skyrim"
+
+#~ msgid        "A \"one-click\" program for users that quickly optimises and "
+#~      "avoids detrimental conflicts in their\n"
+#~      "TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 "
+#~      "and Fallout: New Vegas mod load orders."
+#~ msgstr       "Un programa \"de un solo clic\" para usuarios, que "
+#~      "rápidamente optimiza, ordena, y evita los conflictos perjudiciales "
+#~      "en sus listas de mods para sus:\n"
+#~      "TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 "
+#~      "y Fallout: New Vegas."
+
+#~ msgid        "A cURL option could not be set! cURL response: \"%1%\"."
+#~ msgstr       "¡No se pudo asignar una opcion de cURL! Respuesta: \"%1%\"."
+
+#~ msgid        "Active Labels"
+#~ msgstr       "Las etiquetas activas"
+
+#~ msgid        "Active Menu Button"
+#~ msgstr       "Botón de Menú de activo"
+
+#~ msgid        "Adds source code references to command line output."
+#~ msgstr       "Añade las referencias al código fuente de BOSS a la salida "
+#~      "de línea de comandos."
+
+#~ msgid        "Allows the backup and restore of custom display settings."
+#~ msgstr       "Permite guardar y restaurar la configuración de pantalla "
+#~      "personalizados."
+
+#~ msgid        "Appearance"
+#~ msgstr       "Apariencia"
+
+#~ msgid        "Apply"
+#~ msgstr       "Aplicar"
+
+#~ msgid        "Automatic updater cancelled."
+#~ msgstr       "Actualizador automático cancelado."
+
+#~ msgid        "BOSS Update check failed. No Internet connection detected."
+#~ msgstr       "Error en la actualización de BOSS. Conexión al Internet no "
+#~      "era detectado."
+
+#~ msgid        "BOSS will now launch the downloaded installer and exit. "
+#~      "Complete the installer to complete the update."
+#~ msgstr       "BOSS ahora se iniciará el instalador de descargo y salir. "
+#~      "Completa el Instalador para completar la actualización."
+
+#~ msgid        "BOSS: Automatic Updater"
+#~ msgstr       "BOSS: Actualizador automático "
+
+#~ msgid        "BOSS: Check For Updates"
+#~ msgstr       "BOSS: Buscar actualizaciones"
+
+#~ msgid        "Backup files are given nonsensical names by your browser, "
+#~      "but you can rename them to whatever you want. Drag and drop a backup "
+#~      "file into this panel to restore the settings it contains."
+#~ msgstr       "Los archivos de copia de seguridad se les dan nombres sin "
+#~      "sentido en su navegador, pero usted puede cambiar el nombre a lo que "
+#~      "quieras. Arrastre y suelte un archivo de copia de seguridad en este "
+#~      "panel para restaurar los valores que contiene."
+
+#~ msgid        "Backup/Restore of Display Settings"
+#~ msgstr       "Guardar/Restaurar la configuración de la pantalla"
+
+#~ msgid        "Bash Tag Suggestion Prefixes"
+#~ msgstr       "Sugerencia de etiqueta Prefijos de Bash"
+
+#~ msgid        "CRC Labels"
+#~ msgstr       "Las etiquetas de CRC"
+
+#~ msgid        "CSS Settings Panel File Drag Highlight"
+#~ msgstr       "CSS, Panel de Configuración de archivos Arrastrar Resaltar"
+
+#~ msgid        "Cancelled by user."
+#~ msgstr       "Cancelado por el usuario."
+
+#~ msgid        "Cannot find online masterlist revision date!"
+#~ msgstr       "¡No se pudo encontrar la fecha en el archivo de reglas "
+#~      "'master' obtenido del repositorio!"
+
+#~ msgid        "Cannot find online masterlist revision number!"
+#~ msgstr       "¡No se pudo encontrar el número de revisión en el archivo de "
+#~      "reglas 'master' obtenido del repositorio!"
+
+#~ msgid        "Cannot read list of files to be updated!"
+#~ msgstr       "¡No se pudo leer la lista de archivos a actualizar!"
+
+#~ msgid        "Check for BOSS updates on startup"
+#~ msgstr       "Buscar actualizaciones en el inicio de BOSS"
+
+#~ msgid        "Checking for BOSS updates..."
+#~ msgstr       "Verificando si hay actualizaciones a BOSS ..."
+
+#~ msgid        "Checks for updates to BOSS."
+#~ msgstr       "Comprueba si hay actualizaciones de BOSS."
+
+#~ msgid        "Colour"
+#~ msgstr       "Color"
+
+#~ msgid        "Debugging"
+#~ msgstr       "Depuración"
+
+#~ msgid        "Dirty Messages"
+#~ msgstr       "Mensajes Erróneos"
+
+#~ msgid        "Display Settings"
+#~ msgstr       "Configuración de pantalla"
+
+#~ msgid        "Do not display this panel again for this browser. If this "
+#~      "checkbox is left unchecked, this panel will be displayed every time "
+#~      "you open the BOSS Log."
+#~ msgstr       "No muestra este panel de nuevo para este navegador. Si esta "
+#~      "casilla la izquierdase queda deseleccionada, este panel se mostrará "
+#~      "cada vez que abra el registro de BOSS"
+
+#~ msgid        "Do you want to download and install the update? (y/n)"
+#~ msgstr       "¿Quiere descargar e instalar la actualización? (Si/no)"
+
+#~ msgid        "Downloaded file \"%1%\" failed verification test!"
+#~ msgstr       "¡El archivo \"%1%\" recibido no pasó la prueba de "
+#~      "verificación!"
+
+#~ msgid        "Downloading: %1%"
+#~ msgstr       "Descargaando: %1%"
+
+#~ msgid        "Downloading: %s; %3.0f%% of %3.0f KB"
+#~ msgstr       "Descargando: %s; %3.0f%% of %3.0f KB"
+
+#~ msgid        "Element"
+#~ msgstr       "Elemento"
+
+#~ msgid        "Error: Data transfer failed."
+#~ msgstr       "Error: La transferencia de datos ha fallado."
+
+#~ msgid        "Error: Existing submission check failed!"
+#~ msgstr       "Error: Era falla Verificando si la presentación existente!"
+
+#~ msgid        "Error: No internet connection detected. Masterlist could not "
+#~      "be downloaded."
+#~ msgstr       "Error: Sin conexión a Internet detectada. No se pudo "
+#~      "descargar Masterlist."
+
+#~ msgid        "Error: Plugin could not be submitted."
+#~ msgstr       "Error: Plugin no ha sido Actualicado!"
+
+#~ msgid        "Error: Plugin submission could not be updated."
+#~ msgstr       "Error: Actualizacacion de Plugin no ha sido terminada!"
+
+#~ msgid        "Errors"
+#~ msgstr       "Errores"
+
+#~ msgid        "Exception occurred:"
+#~ msgstr       "Excepción se ocurrio:"
+
+#~ msgid        "Failed to get release notes. Details: %1%"
+#~ msgstr       "Error al obtener notas de la versión. Detalles: %1%"
+
+#~ msgid        "Failed to set proxy authentication type! cURL response: \"%1%"
+#~      "\"."
+#~ msgstr       "¡No se puede configurar el tipo de autenticación con el "
+#~      "proxy! Respuesta: \"%1%\"."
+
+#~ msgid        "Failed to set proxy type! cURL response: \"%1%\"."
+#~ msgstr       "¡No se pudo configurar el tipo de proxy! Respuesta: \"%1%\"."
+
+#~ msgid        "Filters Background"
+#~ msgstr       "Filtros de Fondo"
+
+#~ msgid        "General"
+#~ msgstr       "General"
+
+#~ msgid        "General Text"
+#~ msgstr       "Texto General"
+
+#~ msgid        "Hide Clean Plugins"
+#~ msgstr       "Ocultar Plugins Limpios"
+
+#~ msgid        "Include Source Code References"
+#~ msgstr       "incluir referencias de código fuente"
+
+#~ msgid        "Initialising download..."
+#~ msgstr       "Iniciando descarga ..."
+
+#~ msgid        "Internet"
+#~ msgstr       "Internet"
+
+#~ msgid        "It will then launch the installer before exiting. Complete "
+#~      "the installer to complete the update."
+#~ msgstr       "A continuación, se iniciará el instalador antes de salir.  "
+#~      "Completar el programa de instalación para completar la actualización."
+
+#~ msgid        "Links"
+#~ msgstr       "Enlaces"
+
+#~ msgid        "Log Debug Output"
+#~ msgstr       "Registro de la salida de depuración"
+
+#~ msgid        "Masterlist already up-to-date."
+#~ msgstr       "Masterlist ya hasta al día."
+
+#~ msgid        "Masterlist updated successfully."
+#~ msgstr       "Masterlist actualizado con éxito."
+
+#~ msgid        "Memory allocation failed."
+#~ msgstr       "La Asignación de memoria falló."
+
+#~ msgid        "Menu Background"
+#~ msgstr       "Menú de fondo"
+
+#~ msgid        "Menu Button Hover"
+#~ msgstr       "Botón de Menu activable"
+
+#~ msgid        "New installer successfully downloaded!"
+#~ msgstr       "¡Nuevo instalador descargado correctamente!"
+
+#~ msgid        "New installer successfully downloaded! When you click 'OK', "
+#~      "BOSS will launch the downloaded installer and exit. Complete the "
+#~      "installer to complete the update."
+#~ msgstr       "¡El nuevo instalador se descargó correctamente! Al hacer "
+#~      "clic en 'Aceptar', BOSS iniciará el archivo instalador obtenido y se "
+#~      "cerrará. Para completar la actualizacion se debe ejecutar por "
+#~      "completo el programa de instalación."
+
+#~ msgid        "No Internet connection detected."
+#~ msgstr       "No se ha detectado la conexión de Internet."
+
+#~ msgid        "No game master .esm file found!"
+#~ msgstr       "¡No se detecta ningún archivo master (ESM)!"
+
+#~ msgid        "No internet connection detected. Masterlist auto-updater "
+#~      "could not check for updates."
+#~ msgstr       "Sin conexión a Internet detectada. Actualizador automático "
+#~      "de Masterlist no pudo buscar actualizaciones."
+
+#~ msgid        "No previous submission found, creating new submission..."
+#~ msgstr       "Actualizacacion anterior encontrado, creando nueva "
+#~      "presentación..."
+
+#~ msgid        "No tag map has yet been initialised."
+#~ msgstr       "Todovia no se ha inicializado la mapa de etiqueta."
+
+#~ msgid        "No update has been downloaded or installed."
+#~ msgstr       "No actualización se ha descargado o instalado."
+
+#~ msgid        "Opacity"
+#~ msgstr       "Opacidad"
+
+#~ msgid        "Opens the BOSS API readme in your default web browser."
+#~ msgstr       "Abre el 'BOSS API readme' en su navegador web por defecto."
+
+#~ msgid        "Previous submission found, updating with supplied details..."
+#~ msgstr       "Presentación anterior encontrado, actualizacando los datos "
+#~      "facilitados..."
+
+#~ msgid        "Proxy Hostname:"
+#~ msgstr       "Nombre del Host Proxy:"
+
+#~ msgid        "Proxy Password:"
+#~ msgstr       "Contraseña de proxy:"
+
+#~ msgid        "Proxy Port Number:"
+#~ msgstr       "Número de puerto proxy:"
+
+#~ msgid        "Proxy Username:"
+#~ msgstr       "Nombre de usuario Proxy:"
+
+#~ msgid        "Proxy authentication username or password invalid! cURL "
+#~      "response: \"%1%\"."
+#~ msgstr       "¡Autenticacion de usuario con el proxy incorrecta! "
+#~      "Respuesta: \"%1%\"."
+
+#~ msgid        "Proxy hostname or port invalid! cURL response: \"%1%\"."
+#~ msgstr       "¡Nombre o puerto de proxy inválidos! Respuesta: \"%1%\"."
+
+#~ msgid        "Quoted Userlist Messages"
+#~ msgstr       "Mensajes Citados del Lista de usuarios"
+
+#~ msgid        "Release notes:"
+#~ msgstr       "Notas de Version:"
+
+#~ msgid        "Shadows"
+#~ msgstr       "Sombras/Opacidad"
+
+#~ msgid        "Success Messages"
+#~ msgstr       "Mensajes de éxito"
+
+#~ msgid        "Summary Messages Default Background"
+#~ msgstr       "Resumen de mensajes por defecto de fondo"
+
+#~ msgid        "Switch to running BOSS for Morrowind."
+#~ msgstr       "Cambiar a la ejecución de BOSS a Morrowind."
+
+#~ msgid        "Table Headings"
+#~ msgstr       "Tabla de títulos"
+
+#~ msgid        "The BOSS Log can be displayed using an alternative colour "
+#~      "scheme, which can be enabled and customised using the options below. "
+#~      "Colours must be specified using their lowercase hex codes. The "
+#~      "default value for each element is displayed as the placeholder for "
+#~      "its text box, and this value is used if the text box is left empty."
+#~ msgstr       "El registro de BOSS puede visualizarse mediante un esquema "
+#~      "de color alternativo, que puede estar habilitado y personalizar "
+#~      "usando las opciones. Colores se debe especificar por medio de sus "
+#~      "códigos hexadecimales en minúsculas. El valor predeterminado para "
+#~      "cada elemento es muestra como el marcador de posición para el cuadro "
+#~      "de texto, y este valor se utiliza si el cuadro de texto se deja en "
+#~      "blanco."
+
+#~ msgid        "The automatic updater will download the installer for the "
+#~      "new version to this BOSS folder.\n"
+#~      "\n"
+#~ msgstr       "El programa de actualización automática descargará el "
+#~      "instalador de la nueva versión a esta carpeta de BOSS.\n"
+#~      "\n"
+
+#~ msgid        "The output is logged to the BOSSDebugLog.txt file"
+#~ msgstr       "La salida se registra en el archivo BOSSDebugLog.txt"
+
+#~ msgid        "The requested change to the active plugins list would result "
+#~      "in over 255 plugins being active."
+#~ msgstr       "El cambio solicitado a la lista de plugins activos se "
+#~      "traduciría en más de 255 plugins activos."
+
+#~ msgid        "The update may be downloaded from any of the locations "
+#~      "listed in the BOSS Log."
+#~ msgstr       "La actualización puede ser descargada desde cualquiera de "
+#~      "los lugares indicados en el registro de BOSS."
+
+#~ msgid        "Transforms"
+#~ msgstr       "Transformas"
+
+#~ msgid        "Transitions"
+#~ msgstr       "Transiciones"
+
+#~ msgid        "Update available! New version: %1%\n"
+#~      "Release notes:\n"
+#~      "\n"
+#~      "%2%\n"
+#~      "\n"
+#~      "Do you want to download and install the update?"
+#~ msgstr       "Actualización a Nueva versión disponible: %1%\n"
+#~      "Notas de la versión:\n"
+#~      "\n"
+#~      "%2%\n"
+#~      "\n"
+#~      "¿Quieres descargar e instalar la actualización? "
+
+#~ msgid        "Update available! New version: %1%\n"
+#~      "The update may be downloaded from any of the locations listed in the "
+#~      "BOSS Log."
+#~ msgstr       "Actualización disponible Nueva versión: %1%\n"
+#~      "La actualización puede ser descargada desde cualquiera de los "
+#~      "lugares indicados en el BOSS Log."
+
+#~ msgid        "Update available! New version: %s"
+#~ msgstr       "Actualización disponible Nueva versión: %s"
+
+#~ msgid        "Update cancelled."
+#~ msgstr       "Actualización cancelada."
+
+#~ msgid        "Update check failed. Details: %1%"
+#~ msgstr       "Update Fallido. Detalles: %1%"
+
+#~ msgid        "Update check failed. No Internet connection detected."
+#~ msgstr       "Error en la comprobación de actualización. No detecta "
+#~      "conexión a Internet."
+
+#~ msgid        "Update failed. Details: %1%\n"
+#~      "\n"
+#~      "Update cancelled."
+#~ msgstr       "Actualización Fallida.  Información: %1%\n"
+#~      "\n"
+#~      "Actualización cancelada."
+
+#~ msgid        "Update failed. Details: %1%; %2%\n"
+#~      "\n"
+#~      "Update cancelled."
+#~ msgstr       "Actualización fallida.  Información: %1%; %2%\n"
+#~      "\n"
+#~      "Actualización cancelada."
+
+#~ msgid        "Use Alternative Colour Scheme"
+#~ msgstr       "Plan de Uso del color alternativo"
+
+#~ msgid        "Version Labels"
+#~ msgstr       "Version etiquetas"
+
+#~ msgid        "Visited Links"
+#~ msgstr       "Enlaces visitados"
+
+#~ msgid        "Warnings"
+#~ msgstr       "Advertencias"
+
+#~ msgid        "Window Backgrounds"
+#~ msgstr       "Fondos de la ventana"
+
+#~ msgid        "You are already using the latest version of BOSS."
+#~ msgstr       "Usted ya está usando la versión más reciente de BOSS."
+
+#~ msgid        "You can <span class='button' id='cssButtonBackup'>back up</"
+#~      "span> your display settings to avoid losing them when you <span "
+#~      "id='loseSettingsClose'>close the BOSS Log</span><span "
+#~      "id='loseSettingsCacheClear'>clear your browser's cache</span>."
+#~ msgstr       "Puede <span class='button' id='cssButtonBackup'>copiar</"
+#~      "span> su configuración de la pantalla para evitar de perderlos "
+#~      "cuando usted <span id='loseSettingsClose'>cerrar el registro de "
+#~      "BOSS</span><span id='loseSettingsCacheClear'>borrar la memoria caché "
+#~      "de su navegador</span>."
+
+#~ msgid        "Your masterlist is already at the latest revision (r%1%; "
+#~      "%2%). No update necessary."
+#~ msgstr       "Su masterlist ya se encuentra en la última revisión (r%1%; "
+#~      "%2%). No se requiere actualización."
+
+#~ msgid        "add source file references to debug statements"
+#~ msgstr       "agregar referencias al archivo para depurar las declaraciones"
+
+#~ msgid        "cURL cannot be initialised!"
+#~ msgstr       "¡No se pudo inicializar cURL!"
+
+#~ msgid        "cURL could not perform task! cURL response: \"%1%\"."
+#~ msgstr       "¡cURL falló en ejecutar una tarea! Respuesta: \"%1%\"."
+
+#~ msgid        "cURL's error buffer could not be set! cURL response: \"%1%\"."
+#~ msgstr       "¡No se pudo asignar el buffer de errores de cURL! Respuesta: "
+#~      "\"%1%\"."
+
+#~ msgid        "logs the debug output to the BOSSDebugLog.txt file instead "
+#~      "of the command line."
+#~ msgstr       "registra el resultado de la depuración en el archivo de "
+#~      "BOSSDebugLog.txt en lugar del comando línea."
+
+#~ msgid        "sets the proxy hostname for the masterlist updater"
+#~ msgstr       "establece el nombre de host del servidor proxy para la "
+#~      "actualización del masterlist"
+
+#~ msgid        "sets the proxy port number for the masterlist updater"
+#~ msgstr       "establece el número de puerto del servidor proxy para la "
+#~      "actualización del masterlist"

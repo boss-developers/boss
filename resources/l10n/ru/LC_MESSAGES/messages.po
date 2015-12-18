@@ -1,1896 +1,1878 @@
-msgid ""
-msgstr ""
-"Project-Id-Version: BOSS2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-15 19:29+0600\n"
-"PO-Revision-Date: 2014-03-15 20:03+0600\n"
-"Last-Translator: Tokc.D.K. <TokcDK@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: ru\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.4\n"
-
-#: Error.h:96
-msgid "Masterlist Parsing Error: Expected a %1% at:"
-msgstr "Ошибка обработки мастерлиста: Ожидалось %1% на:"
-
-#: Error.h:97
-msgid "Ini Parsing Error: Expected a %1% at:"
-msgstr "Ошибка обработки INI: Ожидалось %1% на:"
-
-#: Error.h:98
-msgid "Userlist Parsing Error: Expected a %1% at:"
-msgstr "Ошибка обработки списка правил: Ожидалось %1% на:"
-
-#: Error.h:99
-msgid "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-msgstr ""
-"Ошибка в синтаксисе списка правил: Правило начинается с \"%1%: %2%\" %3%"
-
-#: Error.h:100
-msgid "Masterlist parsing aborted. Utility will end now."
-msgstr "Обработка мастерлиста прервана. Утилита будет закрыта."
-
-#: Error.h:101
-msgid ""
-"Ini parsing aborted. Some or all of the options may not have been set "
-"correctly."
-msgstr ""
-"Обработка ini прервана. Некоторые или все настройки не могут быть "
-"установлены правильно."
-
-#: Error.h:102
-msgid "Userlist parsing aborted. No rules will be applied."
-msgstr ""
-"Обработка списка правил прервана. Отсутствуют правила, которые могли быть "
-"применены"
-
-#: Error.h:105
-msgid "includes a sort line in a rule with a FOR rule keyword."
-msgstr "включает строку сортировки в правиле с ключом FOR."
-
-#: Error.h:106
-msgid "tries to add a group."
-msgstr "пытается добавить группу."
-
-#: Error.h:107
-msgid "tries to sort the group \"ESMs\"."
-msgstr "пытается отсортировать группу \"ESMs\"."
-
-#: Error.h:108
-msgid "tries to sort the master .ESM file."
-msgstr "пытается отсортировать ESM-файл."
-
-#: Error.h:109
-msgid "references a mod and a group."
-msgstr "ссылается на мод и группу."
-
-#: Error.h:110
-msgid "tries to sort a group before the group \"ESMs\"."
-msgstr "пытается отсортировать группу, перед группой \"ESMs\"."
-
-#: Error.h:111
-msgid "tries to sort a mod before the master .ESM file."
-msgstr "пытается отсортировать группу, перед ESM-файлом."
-
-#: Error.h:112
-msgid ""
-"tries to insert a mod into the top of the group \"ESMs\", before the master ."
-"ESM file."
-msgstr ""
-"пытается вставить мод вверх группы \"ESMs\", перед мастерфайлом .ESM-файл."
-
-#: Error.h:113
-msgid "tries to insert a group or insert something into a mod."
-msgstr "пытается вставить группу или что-то в мод."
-
-#: Error.h:114
-msgid "tries to attach a message to a group."
-msgstr "пытается прикрепить сообщение к группе"
-
-#: Error.h:115
-msgid "has more than one sort line."
-msgstr "имеет больше чем одну строку для сортировки."
-
-#: Error.h:116
-msgid "has more than one REPLACE-using message line."
-msgstr "имеет больше чем одно использующее замену сообщение."
-
-#: Error.h:117
-msgid "has a REPLACE-using message line that is not the first message line."
-msgstr ""
-"имеет использующее замену сообщение, которое не первое сообщения в строке."
-
-#: Error.h:118
-msgid "has a sort line that is not the second line of the rule."
-msgstr "имеет строку сортировки, которая не вторая в правиле."
-
-#: Error.h:119
-msgid "tries to sort a mod or group relative to itself."
-msgstr "пытается сортировать мод или группу по отношению к себе."
-
-#: Error.h:120
-msgid "tries to attach an malformatted message."
-msgstr "пытается прикрепить сообщение неизвестного типа."
-
-#: Error.h:121
-msgid "tries to sort a plugin before a master file."
-msgstr "пытается отсортировать плагин перед мастерфайлом."
-
-#: Error.h:122
-msgid "tries to sort a master file before a plugin."
-msgstr "пытается отсортировать мастерфайл перед плагином."
-
-#: Error.cpp:95 Error.cpp:135
-msgid "No error."
-msgstr "Нет ошибки."
-
-#: Error.cpp:97
-msgid "\"%1%\" cannot be read!"
-msgstr "\"%1%\" не может быть прочитан!"
-
-#: Error.cpp:99
-msgid "\"%1%\" cannot be written to!"
-msgstr "\"%1%\" не может быть записан!"
-
-#: Error.cpp:101
-msgid "\"%1%\" is not encoded in valid UTF-8!"
-msgstr "\"%1%\" не закодирован в верной кодировке UTF-8!"
-
-#: Error.cpp:103
-msgid "\"%1%\" cannot be found!"
-msgstr "\"%1%\" не найден!"
-
-#: Error.cpp:105
-msgid "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
-msgstr "Определение условия \"%1%\" для \"%2%\" не удалось!"
-
-#: Error.cpp:107
-msgid "\"%1%\" is not a valid regular expression. Item skipped."
-msgstr "\"%1%\" это неверное регулярное выражение. Запись пропущена."
-
-#: Error.cpp:109
-msgid "No game detected!"
-msgstr "Игра не найдена!"
-
-#: Error.cpp:111
-msgid "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
-msgstr "\"%1%\" не может быть конвертирован из UTF-8 в \"%2%\"."
-
-#: Error.cpp:113
-msgid "Master file \"%1%\" loading after non-master plugins!"
-msgstr ""
-"Мастерфайл \"%1%\" загружается после плагинов, не являющихся мастерфайлами!"
-
-#: Error.cpp:117
-msgid "Git operation failed. Error: %1%"
-msgstr "Операция с Git не удалась. Ошибка: %1%"
-
-#: Error.cpp:119
-msgid ""
-"The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%"
-"\"."
-msgstr ""
-"Не читается дата модификации для \"%1%\"! Ответ файловой системы: \"%2%\"."
-
-#: Error.cpp:121
-msgid "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
-msgstr "\"%1%\" не может быть переименован! Ответ файловой системы: \"%2%\"."
-
-#: Error.cpp:123
-msgid "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
-msgstr "\"%1%\" не найден! Ответ файловой системы: \"%2%\"."
-
-#: Error.cpp:125
-msgid "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
-msgstr "\"%1%\" не может быть создан! Ответ файловой системы: \"%2%\"."
-
-#: Error.cpp:127
-msgid "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
-msgstr "\"%1%\" не может быть отсканирован! Ответ файловой системы: \"%2%\"."
-
-#: Error.cpp:129
-msgid "Parsing of \"%1%\" failed!"
-msgstr "Обработка \"%1%\" не удалась!"
-
-#: Error.cpp:131
-msgid ""
-"The modification date of \"%1%\" cannot be written! Filesystem response: "
-"\"%2%\"."
-msgstr ""
-"Дата изменения для \"%1%\" не может быть записана! Ответ файловой системы: "
-"\"%2%\"."
-
-#: Error.cpp:133
-msgid "The window \"%1%\" failed to initialise. Details: \"%2%\"."
-msgstr "Окно \"%1%\" не удалось инициализировать. Детали: \"%2%\"."
-
-#: Game.cpp:469
-msgid "Rule is disabled."
-msgstr "Правило отключено."
-
-#: Game.cpp:485 Game.cpp:523 Game.cpp:562
-msgid " is not installed or in the masterlist."
-msgstr " не установлен или уже в мастерлисте."
-
-#: Game.cpp:489 Game.cpp:528
-msgid " is already in the masterlist."
-msgstr " уже в мастерлисте."
-
-#: Game.cpp:493 Game.cpp:532
-msgid " is not in the masterlist, cannot override."
-msgstr " не в мастерлисте, невозможно перезаписать."
-
-#: Game.cpp:501
-msgid " is not installed, and is not in the masterlist."
-msgstr " не установлен и отсутствует в мастерлисте."
-
-#: Game.cpp:505
-msgid " is not in the masterlist and has not been sorted by a rule."
-msgstr " отсутствует в мастерлисте и не может быть отсортирован правилом."
-
-#: Game.cpp:543 Game.cpp:581 Game.cpp:599
-msgid "The group "
-msgstr "Группа "
-
-#: Game.cpp:543 Game.cpp:581 Game.cpp:599
-msgid " is not in the masterlist or is malformatted."
-msgstr "  отсутствует в мастерлисте или неизвестного типа."
-
-#: Game.cpp:648 Game.cpp:664
-msgid "Version: "
-msgstr "Версия: "
-
-#: Game.cpp:650 Game.cpp:666 Game.cpp:747 Game.cpp:749
-msgid "Checksum: "
-msgstr "Контрольная сумма: "
-
-#: Game.cpp:719
-msgid ""
-"The order of plugins set by BOSS differs from their order in its masterlist, "
-"as one or more of the installed plugins is false-flagged. For more "
-"information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged "
-"Plugins\"."
-msgstr ""
-"Порядок плагинов, заданный в BOSS, отличается от их порядка в мастерлисте, "
-"один или больше установленных плагинов являются ложно-помеченными. Для "
-"подробной информации смотрите \"file:../Docs/BOSS%20Readme.html#appendix-c "
-"False-Flagged Plugins\"."
-
-#: Game.cpp:722
-msgid "Could not enforce load order master/plugin partition. Details: "
-msgstr ""
-"Не в состоянии обеспечить изменить порядок загрузки раздела плагинов/"
-"мастерфайлов. Детали: "
-
-#: Game.cpp:741 ..\boss-common\Output\Output.cpp:963
-#: ..\boss-cli\BOSS-CLI.cpp:75
-msgid "Version "
-msgstr "Версия "
-
-#: Game.cpp:743
-msgid "Active"
-msgstr "Активен"
-
-#: Game.cpp:762
-msgid "Error: "
-msgstr "Ошибка: "
-
-#: Game.cpp:797 ..\boss-cli\BOSS-CLI.cpp:334
-msgid "Critical Error: "
-msgstr "Критическая ошибка: "
-
-#: Game.cpp:798 ..\boss-cli\BOSS-CLI.cpp:335 ..\boss-cli\BOSS-CLI.cpp:401
-#: ..\boss-cli\BOSS-CLI.cpp:445 ..\boss-cli\BOSS-CLI.cpp:484
-#: MainWindow.cpp:498 MainWindow.cpp:553 MainWindow.cpp:603
-msgid ""
-"Check the Troubleshooting section of the ReadMe for more information and "
-"possible solutions."
-msgstr ""
-"Проверьте секцию ридми \"Решение проблем\", для большей информации и "
-"возможных решений."
-
-#: Game.cpp:799 ..\boss-cli\BOSS-CLI.cpp:336 ..\boss-cli\BOSS-CLI.cpp:402
-#: ..\boss-cli\BOSS-CLI.cpp:446 ..\boss-cli\BOSS-CLI.cpp:485
-#: MainWindow.cpp:499 MainWindow.cpp:554 MainWindow.cpp:604
-msgid "Utility will end now."
-msgstr "Утилита сейчас закроется."
-
-#: ..\boss-common\Output\Output.cpp:493 ..\boss-common\Output\Output.cpp:495
-#: ..\boss-common\Output\Output.cpp:528 ..\boss-common\Output\Output.cpp:530
-msgid "Note"
-msgstr "Примечание"
-
-#: ..\boss-common\Output\Output.cpp:498 ..\boss-common\Output\Output.cpp:500
-msgid "Bash Tag suggestion(s)"
-msgstr "Bash-теги"
-
-#: ..\boss-common\Output\Output.cpp:503 ..\boss-common\Output\Output.cpp:505
-msgid "Requires"
-msgstr "Требуется"
-
-#: ..\boss-common\Output\Output.cpp:508 ..\boss-common\Output\Output.cpp:510
-msgid "Incompatible with"
-msgstr "Несовместим с"
-
-#: ..\boss-common\Output\Output.cpp:513 ..\boss-common\Output\Output.cpp:515
-#: ..\boss-common\Output\Output.cpp:1116 ..\boss-common\Output\Output.cpp:1118
-msgid "Warning"
-msgstr "Предупреждение"
-
-#: ..\boss-common\Output\Output.cpp:518 ..\boss-common\Output\Output.cpp:520
-#: ..\boss-common\Output\Output.cpp:1120 ..\boss-common\Output\Output.cpp:1122
-msgid "Error"
-msgstr "Ошибка"
-
-#: ..\boss-common\Output\Output.cpp:523 ..\boss-common\Output\Output.cpp:525
-msgid "Contains dirty edits"
-msgstr "\"Грязные\" правки"
-
-#: ..\boss-common\Output\Output.cpp:568
-msgid "Sort %1% before %2%"
-msgstr "Сортировать %1% перед %2%"
-
-#: ..\boss-common\Output\Output.cpp:570
-msgid "Sort %1% after %2%"
-msgstr "Сортировать %1% после %2%"
-
-#: ..\boss-common\Output\Output.cpp:572
-msgid "Insert %1% at the top of %2%"
-msgstr "Вставлен %1% на верх группы %2%"
-
-#: ..\boss-common\Output\Output.cpp:574
-msgid "Insert %1% at the bottom of %2%"
-msgstr "Вставлен %1% в низ группы %2%"
-
-#: ..\boss-common\Output\Output.cpp:578
-msgid "Add the following messages to %1%:"
-msgstr "Добавить сообщение к %1%:"
-
-#: ..\boss-common\Output\Output.cpp:580 UserRuleEditor.cpp:198
-msgid "Add the following messages:"
-msgstr "Добавляет следующие сообщения:"
-
-#: ..\boss-common\Output\Output.cpp:587
-msgid "Replace the messages attached to %1% with:"
-msgstr "Заменяет сообщения, добавленные к %1% с:"
-
-#: ..\boss-common\Output\Output.cpp:589
-msgid "Replace the attached messages with:"
-msgstr "Заменяет сообщения, добавленные с"
-
-#: ..\boss-common\Output\Output.cpp:959
-msgid "\tVersion "
-msgstr "\tВерсия "
-
-#: ..\boss-common\Output\Output.cpp:971
-msgid "Log Feature Support"
-msgstr "Поддержка функций лога"
-
-#: ..\boss-common\Output\Output.cpp:972
-msgid "Filters"
-msgstr "Фильтры"
-
-#: ..\boss-common\Output\Output.cpp:976
-msgid "The BOSS Log requires Javascript to be enabled in order to function."
-msgstr "Для работы всех функций лога BOSS требуется включить JavaScript"
-
-#: ..\boss-common\Output\Output.cpp:983
-msgid "Colours must be specified using lowercase hex codes."
-msgstr "Цвета должны быть заданы с помощью строчных шестнадцатеричных кодов."
-
-#: ..\boss-common\Output\Output.cpp:987
-msgid ""
-"Support for the BOSS Log's more advanced features varies. Here's what your "
-"browser supports:"
-msgstr ""
-"Поддержка дополнительных функций для лога BOSS варьируется. Здесь то, что "
-"поддерживает ваш браузер:"
-
-#: ..\boss-common\Output\Output.cpp:988
-msgid "Functionality"
-msgstr "Функциональность"
-
-#: ..\boss-common\Output\Output.cpp:991
-msgid "In-Log Plugin Submission"
-msgstr "Отправка плагинов из лога"
-
-#: ..\boss-common\Output\Output.cpp:991
-msgid ""
-"Allows unrecognised plugins to be anonymously submitted to the BOSS team "
-"directly from the BOSS Log."
-msgstr ""
-"Все неизвестные плагины могут быть анонимно предоставлены команде BOSS, "
-"напрямую из этого лога."
-
-#: ..\boss-common\Output\Output.cpp:992
-msgid "Settings Memory"
-msgstr "Запоминание настроек"
-
-#: ..\boss-common\Output\Output.cpp:992
-msgid ""
-"Allows the BOSS Log to automatically restore the filter configuration last "
-"used whenever the BOSS Log is opened."
-msgstr ""
-"Позволяет автоматически восстановить в логе BOSS последнюю конфигурацию "
-"фильтров, когда бы лог BOSS не был бы открыт."
-
-#: ..\boss-common\Output\Output.cpp:994
-msgid "Appearance"
-msgstr "Внешний вид"
-
-#: ..\boss-common\Output\Output.cpp:997
-msgid "Opacity"
-msgstr "Непрозрачность"
-
-#: ..\boss-common\Output\Output.cpp:998
-msgid "Shadows"
-msgstr "Тени"
-
-#: ..\boss-common\Output\Output.cpp:999
-msgid "Transitions"
-msgstr "Переходы"
-
-#: ..\boss-common\Output\Output.cpp:1000
-msgid "Transforms"
-msgstr "Преобразования"
-
-#: ..\boss-common\Output\Output.cpp:1001
-msgid "Input Placeholders"
-msgstr "Входные заполнители"
-
-#: ..\boss-common\Output\Output.cpp:1002
-msgid "Form Validation"
-msgstr "Проверка формы"
-
-#: ..\boss-common\Output\Output.cpp:1007
-msgid "Hide Version Numbers"
-msgstr "Скрыть номера версии"
-
-#: ..\boss-common\Output\Output.cpp:1008
-msgid "Hide 'Active' Label"
-msgstr "Скрыть метку 'Активен'"
-
-#: ..\boss-common\Output\Output.cpp:1009
-msgid "Hide Checksums"
-msgstr "Скрыть CRC суммы"
-
-#: ..\boss-common\Output\Output.cpp:1010
-msgid "Hide Notes"
-msgstr "Скрыть примечания"
-
-#: ..\boss-common\Output\Output.cpp:1011
-msgid "Hide Bash Tag Suggestions"
-msgstr "Скрыть Bash-теги"
-
-#: ..\boss-common\Output\Output.cpp:1012
-msgid "Hide Requirements"
-msgstr "Скрыть требования"
-
-#: ..\boss-common\Output\Output.cpp:1013
-msgid "Hide Incompatibilities"
-msgstr "Скрыть несовместимости"
-
-#: ..\boss-common\Output\Output.cpp:1014
-msgid "Hide 'Do Not Clean' Messages"
-msgstr "Скрыть сообщения 'Не чистить'"
-
-#: ..\boss-common\Output\Output.cpp:1015
-msgid "Hide All Plugin Messages"
-msgstr "Скрыть все сообщения"
-
-#: ..\boss-common\Output\Output.cpp:1016
-msgid "Hide Inactive Plugins"
-msgstr "Скрыть неактивные плагины"
-
-#: ..\boss-common\Output\Output.cpp:1017
-msgid "Hide Messageless Plugins"
-msgstr "Скрыть плагины без сообщений"
-
-#: ..\boss-common\Output\Output.cpp:1019
-msgid "%1% of %2% recognised plugins hidden."
-msgstr "%1% из %2% известных плагинов скрыты."
-
-#: ..\boss-common\Output\Output.cpp:1020
-msgid "%1% of %2% messages hidden."
-msgstr "%1% из %2% сообщений скрыты."
-
-#: ..\boss-common\Output\Output.cpp:1026
-msgid "Submit Plugin"
-msgstr "Отправка плагина"
-
-#: ..\boss-common\Output\Output.cpp:1027
-msgid "Plugin"
-msgstr "Плагин"
-
-#: ..\boss-common\Output\Output.cpp:1029
-msgid "Download Location"
-msgstr "Источник загрузки"
-
-#: ..\boss-common\Output\Output.cpp:1030
-msgid "Additional Notes"
-msgstr "Дополнительные заметки"
-
-#: ..\boss-common\Output\Output.cpp:1030
-msgid ""
-"Any additional information, such as recommended Bash Tags, load order "
-"suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no "
-"download link is available, this information is crucial."
-msgstr ""
-"Любая дополнительная информация, такая как рекомендуемые Bash-теги, указания "
-"по порядку загрузки, количество ITM/UDR записей и контрольные суммы \"грязных"
-"\" плагинов, могут быть указаны здесь, если нет доступной ссылки для "
-"загрузки. Эта информация очень важна."
-
-#: ..\boss-common\Output\Output.cpp:1032
-msgid "Submit"
-msgstr "Отправить"
-
-#: ..\boss-common\Output\Output.cpp:1033
-msgid "Close"
-msgstr "Закрыть"
-
-#: ..\boss-common\Output\Output.cpp:1041
-msgid "Checking for existing submission..."
-msgstr "Проверка существования заявки..."
-
-#: ..\boss-common\Output\Output.cpp:1042
-msgid "Error: Existing submission check failed!"
-msgstr "Ошибка: Проверка существования заявки не удалась!"
-
-#: ..\boss-common\Output\Output.cpp:1043
-msgid "Previous submission found, updating with supplied details..."
-msgstr "Найдена предыдущая заявка, обновление переданными данными..."
-
-#: ..\boss-common\Output\Output.cpp:1044
-msgid "Plugin submission updated!"
-msgstr "Заявка плагина обновлена!"
-
-#: ..\boss-common\Output\Output.cpp:1045
-msgid "Error: Plugin submission could not be updated."
-msgstr "Ошибка: Заявка плагина не может быть отображена."
-
-#: ..\boss-common\Output\Output.cpp:1046
-msgid "No previous submission found, creating new submission..."
-msgstr "Не обнаружено предыдущей заявки, создание новой..."
-
-#: ..\boss-common\Output\Output.cpp:1047
-msgid "Plugin submitted!"
-msgstr "Плагин предоставлен!"
-
-#: ..\boss-common\Output\Output.cpp:1048
-msgid "Error: Plugin could not be submitted."
-msgstr "Ошибка: Плагин не может быть отправлен."
-
-#: ..\boss-common\Output\Output.cpp:1049
-msgid "Error: Data transfer failed."
-msgstr "Ошибка: Передача данных не удалась."
-
-#: ..\boss-common\Output\Output.cpp:1050
-msgid ""
-"Web storage quota for this document has been exceeded.Please empty your "
-"browser\\'s cache. Note that this will delete all locally stored data."
-msgstr ""
-"Квота для Web-хранилища этого документа была превышена. Пожалуйста, очистите "
-"кеш вашего браузера. Обратите внимание, что это приведет к удалению всех "
-"локально сохраненных данных."
-
-#: ..\boss-common\Output\Output.cpp:1051
-msgid "Please supply at least a link or some notes."
-msgstr "Пожалуйста укажите хотя бы ссылку или некоторое описание."
-
-#: ..\boss-common\Output\Output.cpp:1052
-msgid "Exception occurred:"
-msgstr "Произошло исключение:"
-
-#: ..\boss-common\Output\Output.cpp:1053
-msgid "Do not clean."
-msgstr "Не чистить."
-
-#: ..\boss-common\Output\Output.cpp:1069 ..\boss-common\Output\Output.cpp:1100
-msgid "Summary"
-msgstr "Сводка"
-
-#: ..\boss-common\Output\Output.cpp:1072 ..\boss-common\Output\Output.cpp:1163
-#: UserRuleEditor.cpp:864
-msgid "User Rules"
-msgstr "Пользовательские правила"
-
-#: ..\boss-common\Output\Output.cpp:1075
-msgid "%1% Plugins"
-msgstr "%1% Плагины"
-
-#: ..\boss-common\Output\Output.cpp:1079 ..\boss-common\Output\Output.cpp:1195
-msgid "Recognised Plugins"
-msgstr "Известные плагины"
-
-#: ..\boss-common\Output\Output.cpp:1081
-msgid "Restored Load Order"
-msgstr "Порядок загрузки восстановлен"
-
-#: ..\boss-common\Output\Output.cpp:1085 ..\boss-common\Output\Output.cpp:1218
-msgid "Unrecognised Plugins"
-msgstr "Неизвестные плагины"
-
-#: ..\boss-common\Output\Output.cpp:1103
-msgid "Plugin Type"
-msgstr "Тип плагина"
-
-#: ..\boss-common\Output\Output.cpp:1103 ..\boss-common\Output\Output.cpp:1113
-msgid "Count"
-msgstr "Количество"
-
-#: ..\boss-common\Output\Output.cpp:1104
-msgid "Recognised (or sorted by user rules)"
-msgstr "Известный (или отсортированный пользовательскими правилами)"
-
-#: ..\boss-common\Output\Output.cpp:1106 ..\boss-common\Output\Output.cpp:1108
-msgid "Unrecognised"
-msgstr "Неизвестный"
-
-#: ..\boss-common\Output\Output.cpp:1109
-msgid "Inactive"
-msgstr "Неактивный"
-
-#: ..\boss-common\Output\Output.cpp:1110 ..\boss-common\Output\Output.cpp:1123
-msgid "All"
-msgstr "Все"
-
-#: ..\boss-common\Output\Output.cpp:1113
-msgid "Plugin Message Type"
-msgstr "Тип сообщения"
-
-#: ..\boss-common\Output\Output.cpp:1132
-msgid "No change in recognised plugin list since last run."
-msgstr "Никаких изменений в списке известных плагинов, с последнего запуска."
-
-#: ..\boss-common\Output\Output.cpp:1164
-msgid "Rule"
-msgstr "Правило"
-
-#: ..\boss-common\Output\Output.cpp:1164
-msgid "Applied"
-msgstr "Принято"
-
-#: ..\boss-common\Output\Output.cpp:1164
-msgid "Details (if applicable)"
-msgstr "Детали (если имеются)"
-
-#: ..\boss-common\Output\Output.cpp:1178
-msgid " Plugins"
-msgstr " Плагины"
-
-#: ..\boss-common\Output\Output.cpp:1197
-msgid "Restored Load Order (Using modlist.txt)"
-msgstr "Восстановлен порядок загрузки(Использован modlist.txt)"
-
-#: ..\boss-common\Output\Output.cpp:1199
-msgid "Restored Load Order (Using modlist.old)"
-msgstr "Восстановлен порядок загрузки (Использован modlist.old)"
-
-#: ..\boss-common\Output\Output.cpp:1202
-msgid ""
-"These plugins are recognised by BOSS and have been sorted according to its "
-"masterlist. Please read any attached messages and act on any that require "
-"action."
-msgstr ""
-"Эти плагины известны BOSS и были отсортированы, в соответствии с их "
-"положением в мастерлисте. Пожалуйста, прочтите прикрепленные сообщения и "
-"выполните все требуемые действия."
-
-#: ..\boss-common\Output\Output.cpp:1220
-msgid ""
-"The following plugins were not found in the masterlist, and must be "
-"positioned manually, using your favourite mod manager or by using BOSS's "
-"user rules functionality."
-msgstr ""
-"Следующие плагины не найдены в мастерлисте и должны быть перемещены вручную, "
-"с использованием вашего любимого менеджера модов или функционала "
-"пользовательских правил BOSS."
-
-#: ..\boss-common\Output\Output.cpp:1221
-msgid ""
-" You can submit unrecognised plugins for addition to the masterlist directly "
-"from this log by clicking on a plugin and supplying a link and/or "
-"description of its contents in the panel that is displayed."
-msgstr ""
-" Вы можете отправить неизвестные плагины, для их добавления в мастерлист, "
-"напрямую, из HTML-лога, нажатием на плагин и предоставлением ссылки и/или "
-"описания его содержимого, в открывшейся панели."
-
-#: ..\boss-common\Output\Output.cpp:1298
-msgid "Please read any attached messages and act on any that require action."
-msgstr ""
-"Пожалуйста, прочтите прикрепленные сообщения и выполните все требуемые "
-"действия."
-
-#: ..\boss-cli\BOSS-CLI.cpp:88
-msgid "Description:"
-msgstr "Описание:"
-
-#: ..\boss-cli\BOSS-CLI.cpp:89
-msgid ""
-"  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, "
-"Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a "
-"frequently updated  masterlist to minimise incompatibilities between mods."
-msgstr ""
-"  BOSS - это утилита, которая сортирует порядок загрузки модов, для таких "
-"игр как TESIV: Oblivion, Nehrim,  Fallout 3, Fallout: New Vegas и TESV: "
-"Skyrim, в соответствии с порядком в часто обновляемом мастерлисте, чтобы "
-"минимизировать несовместимости между модами."
-
-#: ..\boss-cli\BOSS-CLI.cpp:93
-msgid "Examples:"
-msgstr "Примеры:"
-
-#: ..\boss-cli\BOSS-CLI.cpp:95
-msgid "    updates the masterlist, sorts your mods, and shows the log"
-msgstr "    обновляет мастерлист, сортирует ваши моды и открывает лог"
-
-#: ..\boss-cli\BOSS-CLI.cpp:97
-msgid "    reverts your load order 1 level and skips showing the log"
-msgstr "    возвращает ваш прошлый порядок загрузки и пропускает показ лога"
-
-#: ..\boss-cli\BOSS-CLI.cpp:99
-msgid "    reverts your load order 2 levels and shows the log"
-msgstr ""
-"    возвращает ваш порядок загрузки на два запуска назад и пропускает показ "
-"лога"
-
-#: ..\boss-cli\BOSS-CLI.cpp:111
-#, c-format
-msgid "Downloading masterlist: %i of %i objects (%i KB)"
-msgstr "Загрузка мастерлиста: %i из %i объектов (%i KB)"
-
-#: ..\boss-cli\BOSS-CLI.cpp:183
-msgid "produces this help message"
-msgstr "вызывает это вспомогательное сообщение"
-
-#: ..\boss-cli\BOSS-CLI.cpp:184
-msgid "prints the version banner"
-msgstr "выводит всплывающее окно с версией"
-
-#: ..\boss-cli\BOSS-CLI.cpp:186
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web before sorting"
-msgstr ""
-"перед сортировкой, автоматически обновляет локальную копию мастерлиста до "
-"последней, доступной через web, версии."
-
-#: ..\boss-cli\BOSS-CLI.cpp:189
-msgid "inhibit the automatic masterlist updater"
-msgstr "задерживает автоматическое обновление мастерлиста."
-
-#: ..\boss-cli\BOSS-CLI.cpp:191
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web but don't sort right now"
-msgstr ""
-"автоматически обновляет локальную копию мастерлиста до последней версии,  "
-"доступной через web, но без запуска сортировки."
-
-#: ..\boss-cli\BOSS-CLI.cpp:196
-msgid "don't launch a browser to show the HTML log at program completion"
-msgstr "не открывать браузер для показа HTML лога по завершению программы."
-
-#: ..\boss-cli\BOSS-CLI.cpp:199
-msgid ""
-"revert to a previous load order.  this parameter optionally accepts values "
-"of 1 or 2, indicating how many undo steps to apply.  if no option value is "
-"specified, it defaults to 1"
-msgstr ""
-"возвращает предыдущий порядок загрузки.  Этот параметр опционально принимает "
-"значения 1 или 2, означающих, как много шагов отката сделать.  Если значение "
-"не установлено , то по умолчанию используется 1"
-
-#: ..\boss-cli\BOSS-CLI.cpp:205
-msgid ""
-"specify verbosity level (0-3) of the debugging output.  0 is the default, "
-"showing only WARN and ERROR messges. 1 (INFO and above) is implied if this "
-"option is specified without an argument.  higher values increase the "
-"verbosity further"
-msgstr ""
-"Задание уровня детализации (0-3) выводимых отладочных сообщений.  0 по "
-"умолчанию, показывает только предупреждения и ошибки. 1 (INFO и выше) "
-"подразумевается, если эта опция указана без аргументов.  Большие значения "
-"повышают детализацию еще больше"
-
-#: ..\boss-cli\BOSS-CLI.cpp:211
-msgid ""
-"override game autodetection.  valid values are: 'Oblivion', 'Nehrim', "
-"'Fallout3', 'FalloutNV', and 'Skyrim'"
-msgstr ""
-"заменяет автообнаружение игры.  допустимые значения: 'Oblivion', 'Nehrim', "
-"'Fallout3', 'FalloutNV', и 'Skyrim'"
-
-#: ..\boss-cli\BOSS-CLI.cpp:215
-msgid ""
-"show mod file CRCs, so that a file's CRC can be added to the masterlist in a "
-"conditional"
-msgstr ""
-"показывает контрольные суммы(CRC) модов, так что CRC файла могжет быть "
-"добавлено в мастерлист, с помощью условий"
-
-#: ..\boss-cli\BOSS-CLI.cpp:218
-msgid "select output format. valid values are: 'html', 'text'"
-msgstr "выбор формата вывода. допустимые значения: 'html', 'text'"
-
-#: ..\boss-cli\BOSS-CLI.cpp:221
-msgid "run BOSS without actually making any changes to load order"
-msgstr "запуск BOSS без реального изменения порядка загрузки"
-
-#: ..\boss-cli\BOSS-CLI.cpp:316 MainWindow.cpp:196
-msgid "Please pick which game to run BOSS for:"
-msgstr "Пожалуйста выберете, для какой игры загрузить BOSS:"
-
-#: ..\boss-cli\BOSS-CLI.cpp:322
-msgid "Invalid selection."
-msgstr "Неправильный выбор."
-
-#: ..\boss-cli\BOSS-CLI.cpp:355 MainWindow.cpp:444 UserRuleEditor.cpp:94
-msgid "Updating to the latest masterlist from the online repository..."
-msgstr "Обновление до последнего мастерлиста из сетевого хранилища..."
-
-#: ..\boss-cli\BOSS-CLI.cpp:359 MainWindow.cpp:448
-msgid "Masterlist updated; at revision: %1%."
-msgstr "Мастерлист обновлен. Версия: %1%."
-
-#: ..\boss-cli\BOSS-CLI.cpp:363 MainWindow.cpp:452 UserRuleEditor.cpp:102
-msgid "Error: masterlist update failed."
-msgstr "Ошибка: обновление мастерлиста не удалось."
-
-#: ..\boss-cli\BOSS-CLI.cpp:364 MainWindow.cpp:453 UserRuleEditor.cpp:103
-msgid "Details: %1%"
-msgstr "Детали: %1%"
-
-#: ..\boss-cli\BOSS-CLI.cpp:370 MainWindow.cpp:459
-msgid "Masterlist updating disabled; at revision: %1%."
-msgstr "Обновление мастерлиста отключено. Версия: %1%."
-
-#: ..\boss-cli\BOSS-CLI.cpp:391 MainWindow.cpp:423 MainWindow.cpp:478
-msgid "BOSS working..."
-msgstr "BOSS работает..."
-
-#: ..\boss-cli\BOSS-CLI.cpp:400 ..\boss-cli\BOSS-CLI.cpp:444
-#: ..\boss-cli\BOSS-CLI.cpp:483 MainWindow.cpp:497 MainWindow.cpp:552
-#: MainWindow.cpp:602
-msgid "Critical Error: %1%"
-msgstr "Критическая ошибка: %1%"
-
-#: ElementIDs.cpp:55
-msgid "Downloading masterlist: %1% of %2% objects (%3% KB)"
-msgstr "Загрузка мастерлиста: %1% из %2% объектов (%3% KB)"
-
-#: ElementIDs.cpp:57
-msgid "Are you sure you want to cancel?"
-msgstr "Вы уверены, что хотите отменить?"
-
-#: ElementIDs.cpp:57
-msgid "BOSS: Updater"
-msgstr "BOSS: Обновление"
-
-#: MainWindow.cpp:102
-msgid "Error: %1% Details: %2%"
-msgstr "Ошибка: %1% Детали: %2%"
-
-#: MainWindow.cpp:103 MainWindow.cpp:152 MainWindow.cpp:167 MainWindow.cpp:410
-#: MainWindow.cpp:643 MainWindow.cpp:659 MainWindow.cpp:681
-#: UserRuleEditor.cpp:117 UserRuleEditor.cpp:162 UserRuleEditor.cpp:438
-#: UserRuleEditor.cpp:465 UserRuleEditor.cpp:734 UserRuleEditor.cpp:742
-#: UserRuleEditor.cpp:752 UserRuleEditor.cpp:760 UserRuleEditor.cpp:884
-msgid "BOSS: Error"
-msgstr "BOSS: Ошибка"
-
-#: MainWindow.cpp:151
-msgid "Error: could not apply translation: %1%"
-msgstr "Ошибка: Невозможно применить перевод: %1%"
-
-#: MainWindow.cpp:166
-msgid "Error: The BOSS GUI is already running. This instance will now quit."
-msgstr "Ошибка: BOSS GUI уже запущен. Этот экземпляр будет закрыт."
-
-#: MainWindow.cpp:192
-msgid " (not detected)"
-msgstr " (не найдена)"
-
-#: MainWindow.cpp:197
-msgid "BOSS: Select Game"
-msgstr "BOSS: Выбор игры"
-
-#: MainWindow.cpp:235
-msgid "Plain Text"
-msgstr "Обычный текст"
-
-#: MainWindow.cpp:239
-msgid "Last Run"
-msgstr "Последний запуск"
-
-#: MainWindow.cpp:240
-msgid "2nd Last Run"
-msgstr "Два последних запуска"
-
-#: MainWindow.cpp:247
-msgid "&View BOSS Log"
-msgstr "&Лог BOSS"
-
-#: MainWindow.cpp:247
-msgid "Opens your BOSSlog."
-msgstr "Открывает ваш лог BOSS"
-
-#: MainWindow.cpp:248
-msgid "&Run BOSS"
-msgstr "&Запуск BOSS"
-
-#: MainWindow.cpp:248
-msgid "Runs BOSS with the options you have chosen."
-msgstr "Запускает BOSS с выбранными вами опциями."
-
-#: MainWindow.cpp:250
-msgid "&Quit"
-msgstr "&Выход"
-
-#: MainWindow.cpp:250
-msgid "Quit BOSS."
-msgstr "Выйти из BOSS."
-
-#: MainWindow.cpp:251
-msgid "&File"
-msgstr "&Файл"
-
-#: MainWindow.cpp:254
-msgid "&User Rules..."
-msgstr "&Пользовательские правила..."
-
-#: MainWindow.cpp:254
-msgid "Opens your userlist in your default text editor."
-msgstr "Открывает ваш список правил в редакторе по умолчанию."
-
-#: MainWindow.cpp:255
-msgid "&Settings..."
-msgstr "&Настройки..."
-
-#: MainWindow.cpp:255
-msgid "Opens the Settings window."
-msgstr "Открывает окно настроек"
-
-#: MainWindow.cpp:256
-msgid "&Edit"
-msgstr "&Правка"
-
-#: MainWindow.cpp:259
-msgid "Switch to running BOSS for Oblivion."
-msgstr "Переключение на запуск BOSS для Oblivion"
-
-#: MainWindow.cpp:260
-msgid "Switch to running BOSS for Nehrim."
-msgstr "Переключение на запуск BOSS для Nehrim"
-
-#: MainWindow.cpp:261
-msgid "Switch to running BOSS for Skyrim."
-msgstr "Переключение на запуск BOSS для Skyrim"
-
-#: MainWindow.cpp:262
-msgid "Switch to running BOSS for Fallout 3."
-msgstr "Переключение на запуск BOSS для Fallout 3"
-
-#: MainWindow.cpp:263
-msgid "Switch to running BOSS for Fallout: New Vegas."
-msgstr "Переключение на запуск BOSS для Fallout: New Vegas."
-
-#: MainWindow.cpp:264
-msgid "&Active Game"
-msgstr "&Игра"
-
-#: MainWindow.cpp:267
-msgid "Open &Main Readme"
-msgstr "Описание &BOSS"
-
-#: MainWindow.cpp:267
-msgid "Opens the main BOSS readme in your default web browser."
-msgstr "Открывает описание программы в браузере по умолчанию."
-
-#: MainWindow.cpp:268
-msgid "Open &Userlist Syntax Doc"
-msgstr "Описание &синтаксиса списка правил"
-
-#: MainWindow.cpp:268
-msgid ""
-"Opens the BOSS userlist syntax documentation in your default web browser."
-msgstr "Открывает документацию по списку правил BOSS в браузере по умолчанию."
-
-#: MainWindow.cpp:269
-msgid "Open &Masterlist Syntax Doc"
-msgstr "Описание синтаксиса &мастерлиста"
-
-#: MainWindow.cpp:269
-msgid ""
-"Opens the BOSS masterlist syntax documentation in your default web browser."
-msgstr ""
-"Открывает документацию по синтаксису мастерлиста в браузере по умолчанию."
-
-#: MainWindow.cpp:270
-msgid "Open &Version History"
-msgstr "&История версий"
-
-#: MainWindow.cpp:270
-msgid "Opens the BOSS version history in your default web browser."
-msgstr "Открывает историю версий BOSS в браузере по умолчанию."
-
-#: MainWindow.cpp:271
-msgid "View &Copyright Licenses"
-msgstr "&Лицензия"
-
-#: MainWindow.cpp:271
-msgid ""
-"View the GNU General Public License v3.0 and GNU Free Documentation License "
-"v1.3."
-msgstr ""
-"Просмотр GNU General Public License v3.0 и GNU Free Documentation License "
-"v1.3."
-
-#: MainWindow.cpp:273
-msgid "&About BOSS..."
-msgstr "&О BOSS..."
-
-#: MainWindow.cpp:273
-msgid "Shows information about BOSS."
-msgstr "Показать информацию о BOSS"
-
-#: MainWindow.cpp:274
-msgid "&Help"
-msgstr "&Справка"
-
-#: MainWindow.cpp:285
-msgid "Output Options"
-msgstr "Опции вывода"
-
-#: MainWindow.cpp:289
-msgid "Show BOSS Log On Completion"
-msgstr "Открыть лог BOSS по завершению"
-
-#: MainWindow.cpp:290
-msgid "Display File CRCs"
-msgstr "Показать CRC файлов"
-
-#: MainWindow.cpp:291
-msgid "BOSS Log Format: "
-msgstr "Формат лога BOSS: "
-
-#: MainWindow.cpp:299
-msgid "Edit User Rules"
-msgstr "Правила"
-
-#: MainWindow.cpp:300
-msgid "Run BOSS"
-msgstr "Запуск BOSS"
-
-#: MainWindow.cpp:301
-msgid "View BOSS Log"
-msgstr "Лог BOSS"
-
-#: MainWindow.cpp:308
-msgid "Run Options"
-msgstr "Открыть опции"
-
-#: MainWindow.cpp:314
-msgid "Sort Plugins"
-msgstr "Сортировать плагины"
-
-#: MainWindow.cpp:317
-msgid "Update Masterlist"
-msgstr "Обновить мастерлист"
-
-#: MainWindow.cpp:318
-msgid "Perform Trial Run"
-msgstr "Выполнить тестовый запуск"
-
-#: MainWindow.cpp:323
-msgid "Update Masterlist Only"
-msgstr "Только обновить мастерлист"
-
-#: MainWindow.cpp:327
-msgid "Undo Changes"
-msgstr "Отмена изменений"
-
-#: MainWindow.cpp:328
-msgid "Undo Level: "
-msgstr "Уровень отмены: "
-
-#: MainWindow.cpp:337
-msgid ""
-"This decides both the format of BOSSlog generated when you click the \"Run "
-"BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog"
-"\" button."
-msgstr ""
-"Устанавливает формат лога BOSS, генерируемого, когда вы нажимаете кнопку "
-"\"Запуск BOSS\" и формат лога, открытого нажатием кнопки \"Открыть лог BOSS"
-"\"."
-
-#: MainWindow.cpp:338
-msgid ""
-"The format of BOSSlog this opens is decided by the setting of the \"BOSSlog "
-"Format\" Output Option above."
-msgstr ""
-"Формат открываемого лога BOSS, задается вышестоящей опцией - \"Формат лога "
-"BOSS\"."
-
-#: MainWindow.cpp:339
-msgid ""
-"Runs BOSS, simulating its changes to your load order, but doesn't actually "
-"reorder your mods."
-msgstr ""
-"Запускает BOSS, имитируя изменения порядка загрузки, но в действительности, "
-"не меняет порядок ваших модов."
-
-#: MainWindow.cpp:391
-msgid "Ready"
-msgstr "Готов"
-
-#: MainWindow.cpp:409 MainWindow.cpp:642 UserRuleEditor.cpp:116
-#: UserRuleEditor.cpp:161 UserRuleEditor.cpp:883
-msgid "Error: %1%"
-msgstr "Ошибка: %1%"
-
-#: MainWindow.cpp:423 UserRuleEditor.cpp:92 UserRuleEditor.cpp:108
-msgid "BOSS: Working..."
-msgstr "BOSS: Работает..."
-
-#: MainWindow.cpp:629 UserRuleEditor.cpp:86 UserRuleEditor.cpp:454
-#: UserRuleEditor.cpp:476
-msgid "BOSS: User Rules Manager"
-msgstr "BOSS: Менеджер пользовательских правил"
-
-#: MainWindow.cpp:658 MainWindow.cpp:680
-msgid "Error: \"%1%\" cannot be found."
-msgstr "Ошибка: \"%1%\" не найден"
-
-#: MainWindow.cpp:692
-msgid ""
-"Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New Vegas."
-msgstr ""
-"Сортировка порядка загрузки для Oblivion, Skyrim, Fallout 3 и Fallout: New "
-"Vegas."
-
-#: MainWindow.cpp:881
-msgid "BOSS: Settings"
-msgstr "BOSS: Настройки"
-
-#: SettingsWindow.cpp:41
-msgid "Standard (0)"
-msgstr "Стандарт (0)"
-
-#: SettingsWindow.cpp:42
-msgid "Level 1"
-msgstr "Уровень 1"
-
-#: SettingsWindow.cpp:43
-msgid "Level 2"
-msgstr "Уровень 2"
-
-#: SettingsWindow.cpp:44
-msgid "Level 3"
-msgstr "Уровень 3"
-
-#: SettingsWindow.cpp:48
-msgid "Autodetect"
-msgstr "Автообнаружение"
-
-#: SettingsWindow.cpp:70
-msgid "Use User Rules Manager"
-msgstr "Менеджер пользовательских правил"
-
-#: SettingsWindow.cpp:71
-msgid "Close the GUI after running BOSS"
-msgstr "Закрыть GUI после запуска BOSS"
-
-#: SettingsWindow.cpp:91
-msgid "Default Game:"
-msgstr "Игра по умолч.:"
-
-#: SettingsWindow.cpp:93
-msgid "Language:"
-msgstr "Язык:"
-
-#: SettingsWindow.cpp:95
-msgid "Debug Output Verbosity:"
-msgstr "Детализация отладочных сообщений"
-
-#: SettingsWindow.cpp:97
-msgid "Oblivion Masterlist URL:"
-msgstr "Адрес мастерлиста Oblivion:"
-
-#: SettingsWindow.cpp:99
-msgid "Nehrim Masterlist URL:"
-msgstr "Адрес мастерлиста Nehrim:"
-
-#: SettingsWindow.cpp:101
-msgid "Skyrim Masterlist URL:"
-msgstr "Адрес мастерлиста Skyrim:"
-
-#: SettingsWindow.cpp:103
-msgid "Fallout 3 Masterlist URL:"
-msgstr "Адрес мастерлиста Fallout 3:"
-
-#: SettingsWindow.cpp:105
-msgid "Falllout: New Vegas Masterlist URL:"
-msgstr "Адрес мастерлиста Falllout: New Vegas:"
-
-#: SettingsWindow.cpp:112
-msgid "Language settings will be applied after the BOSS GUI is restarted."
-msgstr "Установки языка будут применены после перезапуска BOSS GUI."
-
-#: SettingsWindow.cpp:117
-msgid "OK"
-msgstr "Принять"
-
-#: SettingsWindow.cpp:118 UserRuleEditor.cpp:242
-msgid "Cancel"
-msgstr "Отмена"
-
-#: SettingsWindow.cpp:125
-msgid ""
-"The higher the verbosity level, the more information is outputted to "
-"BOSSDebugLog.txt."
-msgstr ""
-"Более глубокий уровень отладки, больше информации будет выведено в "
-"BOSSDebugLog.txt."
-
-#: UserRuleEditor.cpp:85
-msgid ""
-"The User Rules Manager requires the BOSS masterlist for %1% to have been "
-"downloaded, but it cannot be detected. Do you wish to download the latest "
-"masterlist now?"
-msgstr ""
-"Менеджер пользовательских правил требует загруженного мастерлиста для %1%, "
-"но не может его обнаружить. Желаете ли вы загрузить последний мастерлист "
-"сейчас?"
-
-#: UserRuleEditor.cpp:92 UserRuleEditor.cpp:108
-msgid "Initialising User Rules Manager..."
-msgstr "Инициализация менеджера пользовательских правил..."
-
-#: UserRuleEditor.cpp:98
-msgid "Masterlist revision: %1%."
-msgstr "Версия мастерлиста: %1%."
-
-#: UserRuleEditor.cpp:131
-msgid "before"
-msgstr "перед"
-
-#: UserRuleEditor.cpp:132
-msgid "after"
-msgstr "после"
-
-#: UserRuleEditor.cpp:136
-msgid "top"
-msgstr "вверх"
-
-#: UserRuleEditor.cpp:137
-msgid "bottom"
-msgstr "вниз"
-
-#: UserRuleEditor.cpp:176
-msgid "Rule Editor"
-msgstr "Редактор правил"
-
-#: UserRuleEditor.cpp:179
-msgid "For"
-msgstr "Для"
-
-#: UserRuleEditor.cpp:183
-msgid "Sort Item"
-msgstr "Сортировать объект"
-
-#: UserRuleEditor.cpp:186
-msgid "Sort"
-msgstr "Сортировать"
-
-#: UserRuleEditor.cpp:192
-msgid "Insert at the"
-msgstr "Вставить в"
-
-#: UserRuleEditor.cpp:194
-msgid "of"
-msgstr "из"
-
-#: UserRuleEditor.cpp:202
-msgid "Replace existing messages"
-msgstr "Заменить существующие сообщения"
-
-#: UserRuleEditor.cpp:206
-msgid "Default Plugin Messages"
-msgstr "Сообщения плагина по умолчанию"
-
-#: UserRuleEditor.cpp:226
-msgid "Installed Plugins"
-msgstr "Установленные плагины"
-
-#: UserRuleEditor.cpp:227
-msgid "Masterlist"
-msgstr "Мастерлист"
-
-#: UserRuleEditor.cpp:234
-msgid "Create New Rule"
-msgstr "Создать новое правило"
-
-#: UserRuleEditor.cpp:235
-msgid "Save Edited Rule"
-msgstr "Сохранить измененное правило"
-
-#: UserRuleEditor.cpp:236
-msgid "Delete Rule"
-msgstr "Удалить правило"
-
-#: UserRuleEditor.cpp:238
-msgid "Move Rule Up"
-msgstr "Переместить правило выше"
-
-#: UserRuleEditor.cpp:239
-msgid "Move Rule Down"
-msgstr "Переместить правило ниже"
-
-#: UserRuleEditor.cpp:241
-msgid "Save and Exit"
-msgstr "Сохранить и выйти"
-
-#: UserRuleEditor.cpp:261
-msgid ""
-"Messages must be entered in the correct format. See the User Rules Readme "
-"for more information."
-msgstr ""
-"Сообщения должны быть введены в корректном формате. Смотрите описание "
-"пользовательских правил, для получения большей информации."
-
-#: UserRuleEditor.cpp:437 UserRuleEditor.cpp:464
-msgid "Rule Syntax Error: %1% Please correct the mistake before continuing."
-msgstr ""
-"Ошибка в синтаксисе правила: %1% Пожалуйста исправьте ошибку, перед "
-"продолжением."
-
-#: UserRuleEditor.cpp:453
-msgid "Are you sure you want to save your changes to the selected rule?"
-msgstr "Вы уверены, что хотите сохранить изменения в выбранном правиле?"
-
-#: UserRuleEditor.cpp:475
-msgid "Are you sure you want to delete the selected rule?"
-msgstr "Вы уверены, что хотите удалить выбранное правило?"
-
-#: UserRuleEditor.cpp:553 UserRuleEditor.cpp:572 UserRuleEditor.cpp:841
-msgid "User Rules Manager"
-msgstr "Менеджер пользовательских правил"
-
-#: UserRuleEditor.cpp:588
-msgid "No mod is specified to sort relative to."
-msgstr "Не указан мод, по отношению к которому сортировать."
-
-#: UserRuleEditor.cpp:590
-msgid "Cannot sort a plugin relative to a group."
-msgstr "Нельзя отсортировать плагин относительно группы."
-
-#: UserRuleEditor.cpp:593
-msgid "No group is specified to insert into."
-msgstr "Не указана группа для вставки"
-
-#: UserRuleEditor.cpp:595
-msgid "Cannot insert into a plugin."
-msgstr "Нельзя вставить в плагин"
-
-#: UserRuleEditor.cpp:599
-msgid "Cannot add messages when none are given."
-msgstr "Нельзя добавлять сообщения, когда ничего не задано."
-
-#: UserRuleEditor.cpp:602
-msgid "No rule mod is specified."
-msgstr "Нет указанного в правиле мода."
-
-#: UserRuleEditor.cpp:606
-msgid "No group is specified to sort relative to."
-msgstr "Не указана группа, по отношению к которой сортировать."
-
-#: UserRuleEditor.cpp:608
-msgid "Cannot sort a group relative to a plugin."
-msgstr "Нельзя сортировать группу по отношению к плагину"
-
-#: UserRuleEditor.cpp:610
-msgid "Cannot insert groups."
-msgstr "Невозможно вставлять группы"
-
-#: UserRuleEditor.cpp:613
-msgid "Cannot add messages to groups."
-msgstr "Нельзя добавить сообщения к группе"
-
-#: UserRuleEditor.cpp:616
-msgid ""
-"The rule mod is not being sorted nor having its attached messages altered."
-msgstr ""
-"Правило мода не может быть отсортировано, не имея добавленных им измененных "
-"сообщений."
-
-#: UserRuleEditor.cpp:733
-msgid "Rule Syntax Error: Cannot sort a plugin relative to a group."
-msgstr ""
-"Ошибка в синтаксисе правила: Нельзя сортировать плагин по отношению к группе"
-
-#: UserRuleEditor.cpp:741
-msgid "Rule Syntax Error: Cannot insert into a plugin."
-msgstr "Ошибка в синтаксисе правила: Нельзя вставить в плагин"
-
-#: UserRuleEditor.cpp:751
-msgid "Rule Syntax Error: Cannot sort a group relative to a plugin."
-msgstr ""
-"Ошибка в синтаксисе правила: Нельзя отсортировать группу по отношению к "
-"плагину"
-
-#: UserRuleEditor.cpp:759
-msgid "Rule Syntax Error: Cannot insert groups."
-msgstr "Ошибка в синтаксисе правила: Нельзя вставить группу"
-
-#: UserRuleEditor.cpp:852
-msgid ""
-"The rule sorting the unrecognised plugin \"%1%\" has been disabled as the "
-"plugin is now recognised. If you wish to override its position in the "
-"masterlist, re-enable the rule."
-msgstr ""
-"Правило, сортирующее неизвестные плагины \"%1%\", было отключено, так как "
-"плагин теперь известен. Если вы желаете изменить его позицию в мастерлисте, "
-"включите правило заново."
-
-#: UserRuleEditor.cpp:853
-msgid "BOSS: Rule Disabled"
-msgstr "BOSS: Правило отключено"
-
-#~ msgid "No game master .esm file found!"
-#~ msgstr "Не найден .esm мастерфайл игры!"
-
-#~ msgid "Cannot find online masterlist revision number!"
-#~ msgstr "Невозможно найти номер ревизии мастерлиста онлайн!"
-
-#~ msgid "Cannot find online masterlist revision date!"
-#~ msgstr "Невозможно найти дату ревизии мастерлиста онлайн!"
-
-#~ msgid "Cannot read list of files to be updated!"
-#~ msgstr "Невозможно прочесть список файлов для обновления!"
-
-#~ msgid "Downloaded file \"%1%\" failed verification test!"
-#~ msgstr "Загруженный файл \"%1%\" не прошел проверку!"
-
-#~ msgid "cURL cannot be initialised!"
-#~ msgstr "cURL не может быть инициализирован!"
-
-#~ msgid "cURL's error buffer could not be set! cURL response: \"%1%\"."
-#~ msgstr "Ошибка cURL, буфер не может быть установлен! Ответ cURL: \"%1%\"."
-
-#~ msgid "A cURL option could not be set! cURL response: \"%1%\"."
-#~ msgstr "Опция cURL не может быть установлена! Ответ cURL: \"%1%\"."
-
-#~ msgid "Proxy hostname or port invalid! cURL response: \"%1%\"."
-#~ msgstr "Имя прокси или порт недействителен! Ответ cURL: \"%1%\"."
-
-#~ msgid "Failed to set proxy type! cURL response: \"%1%\"."
-#~ msgstr "Не удается установить тип прокси! Ответ cURL: \"%1%\"."
-
-#~ msgid ""
-#~ "Proxy authentication username or password invalid! cURL response: \"%1%\"."
-#~ msgstr ""
-#~ "Имя пользователя или пароль для прокси недействительны! Ответ cURL: \"%1%"
-#~ "\"."
-
-#~ msgid "Failed to set proxy authentication type! cURL response: \"%1%\"."
-#~ msgstr ""
-#~ "Невозможно установить тип идентификации прокси! Ответ cURL: \"%1%\"."
-
-#~ msgid "cURL could not perform task! cURL response: \"%1%\"."
-#~ msgstr "cURL не может выполнить задачу! Ответ cURL: \"%1%\"."
-
-#~ msgid "Cancelled by user."
-#~ msgstr "Отменено пользователем."
-
-#~ msgid "Memory allocation failed."
-#~ msgstr "Ошибка выделения памяти."
-
-#~ msgid "No Internet connection detected."
-#~ msgstr "Интернет-подключение не найдено."
-
-#~ msgid "No tag map has yet been initialised."
-#~ msgstr "Карты тегов еще не инициализирована"
-
-#~ msgid ""
-#~ "The requested change to the active plugins list would result in over 255 "
-#~ "plugins being active."
-#~ msgstr ""
-#~ "Запрошенные изменения в списке активных плагинов приведут к наличию более "
-#~ "чем 255 активных плагинов."
-
-#~ msgid "Display Settings"
-#~ msgstr "Настройки отображения"
-
-#~ msgid ""
-#~ "The BOSS Log can be displayed using an alternative colour scheme, which "
-#~ "can be enabled and customised using the options below. Colours must be "
-#~ "specified using their lowercase hex codes. The default value for each "
-#~ "element is displayed as the placeholder for its text box, and this value "
-#~ "is used if the text box is left empty."
-#~ msgstr ""
-#~ "Лог BOSS может быть отображен с использованием альтернативной цветовой "
-#~ "схемы, которая может быть включена и настроена нижестоящими опциями. "
-#~ "Цвета должны быть заданы с помощью строчных шестнадцатеричных кодов. "
-#~ "Значение по умолчанию для каждого элемента отобразится как заполнитель "
-#~ "его текстового поля, и это значение используется, если  текстовое поле "
-#~ "останется пустым."
-
-#~ msgid ""
-#~ " Some examples of colour codes that can be used may be found <a "
-#~ "href='http://en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>."
-#~ msgstr ""
-#~ " Примеры цветовых кодов могут быть найдены <a href='http://ru.wikipedia."
-#~ "org/wiki/%D0%A6%D0%B2%D0%B5%D1%82%D0%B0_HTML'>здесь</a>."
-
-#~ msgid "Use Alternative Colour Scheme"
-#~ msgstr "Использовать альтернативную цветовую схему"
-
-#~ msgid "Element"
-#~ msgstr "Элемент"
-
-#~ msgid "Colour"
-#~ msgstr "Цвет"
-
-#~ msgid "General Text"
-#~ msgstr "Основной текст"
-
-#~ msgid "Window Backgrounds"
-#~ msgstr "Фон окна"
-
-#~ msgid "Menu Background"
-#~ msgstr "Фон меню"
-
-#~ msgid "Menu Button Hover"
-#~ msgstr "Покрытие кнопки меню"
-
-#~ msgid "Active Menu Button"
-#~ msgstr "Активная кнопка меню"
-
-#~ msgid "Links"
-#~ msgstr "Ссылки"
-
-#~ msgid "Visited Links"
-#~ msgstr "Посещенные ссылки"
-
-#~ msgid "CRC Labels"
-#~ msgstr "Метки контрольных сумм"
-
-#~ msgid "Active Labels"
-#~ msgstr "Метки активных"
-
-#~ msgid "Version Labels"
-#~ msgstr "Метки версий"
-
-#~ msgid "Errors"
-#~ msgstr "Ошибки"
-
-#~ msgid "Warnings"
-#~ msgstr "Предупреждения"
-
-#~ msgid "Dirty Messages"
-#~ msgstr "Сообщения о \"грязных правках\""
-
-#~ msgid "Bash Tag Suggestion Prefixes"
-#~ msgstr "Префиксы Bash-тегов"
-
-#~ msgid "CSS Settings Panel File Drag Highlight"
-#~ msgstr "Подсветка панели настроек стилей переноса файла"
-
-#~ msgid "Filters Background"
-#~ msgstr "Фон фильтров"
-
-#~ msgid "Success Messages"
-#~ msgstr "Сообщения об успехе"
-
-#~ msgid "Quoted Userlist Messages"
-#~ msgstr "Цитированные сообщения списка правил"
-
-#~ msgid "Summary Messages Default Background"
-#~ msgstr "Фон по умолчанию для общих сообщений"
-
-#~ msgid "Table Headings"
-#~ msgstr "Заголовки таблицы"
-
-#~ msgid ""
-#~ "You can <span class='button' id='cssButtonBackup'>back up</span> your "
-#~ "display settings to avoid losing them when you <span "
-#~ "id='loseSettingsClose'>close the BOSS Log</span><span "
-#~ "id='loseSettingsCacheClear'>clear your browser's cache</span>."
-#~ msgstr ""
-#~ "Вы можете <span class='button' id='cssButtonBackup'>сделать резервную "
-#~ "копию</span> ваших настроек стилей, для предотвращения их потери, в "
-#~ "случае, когда вы <span id='loseSettingsClose'>закроете лог BOSS и </"
-#~ "span><span id='loseSettingsCacheClear'>очистите кэш браузера</span>."
-
-#~ msgid ""
-#~ "Backup files are given nonsensical names by your browser, but you can "
-#~ "rename them to whatever you want. Drag and drop a backup file into this "
-#~ "panel to restore the settings it contains."
-#~ msgstr ""
-#~ "Резервное копирование файлов с присвоенными вашим браузером именами, но "
-#~ "вы можете переименовать их так как вам нужно. Перетащите файл резервной "
-#~ "копии на эту панель для восстановления содержащихся в нем настроек."
-
-#~ msgid "Apply"
-#~ msgstr "Сохранить"
-
-#~ msgid "Backup/Restore of Display Settings"
-#~ msgstr "Сохранение/восстановление настроек отображения"
-
-#~ msgid "Allows the backup and restore of custom display settings."
-#~ msgstr ""
-#~ "Позволяет сделать резервную копию и восстановить из неё измененные "
-#~ "настройки отображения."
-
-#~ msgid ""
-#~ "Do not display this panel again for this browser. If this checkbox is "
-#~ "left unchecked, this panel will be displayed every time you open the BOSS "
-#~ "Log."
-#~ msgstr ""
-#~ "Не показывать в следующий раз эту панель. Если этот флажок оставить "
-#~ "неотмеченным, эта панель будет отображаться каждый раз, при открытии "
-#~ "браузера."
-
-#~ msgid "Hide Clean Plugins"
-#~ msgstr "Скрыть \"чистые\" плагины"
-
-#~ msgctxt ""
-#~ "Label for text box. Do not use a single quote in translation, use "
-#~ "'&#x27;' instead"
-#~ msgid "A link to the plugin&#x27;s download location."
-#~ msgstr "Ссылка на страницу загрузки плагина."
-
-#~ msgid "Downloading: %s; %3.0f%% of %3.0f KB"
-#~ msgstr "Загрузка: %s; %3.0f%% из %3.0f KB"
-
-#~ msgid "add source file references to debug statements"
-#~ msgstr "добавление ссылок на исходные файлы для отчета отладки"
-
-#~ msgid "sets the proxy hostname for the masterlist updater"
-#~ msgstr "устанавливает имя прокси для обновления мастерлиста."
-
-#~ msgid "sets the proxy port number for the masterlist updater"
-#~ msgstr "устанавливает номер порта прокси для обновления мастерлиста."
-
-#~ msgid ""
-#~ "logs the debug output to the BOSSDebugLog.txt file instead of the command "
-#~ "line."
-#~ msgstr ""
-#~ "выводит сообщения отладки в файл BOSSDebugLog.txt вместо командной строки."
-
-#~ msgid "Checking for BOSS updates..."
-#~ msgstr "Проверка обновлений BOSS..."
-
-#~ msgid "You are already using the latest version of BOSS."
-#~ msgstr "У вас уже последняя версия BOSS."
-
-#~ msgid "Update available! New version: %s"
-#~ msgstr "Доступно обновление! Новая версия: %s"
-
-#~ msgid ""
-#~ "The update may be downloaded from any of the locations listed in the BOSS "
-#~ "Log."
-#~ msgstr ""
-#~ "Обновление может быть загружено из любого другого места, из "
-#~ "представленных в логе  BOSS."
-
-#~ msgid "Release notes:"
-#~ msgstr "Заметки к выпуску:"
-
-#~ msgid "Do you want to download and install the update? (y/n)"
-#~ msgstr "Вы хотите загрузить и установить обновление? (y/n)"
-
-#~ msgid "No update has been downloaded or installed."
-#~ msgstr "Никаких обновлений не было загружено или установлено"
-
-#~ msgid "New installer successfully downloaded!"
-#~ msgstr "Новый установщик успешно загружен!"
-
-#~ msgid ""
-#~ "BOSS will now launch the downloaded installer and exit. Complete the "
-#~ "installer to complete the update."
-#~ msgstr ""
-#~ "Теперь BOSS запустит скачанный установщик и закроется. Завершите "
-#~ "установку для завершения обновления."
-
-#~ msgid "Update cancelled."
-#~ msgstr "Обновление прервано"
-
-#~ msgid "BOSS Update check failed. No Internet connection detected."
-#~ msgstr ""
-#~ "Проверка обновлений BOSS не удалась. Не найдено активное интернет-"
-#~ "соединение."
-
-#~ msgid ""
-#~ "Your masterlist is already at the latest revision (r%1%; %2%). No update "
-#~ "necessary."
-#~ msgstr ""
-#~ "Ваш мастерлист уже последней версии (r %1%; %2%). Обновление не требуется."
-
-#~ msgid ""
-#~ "No internet connection detected. Masterlist auto-updater could not check "
-#~ "for updates."
-#~ msgstr ""
-#~ "Не найдено активное интернет-соединение. Проверка обновлений не может "
-#~ "быть произведена."
-
-#~ msgid "Downloading: %1%"
-#~ msgstr "Загрузка: %1%"
-
-#~ msgid "Switch to running BOSS for Morrowind."
-#~ msgstr "Переключение на запуск BOSS для Morrowind"
-
-#~ msgid "&Open API Readme"
-#~ msgstr "Описание &API"
-
-#~ msgid "Opens the BOSS API readme in your default web browser."
-#~ msgstr "Открывает описание BOSS API в браузере по умолчанию."
-
-#~ msgid "&Check For Updates..."
-#~ msgstr "&Проверка обновлений..."
-
-#~ msgid "Checks for updates to BOSS."
-#~ msgstr "Проверить обновления для BOSS"
-
-#~ msgid "Masterlist already up-to-date."
-#~ msgstr "Мастерлист уже обновлен"
-
-#~ msgid "Masterlist updated successfully."
-#~ msgstr "Мастерлист успешно обновлен"
-
-#~ msgid ""
-#~ "A \"one-click\" program for users that quickly optimises and avoids "
-#~ "detrimental conflicts in their\n"
-#~ "TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and "
-#~ "Fallout: New Vegas mod load orders."
-#~ msgstr ""
-#~ "Простая программа для пользователей, которая быстро оптимизирует и "
-#~ "предотвращает конфликты в порядке загрузки модов, для таких\n"
-#~ " игр как:  TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, "
-#~ "Fallout 3 и Fallout: New Vegas."
-
-#~ msgid ""
-#~ "The automatic updater will download the installer for the new version to "
-#~ "this BOSS folder.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Автоматическое обновление загрузит установщик новой версии в эту папку "
-#~ "BOSS.\n"
-#~ "\n"
-
-#~ msgid ""
-#~ "It will then launch the installer before exiting. Complete the installer "
-#~ "to complete the update."
-#~ msgstr ""
-#~ "Перед выходом установщик будет запущен. Завершите установку для "
-#~ "завершения обновления."
-
-#~ msgid "BOSS: Automatic Updater"
-#~ msgstr "BOSS: Автоматическое обновление"
-
-#~ msgid "Automatic updater cancelled."
-#~ msgstr "Автоматическое обновление отменено"
-
-#~ msgid "Initialising download..."
-#~ msgstr "Инизиализация загрузки..."
-
-#~ msgid ""
-#~ "New installer successfully downloaded! When you click 'OK', BOSS will "
-#~ "launch the downloaded installer and exit. Complete the installer to "
-#~ "complete the update."
-#~ msgstr ""
-#~ "Новый установщик успешно загружен! Когда вы нажмете 'Готово', BOSS "
-#~ "запустит загруженный установщик и  закроется. Выполните установку для "
-#~ "завершения обновления."
-
-#~ msgid ""
-#~ "Update failed. Details: %1%\n"
-#~ "\n"
-#~ "Update cancelled."
-#~ msgstr ""
-#~ "Обновление не удалось. Детали: %1%\n"
-#~ "\n"
-#~ "Обновление отменено."
-
-#~ msgid ""
-#~ "Update failed. Details: %1%; %2%\n"
-#~ "\n"
-#~ "Update cancelled."
-#~ msgstr ""
-#~ "Обновление не удалось. Детали: %1%; %2%\n"
-#~ "\n"
-#~ "Обновление отменено."
-
-#~ msgid "Update check failed. Details: %1%"
-#~ msgstr "Проверка обновлений не удалась. Детали: %1%"
-
-#~ msgid "Update check failed. No Internet connection detected."
-#~ msgstr ""
-#~ "Проверка обновлений не удалась. Не найдено активное интернет-соединение."
-
-#~ msgid "BOSS: Check For Updates"
-#~ msgstr "BOSS: Проверка обновлений"
-
-#~ msgid ""
-#~ "Update available! New version: %1%\n"
-#~ "The update may be downloaded from any of the locations listed in the BOSS "
-#~ "Log."
-#~ msgstr ""
-#~ "Доступно обновление! Новая версия: %1%\n"
-#~ "обновление может быть загружено из любого другого места, из "
-#~ "представленных в логе BOSS."
-
-#~ msgid "Failed to get release notes. Details: %1%"
-#~ msgstr "Не удалось получить замечания к выпуску. Детали: %1%"
-
-#~ msgid ""
-#~ "Update available! New version: %1%\n"
-#~ "Release notes:\n"
-#~ "\n"
-#~ "%2%\n"
-#~ "\n"
-#~ "Do you want to download and install the update?"
-#~ msgstr ""
-#~ "Доступно обновление! Новая версия: %1%\n"
-#~ "Замечания к выпуску:\n"
-#~ "\n"
-#~ "%2%\n"
-#~ "\n"
-#~ "Вы хотите загрузить и установить обновление?"
-
-#~ msgid "Check for BOSS updates on startup"
-#~ msgstr "Проверять обновления BOSS при запуске"
-
-#~ msgid "Proxy Hostname:"
-#~ msgstr "Имя хоста:"
-
-#~ msgid "Proxy Port Number:"
-#~ msgstr "Номер порта:"
-
-#~ msgid "Proxy Username:"
-#~ msgstr "Имя пользователя:"
-
-#~ msgid "Proxy Password:"
-#~ msgstr "Пароль:"
-
-#~ msgid "Include Source Code References"
-#~ msgstr "Включает ссылки на исходный код"
-
-#~ msgid "Log Debug Output"
-#~ msgstr "Вывод лога отладки"
-
-#~ msgid "General"
-#~ msgstr "Основное"
-
-#~ msgid "Internet"
-#~ msgstr "Прокси"
-
-#~ msgid "Debugging"
-#~ msgstr "Отладка"
-
-#~ msgid "The output is logged to the BOSSDebugLog.txt file"
-#~ msgstr "Сообщения будут записаны в файл BOSSDebugLog.txt"
-
-#~ msgid "Adds source code references to command line output."
-#~ msgstr ""
-#~ "Добавляет ссылки на исходный код в выводимые сообщения командной строки"
-
-#~ msgid ""
-#~ "The higher the verbosity level, the more information is outputted to the "
-#~ "command line."
-#~ msgstr ""
-#~ "Более глубокий уровень отладки, больше информации будет выведено в "
-#~ "командную строку."
-
-#~ msgid ""
-#~ "Error: No internet connection detected. Masterlist could not be "
-#~ "downloaded."
-#~ msgstr ""
-#~ "Ошибка: Не найдено активное интернет-соединение. Мастерлист не может быть "
-#~ "загружен."
+msgid   ""
+msgstr  "Project-Id-Version: BOSS2\n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2015-12-18 09:34-0500\n"
+        "PO-Revision-Date: 2014-03-15 20:03+0600\n"
+        "Last-Translator: Tokc.D.K. <TokcDK@gmail.com>\n"
+        "Language-Team: LANGUAGE <LL@li.org>\n"
+        "Language: ru\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=UTF-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+        "X-Generator: Poedit 1.6.4\n"
+
+#: src/common/error.h:102
+#, boost-format
+msgid   "Masterlist Parsing Error: Expected a %1% at:"
+msgstr  "Ошибка обработки мастерлиста: Ожидалось %1% на:"
+
+#: src/common/error.h:104
+#, boost-format
+msgid   "Ini Parsing Error: Expected a %1% at:"
+msgstr  "Ошибка обработки INI: Ожидалось %1% на:"
+
+#: src/common/error.h:106
+#, boost-format
+msgid   "Userlist Parsing Error: Expected a %1% at:"
+msgstr  "Ошибка обработки списка правил: Ожидалось %1% на:"
+
+#: src/common/error.h:108
+#, boost-format
+msgid   "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+msgstr  "Ошибка в синтаксисе списка правил: Правило начинается с \"%1%: %2%\" "
+        "%3%"
+
+#: src/common/error.h:110
+msgid   "Masterlist parsing aborted. Utility will end now."
+msgstr  "Обработка мастерлиста прервана. Утилита будет закрыта."
+
+#: src/common/error.h:112
+msgid   "Ini parsing aborted. Some or all of the options may not have been "
+        "set correctly."
+msgstr  "Обработка ini прервана. Некоторые или все настройки не могут быть "
+        "установлены правильно."
+
+#: src/common/error.h:114
+msgid   "Userlist parsing aborted. No rules will be applied."
+msgstr  "Обработка списка правил прервана. Отсутствуют правила, которые могли "
+        "быть применены"
+
+#: src/common/error.h:119
+msgid   "includes a sort line in a rule with a FOR rule keyword."
+msgstr  "включает строку сортировки в правиле с ключом FOR."
+
+#: src/common/error.h:121
+msgid   "tries to add a group."
+msgstr  "пытается добавить группу."
+
+#: src/common/error.h:123
+msgid   "tries to sort the group \"ESMs\"."
+msgstr  "пытается отсортировать группу \"ESMs\"."
+
+#: src/common/error.h:125
+msgid   "tries to sort the master .ESM file."
+msgstr  "пытается отсортировать ESM-файл."
+
+#: src/common/error.h:127
+msgid   "references a mod and a group."
+msgstr  "ссылается на мод и группу."
+
+#: src/common/error.h:129
+msgid   "tries to sort a group before the group \"ESMs\"."
+msgstr  "пытается отсортировать группу, перед группой \"ESMs\"."
+
+#: src/common/error.h:131
+msgid   "tries to sort a mod before the master .ESM file."
+msgstr  "пытается отсортировать группу, перед ESM-файлом."
+
+#: src/common/error.h:133
+msgid   "tries to insert a mod into the top of the group \"ESMs\", before the "
+        "master .ESM file."
+msgstr  "пытается вставить мод вверх группы \"ESMs\", перед мастерфайлом .ESM-"
+        "файл."
+
+#: src/common/error.h:135
+msgid   "tries to insert a group or insert something into a mod."
+msgstr  "пытается вставить группу или что-то в мод."
+
+#: src/common/error.h:137
+msgid   "tries to attach a message to a group."
+msgstr  "пытается прикрепить сообщение к группе"
+
+#: src/common/error.h:139
+msgid   "has more than one sort line."
+msgstr  "имеет больше чем одну строку для сортировки."
+
+#: src/common/error.h:141
+msgid   "has more than one REPLACE-using message line."
+msgstr  "имеет больше чем одно использующее замену сообщение."
+
+#: src/common/error.h:143
+msgid   "has a REPLACE-using message line that is not the first message line."
+msgstr  "имеет использующее замену сообщение, которое не первое сообщения в "
+        "строке."
+
+#: src/common/error.h:145
+msgid   "has a sort line that is not the second line of the rule."
+msgstr  "имеет строку сортировки, которая не вторая в правиле."
+
+#: src/common/error.h:147
+msgid   "tries to sort a mod or group relative to itself."
+msgstr  "пытается сортировать мод или группу по отношению к себе."
+
+#: src/common/error.h:149
+msgid   "tries to attach an malformatted message."
+msgstr  "пытается прикрепить сообщение неизвестного типа."
+
+#: src/common/error.h:151
+msgid   "tries to sort a plugin before a master file."
+msgstr  "пытается отсортировать плагин перед мастерфайлом."
+
+#: src/common/error.h:153
+msgid   "tries to sort a master file before a plugin."
+msgstr  "пытается отсортировать мастерфайл перед плагином."
+
+#: src/common/settings.cpp:93
+msgid   "# Settings with names starting with 'b' are boolean and accept "
+        "values of 'true' or 'false'."
+msgstr  ""
+
+#: src/common/settings.cpp:94
+msgid   "# Settings with names starting with 'i' are unsigned integers and "
+        "accept varying ranges of whole numbers."
+msgstr  ""
+
+#: src/common/settings.cpp:95
+msgid   "# Settings with names starting with 's' are strings and their "
+        "accepted values vary."
+msgstr  ""
+
+#: src/common/settings.cpp:96
+msgid   "# See the BOSS ReadMe for details on what each setting does and the "
+        "accepted values for integer and string settings."
+msgstr  ""
+
+#: src/common/error.cpp:107 src/common/error.cpp:146
+msgid   "No error."
+msgstr  "Нет ошибки."
+
+#: src/common/error.cpp:109
+#, boost-format
+msgid   "\"%1%\" cannot be read!"
+msgstr  "\"%1%\" не может быть прочитан!"
+
+#: src/common/error.cpp:111
+#, boost-format
+msgid   "\"%1%\" cannot be written to!"
+msgstr  "\"%1%\" не может быть записан!"
+
+#: src/common/error.cpp:113
+#, boost-format
+msgid   "\"%1%\" is not encoded in valid UTF-8!"
+msgstr  "\"%1%\" не закодирован в верной кодировке UTF-8!"
+
+#: src/common/error.cpp:115
+#, boost-format
+msgid   "\"%1%\" cannot be found!"
+msgstr  "\"%1%\" не найден!"
+
+#: src/common/error.cpp:117
+#, boost-format
+msgid   "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
+msgstr  "Определение условия \"%1%\" для \"%2%\" не удалось!"
+
+#: src/common/error.cpp:119
+#, boost-format
+msgid   "\"%1%\" is not a valid regular expression. Item skipped."
+msgstr  "\"%1%\" это неверное регулярное выражение. Запись пропущена."
+
+#: src/common/error.cpp:121
+msgid   "No game detected!"
+msgstr  "Игра не найдена!"
+
+#: src/common/error.cpp:123
+#, boost-format
+msgid   "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
+msgstr  "\"%1%\" не может быть конвертирован из UTF-8 в \"%2%\"."
+
+#: src/common/error.cpp:125
+#, boost-format
+msgid   "Master file \"%1%\" loading after non-master plugins!"
+msgstr  "Мастерфайл \"%1%\" загружается после плагинов, не являющихся "
+        "мастерфайлами!"
+
+#: src/common/error.cpp:129
+#, boost-format
+msgid   "Git operation failed. Error: %1%"
+msgstr  "Операция с Git не удалась. Ошибка: %1%"
+
+#: src/common/error.cpp:131
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be read! Filesystem "
+        "response: \"%2%\"."
+msgstr  "Не читается дата модификации для \"%1%\"! Ответ файловой системы: "
+        "\"%2%\"."
+
+#: src/common/error.cpp:133
+#, boost-format
+msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не может быть переименован! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:135
+#, boost-format
+msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не найден! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:137
+#, boost-format
+msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не может быть создан! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:139
+#, boost-format
+msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не может быть отсканирован! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:141
+#, boost-format
+msgid   "Parsing of \"%1%\" failed!"
+msgstr  "Обработка \"%1%\" не удалась!"
+
+#: src/common/error.cpp:143
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be written! Filesystem "
+        "response: \"%2%\"."
+msgstr  "Дата изменения для \"%1%\" не может быть записана! Ответ файловой "
+        "системы: \"%2%\"."
+
+#: src/common/error.cpp:145
+#, boost-format
+msgid   "The window \"%1%\" failed to initialise. Details: \"%2%\"."
+msgstr  "Окно \"%1%\" не удалось инициализировать. Детали: \"%2%\"."
+
+#: src/common/game.cpp:500
+msgid   "Rule is disabled."
+msgstr  "Правило отключено."
+
+#: src/common/game.cpp:524 src/common/game.cpp:587 src/common/game.cpp:640
+msgid   " is not installed or in the masterlist."
+msgstr  " не установлен или уже в мастерлисте."
+
+#: src/common/game.cpp:531 src/common/game.cpp:594
+msgid   " is already in the masterlist."
+msgstr  " уже в мастерлисте."
+
+#: src/common/game.cpp:537 src/common/game.cpp:601
+msgid   " is not in the masterlist, cannot override."
+msgstr  " не в мастерлисте, невозможно перезаписать."
+
+#: src/common/game.cpp:551
+msgid   " is not installed, and is not in the masterlist."
+msgstr  " не установлен и отсутствует в мастерлисте."
+
+#: src/common/game.cpp:557
+msgid   " is not in the masterlist and has not been sorted by a rule."
+msgstr  " отсутствует в мастерлисте и не может быть отсортирован правилом."
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   "The group "
+msgstr  "Группа "
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   " is not in the masterlist or is malformatted."
+msgstr  "  отсутствует в мастерлисте или неизвестного типа."
+
+#: src/common/game.cpp:748 src/common/game.cpp:766
+msgid   "Version: "
+msgstr  "Версия: "
+
+#: src/common/game.cpp:750 src/common/game.cpp:768 src/common/game.cpp:854
+#: src/common/game.cpp:856
+msgid   "Checksum: "
+msgstr  "Контрольная сумма: "
+
+#: src/common/game.cpp:824
+msgid   "The order of plugins set by BOSS differs from their order in its "
+        "masterlist, as one or more of the installed plugins is false-"
+        "flagged. For more information, see \"file:../Docs/BOSS%20Readme."
+        "html#appendix-c False-Flagged Plugins\"."
+msgstr  "Порядок плагинов, заданный в BOSS, отличается от их порядка в "
+        "мастерлисте, один или больше установленных плагинов являются ложно-"
+        "помеченными. Для подробной информации смотрите \"file:../Docs/BOSS"
+        "%20Readme.html#appendix-c False-Flagged Plugins\"."
+
+#: src/common/game.cpp:827
+msgid   "Could not enforce load order master/plugin partition. Details: "
+msgstr  "Не в состоянии обеспечить изменить порядок загрузки раздела плагинов/"
+        "мастерфайлов. Детали: "
+
+#: src/common/game.cpp:848 src/output/boss_log.cpp:388
+#: src/output/boss_log.cpp:392 src/boss_cli.cpp:88
+msgid   "Version "
+msgstr  "Версия "
+
+#: src/common/game.cpp:850
+msgid   "Active"
+msgstr  "Активен"
+
+#: src/common/game.cpp:872
+msgid   "Error: "
+msgstr  "Ошибка: "
+
+#: src/common/game.cpp:907 src/boss_cli.cpp:356
+msgid   "Critical Error: "
+msgstr  "Критическая ошибка: "
+
+#: src/common/game.cpp:908 src/gui/main_window.cpp:551
+#: src/gui/main_window.cpp:608 src/gui/main_window.cpp:661 src/boss_cli.cpp:357
+#: src/boss_cli.cpp:424 src/boss_cli.cpp:470 src/boss_cli.cpp:512
+msgid   "Check the Troubleshooting section of the ReadMe for more information "
+        "and possible solutions."
+msgstr  "Проверьте секцию ридми \"Решение проблем\", для большей информации и "
+        "возможных решений."
+
+#: src/common/game.cpp:909 src/gui/main_window.cpp:552
+#: src/gui/main_window.cpp:609 src/gui/main_window.cpp:662 src/boss_cli.cpp:358
+#: src/boss_cli.cpp:425 src/boss_cli.cpp:471 src/boss_cli.cpp:513
+msgid   "Utility will end now."
+msgstr  "Утилита сейчас закроется."
+
+#: src/gui/settings_window.cpp:48
+msgid   "Standard (0)"
+msgstr  "Стандарт (0)"
+
+#: src/gui/settings_window.cpp:49
+msgid   "Level 1"
+msgstr  "Уровень 1"
+
+#: src/gui/settings_window.cpp:50
+msgid   "Level 2"
+msgstr  "Уровень 2"
+
+#: src/gui/settings_window.cpp:51
+msgid   "Level 3"
+msgstr  "Уровень 3"
+
+#: src/gui/settings_window.cpp:53
+msgid   "Autodetect"
+msgstr  "Автообнаружение"
+
+#: src/gui/settings_window.cpp:75
+msgid   "Use User Rules Manager"
+msgstr  "Менеджер пользовательских правил"
+
+#: src/gui/settings_window.cpp:77
+msgid   "Close the GUI after running BOSS"
+msgstr  "Закрыть GUI после запуска BOSS"
+
+#: src/gui/settings_window.cpp:97
+msgid   "Default Game:"
+msgstr  "Игра по умолч.:"
+
+#: src/gui/settings_window.cpp:99
+msgid   "Language:"
+msgstr  "Язык:"
+
+#: src/gui/settings_window.cpp:101
+msgid   "Debug Output Verbosity:"
+msgstr  "Детализация отладочных сообщений"
+
+#: src/gui/settings_window.cpp:103
+msgid   "Oblivion Masterlist URL:"
+msgstr  "Адрес мастерлиста Oblivion:"
+
+#: src/gui/settings_window.cpp:105
+msgid   "Nehrim Masterlist URL:"
+msgstr  "Адрес мастерлиста Nehrim:"
+
+#: src/gui/settings_window.cpp:107
+msgid   "Skyrim Masterlist URL:"
+msgstr  "Адрес мастерлиста Skyrim:"
+
+#: src/gui/settings_window.cpp:109
+msgid   "Fallout 3 Masterlist URL:"
+msgstr  "Адрес мастерлиста Fallout 3:"
+
+#: src/gui/settings_window.cpp:111
+msgid   "Falllout: New Vegas Masterlist URL:"
+msgstr  "Адрес мастерлиста Falllout: New Vegas:"
+
+#: src/gui/settings_window.cpp:118
+msgid   "Language settings will be applied after the BOSS GUI is restarted."
+msgstr  "Установки языка будут применены после перезапуска BOSS GUI."
+
+#: src/gui/settings_window.cpp:123
+msgid   "OK"
+msgstr  "Принять"
+
+#: src/gui/settings_window.cpp:124 src/gui/user_rule_editor.cpp:563
+msgid   "Cancel"
+msgstr  "Отмена"
+
+#: src/gui/settings_window.cpp:131
+msgid   "The higher the verbosity level, the more information is outputted to "
+        "BOSSDebugLog.txt."
+msgstr  "Более глубокий уровень отладки, больше информации будет выведено в "
+        "BOSSDebugLog.txt."
+
+#: src/gui/main_window.cpp:125
+#, boost-format
+msgid   "Error: %1% Details: %2%"
+msgstr  "Ошибка: %1% Детали: %2%"
+
+#: src/gui/main_window.cpp:126 src/gui/main_window.cpp:176
+#: src/gui/main_window.cpp:190 src/gui/main_window.cpp:692
+#: src/gui/main_window.cpp:715 src/gui/main_window.cpp:850
+#: src/gui/main_window.cpp:865 src/gui/user_rule_editor.cpp:123
+#: src/gui/user_rule_editor.cpp:130 src/gui/user_rule_editor.cpp:139
+#: src/gui/user_rule_editor.cpp:146 src/gui/user_rule_editor.cpp:283
+#: src/gui/user_rule_editor.cpp:442 src/gui/user_rule_editor.cpp:480
+#: src/gui/user_rule_editor.cpp:759 src/gui/user_rule_editor.cpp:786
+msgid   "BOSS: Error"
+msgstr  "BOSS: Ошибка"
+
+#: src/gui/main_window.cpp:175
+#, boost-format
+msgid   "Error: could not apply translation: %1%"
+msgstr  "Ошибка: Невозможно применить перевод: %1%"
+
+#: src/gui/main_window.cpp:189
+msgid   "Error: The BOSS GUI is already running. This instance will now quit."
+msgstr  "Ошибка: BOSS GUI уже запущен. Этот экземпляр будет закрыт."
+
+#: src/gui/main_window.cpp:215
+msgid   " (not detected)"
+msgstr  " (не найдена)"
+
+#: src/gui/main_window.cpp:221 src/boss_cli.cpp:338
+msgid   "Please pick which game to run BOSS for:"
+msgstr  "Пожалуйста выберете, для какой игры загрузить BOSS:"
+
+#: src/gui/main_window.cpp:222
+msgid   "BOSS: Select Game"
+msgstr  "BOSS: Выбор игры"
+
+#: src/gui/main_window.cpp:260
+msgid   "Plain Text"
+msgstr  "Обычный текст"
+
+#: src/gui/main_window.cpp:262
+msgid   "Last Run"
+msgstr  "Последний запуск"
+
+#: src/gui/main_window.cpp:263
+msgid   "2nd Last Run"
+msgstr  "Два последних запуска"
+
+#: src/gui/main_window.cpp:270
+msgid   "&View BOSS Log"
+msgstr  "&Лог BOSS"
+
+#: src/gui/main_window.cpp:271
+msgid   "Opens your BOSSlog."
+msgstr  "Открывает ваш лог BOSS"
+
+#: src/gui/main_window.cpp:273
+msgid   "&Run BOSS"
+msgstr  "&Запуск BOSS"
+
+#: src/gui/main_window.cpp:274
+msgid   "Runs BOSS with the options you have chosen."
+msgstr  "Запускает BOSS с выбранными вами опциями."
+
+#: src/gui/main_window.cpp:277
+msgid   "&Quit"
+msgstr  "&Выход"
+
+#: src/gui/main_window.cpp:278
+msgid   "Quit BOSS."
+msgstr  "Выйти из BOSS."
+
+#: src/gui/main_window.cpp:279
+msgid   "&File"
+msgstr  "&Файл"
+
+#: src/gui/main_window.cpp:283
+msgid   "&User Rules..."
+msgstr  "&Пользовательские правила..."
+
+#: src/gui/main_window.cpp:284
+msgid   "Opens your userlist in your default text editor."
+msgstr  "Открывает ваш список правил в редакторе по умолчанию."
+
+#: src/gui/main_window.cpp:286
+msgid   "&Settings..."
+msgstr  "&Настройки..."
+
+#: src/gui/main_window.cpp:287
+msgid   "Opens the Settings window."
+msgstr  "Открывает окно настроек"
+
+#: src/gui/main_window.cpp:288
+msgid   "&Edit"
+msgstr  "&Правка"
+
+#: src/gui/main_window.cpp:292
+msgid   "Switch to running BOSS for Oblivion."
+msgstr  "Переключение на запуск BOSS для Oblivion"
+
+#: src/gui/main_window.cpp:294
+msgid   "Switch to running BOSS for Nehrim."
+msgstr  "Переключение на запуск BOSS для Nehrim"
+
+#: src/gui/main_window.cpp:296
+msgid   "Switch to running BOSS for Skyrim."
+msgstr  "Переключение на запуск BOSS для Skyrim"
+
+#: src/gui/main_window.cpp:298
+msgid   "Switch to running BOSS for Fallout 3."
+msgstr  "Переключение на запуск BOSS для Fallout 3"
+
+#: src/gui/main_window.cpp:300
+msgid   "Switch to running BOSS for Fallout: New Vegas."
+msgstr  "Переключение на запуск BOSS для Fallout: New Vegas."
+
+#: src/gui/main_window.cpp:301
+msgid   "&Active Game"
+msgstr  "&Игра"
+
+#: src/gui/main_window.cpp:305
+msgid   "Open &Main Readme"
+msgstr  "Описание &BOSS"
+
+#: src/gui/main_window.cpp:306
+msgid   "Opens the main BOSS readme in your default web browser."
+msgstr  "Открывает описание программы в браузере по умолчанию."
+
+#: src/gui/main_window.cpp:308
+msgid   "Open &Userlist Syntax Doc"
+msgstr  "Описание &синтаксиса списка правил"
+
+#: src/gui/main_window.cpp:309
+msgid   "Opens the BOSS userlist syntax documentation in your default web "
+        "browser."
+msgstr  "Открывает документацию по списку правил BOSS в браузере по умолчанию."
+
+#: src/gui/main_window.cpp:311
+msgid   "Open &Masterlist Syntax Doc"
+msgstr  "Описание синтаксиса &мастерлиста"
+
+#: src/gui/main_window.cpp:312
+msgid   "Opens the BOSS masterlist syntax documentation in your default web "
+        "browser."
+msgstr  "Открывает документацию по синтаксису мастерлиста в браузере по "
+        "умолчанию."
+
+#: src/gui/main_window.cpp:314
+msgid   "Open &Version History"
+msgstr  "&История версий"
+
+#: src/gui/main_window.cpp:315
+msgid   "Opens the BOSS version history in your default web browser."
+msgstr  "Открывает историю версий BOSS в браузере по умолчанию."
+
+#: src/gui/main_window.cpp:317
+msgid   "View &Copyright Licenses"
+msgstr  "&Лицензия"
+
+#: src/gui/main_window.cpp:318
+msgid   "View the GNU General Public License v3.0 and GNU Free Documentation "
+        "License v1.3."
+msgstr  "Просмотр GNU General Public License v3.0 и GNU Free Documentation "
+        "License v1.3."
+
+#: src/gui/main_window.cpp:321
+msgid   "&About BOSS..."
+msgstr  "&О BOSS..."
+
+#: src/gui/main_window.cpp:322
+msgid   "Shows information about BOSS."
+msgstr  "Показать информацию о BOSS"
+
+#: src/gui/main_window.cpp:323
+msgid   "&Help"
+msgstr  "&Справка"
+
+#: src/gui/main_window.cpp:337
+msgid   "Output Options"
+msgstr  "Опции вывода"
+
+#: src/gui/main_window.cpp:342
+msgid   "Show BOSS Log On Completion"
+msgstr  "Открыть лог BOSS по завершению"
+
+#: src/gui/main_window.cpp:343
+msgid   "Display File CRCs"
+msgstr  "Показать CRC файлов"
+
+#: src/gui/main_window.cpp:344
+msgid   "BOSS Log Format: "
+msgstr  "Формат лога BOSS: "
+
+#: src/gui/main_window.cpp:352
+msgid   "Edit User Rules"
+msgstr  "Правила"
+
+#: src/gui/main_window.cpp:353
+msgid   "Run BOSS"
+msgstr  "Запуск BOSS"
+
+#: src/gui/main_window.cpp:354
+msgid   "View BOSS Log"
+msgstr  "Лог BOSS"
+
+#: src/gui/main_window.cpp:363
+msgid   "Run Options"
+msgstr  "Открыть опции"
+
+#: src/gui/main_window.cpp:369
+msgid   "Sort Plugins"
+msgstr  "Сортировать плагины"
+
+#: src/gui/main_window.cpp:372
+msgid   "Update Masterlist"
+msgstr  "Обновить мастерлист"
+
+#: src/gui/main_window.cpp:373
+msgid   "Perform Trial Run"
+msgstr  "Выполнить тестовый запуск"
+
+#: src/gui/main_window.cpp:378
+msgid   "Update Masterlist Only"
+msgstr  "Только обновить мастерлист"
+
+#: src/gui/main_window.cpp:382
+msgid   "Undo Changes"
+msgstr  "Отмена изменений"
+
+#: src/gui/main_window.cpp:383
+msgid   "Undo Level: "
+msgstr  "Уровень отмены: "
+
+#: src/gui/main_window.cpp:392
+msgid   "This decides both the format of BOSSlog generated when you click the "
+        "\"Run BOSS\" button and the BOSSlog format opened when you click the "
+        "\"View BOSSlog\" button."
+msgstr  "Устанавливает формат лога BOSS, генерируемого, когда вы нажимаете "
+        "кнопку \"Запуск BOSS\" и формат лога, открытого нажатием кнопки "
+        "\"Открыть лог BOSS\"."
+
+#: src/gui/main_window.cpp:393
+msgid   "The format of BOSSlog this opens is decided by the setting of the "
+        "\"BOSSlog Format\" Output Option above."
+msgstr  "Формат открываемого лога BOSS, задается вышестоящей опцией - "
+        "\"Формат лога BOSS\"."
+
+#: src/gui/main_window.cpp:394
+msgid   "Runs BOSS, simulating its changes to your load order, but doesn't "
+        "actually reorder your mods."
+msgstr  "Запускает BOSS, имитируя изменения порядка загрузки, но в "
+        "действительности, не меняет порядок ваших модов."
+
+#: src/gui/main_window.cpp:446
+msgid   "Ready"
+msgstr  "Готов"
+
+#: src/gui/main_window.cpp:454
+msgid   "BOSS: Settings"
+msgstr  "BOSS: Настройки"
+
+#: src/gui/main_window.cpp:470 src/gui/user_rule_editor.cpp:408
+#: src/gui/user_rule_editor.cpp:430
+msgid   "BOSS: Working..."
+msgstr  "BOSS: Работает..."
+
+#: src/gui/main_window.cpp:471 src/gui/main_window.cpp:530 src/boss_cli.cpp:413
+msgid   "BOSS working..."
+msgstr  "BOSS работает..."
+
+#: src/gui/main_window.cpp:496 src/gui/user_rule_editor.cpp:414
+#: src/boss_cli.cpp:377
+msgid   "Updating to the latest masterlist from the online repository..."
+msgstr  "Обновление до последнего мастерлиста из сетевого хранилища..."
+
+#: src/gui/main_window.cpp:500 src/boss_cli.cpp:381
+#, boost-format
+msgid   "Masterlist updated; at revision: %1%."
+msgstr  "Мастерлист обновлен. Версия: %1%."
+
+#: src/gui/main_window.cpp:504 src/gui/user_rule_editor.cpp:423
+#: src/boss_cli.cpp:385
+msgid   "Error: masterlist update failed."
+msgstr  "Ошибка: обновление мастерлиста не удалось."
+
+#: src/gui/main_window.cpp:505 src/gui/user_rule_editor.cpp:424
+#: src/boss_cli.cpp:386
+#, boost-format
+msgid   "Details: %1%"
+msgstr  "Детали: %1%"
+
+#: src/gui/main_window.cpp:511 src/boss_cli.cpp:392
+#, boost-format
+msgid   "Masterlist updating disabled; at revision: %1%."
+msgstr  "Обновление мастерлиста отключено. Версия: %1%."
+
+#: src/gui/main_window.cpp:550 src/gui/main_window.cpp:607
+#: src/gui/main_window.cpp:660 src/boss_cli.cpp:423 src/boss_cli.cpp:469
+#: src/boss_cli.cpp:511
+#, boost-format
+msgid   "Critical Error: %1%"
+msgstr  "Критическая ошибка: %1%"
+
+#: src/gui/main_window.cpp:691 src/gui/main_window.cpp:714
+#, boost-format
+msgid   "Error: \"%1%\" cannot be found."
+msgstr  "Ошибка: \"%1%\" не найден"
+
+#: src/gui/main_window.cpp:726
+msgid   "Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New "
+        "Vegas."
+msgstr  "Сортировка порядка загрузки для Oblivion, Skyrim, Fallout 3 и "
+        "Fallout: New Vegas."
+
+#: src/gui/main_window.cpp:834 src/gui/user_rule_editor.cpp:401
+#: src/gui/user_rule_editor.cpp:775 src/gui/user_rule_editor.cpp:796
+msgid   "BOSS: User Rules Manager"
+msgstr  "BOSS: Менеджер пользовательских правил"
+
+#: src/gui/main_window.cpp:849 src/gui/main_window.cpp:864
+#: src/gui/user_rule_editor.cpp:282 src/gui/user_rule_editor.cpp:441
+#: src/gui/user_rule_editor.cpp:479
+#, boost-format
+msgid   "Error: %1%"
+msgstr  "Ошибка: %1%"
+
+#: src/gui/element_ids.cpp:67
+#, boost-format
+msgid   "Downloading masterlist: %1% of %2% objects (%3% KB)"
+msgstr  "Загрузка мастерлиста: %1% из %2% объектов (%3% KB)"
+
+#: src/gui/element_ids.cpp:69
+msgid   "Are you sure you want to cancel?"
+msgstr  "Вы уверены, что хотите отменить?"
+
+#: src/gui/element_ids.cpp:70
+msgid   "BOSS: Updater"
+msgstr  "BOSS: Обновление"
+
+#: src/gui/user_rule_editor.cpp:122
+msgid   "Rule Syntax Error: Cannot sort a plugin relative to a group."
+msgstr  "Ошибка в синтаксисе правила: Нельзя сортировать плагин по отношению "
+        "к группе"
+
+#: src/gui/user_rule_editor.cpp:129
+msgid   "Rule Syntax Error: Cannot insert into a plugin."
+msgstr  "Ошибка в синтаксисе правила: Нельзя вставить в плагин"
+
+#: src/gui/user_rule_editor.cpp:138
+msgid   "Rule Syntax Error: Cannot sort a group relative to a plugin."
+msgstr  "Ошибка в синтаксисе правила: Нельзя отсортировать группу по "
+        "отношению к плагину"
+
+#: src/gui/user_rule_editor.cpp:145
+msgid   "Rule Syntax Error: Cannot insert groups."
+msgstr  "Ошибка в синтаксисе правила: Нельзя вставить группу"
+
+#: src/gui/user_rule_editor.cpp:238 src/gui/user_rule_editor.cpp:892
+#: src/gui/user_rule_editor.cpp:914
+msgid   "User Rules Manager"
+msgstr  "Менеджер пользовательских правил"
+
+#: src/gui/user_rule_editor.cpp:250
+#, boost-format
+msgid   "The rule sorting the unrecognised plugin \"%1%\" has been disabled "
+        "as the plugin is now recognised. If you wish to override its "
+        "position in the masterlist, re-enable the rule."
+msgstr  "Правило, сортирующее неизвестные плагины \"%1%\", было отключено, "
+        "так как плагин теперь известен. Если вы желаете изменить его позицию "
+        "в мастерлисте, включите правило заново."
+
+#: src/gui/user_rule_editor.cpp:251
+msgid   "BOSS: Rule Disabled"
+msgstr  "BOSS: Правило отключено"
+
+#: src/gui/user_rule_editor.cpp:264 src/output/boss_log.cpp:160
+#: src/output/boss_log.cpp:295
+msgid   "User Rules"
+msgstr  "Пользовательские правила"
+
+#: src/gui/user_rule_editor.cpp:400
+#, boost-format
+msgid   "The User Rules Manager requires the BOSS masterlist for %1% to have "
+        "been downloaded, but it cannot be detected. Do you wish to download "
+        "the latest masterlist now?"
+msgstr  "Менеджер пользовательских правил требует загруженного мастерлиста "
+        "для %1%, но не может его обнаружить. Желаете ли вы загрузить "
+        "последний мастерлист сейчас?"
+
+#: src/gui/user_rule_editor.cpp:409 src/gui/user_rule_editor.cpp:431
+msgid   "Initialising User Rules Manager..."
+msgstr  "Инициализация менеджера пользовательских правил..."
+
+#: src/gui/user_rule_editor.cpp:419
+#, boost-format
+msgid   "Masterlist revision: %1%."
+msgstr  "Версия мастерлиста: %1%."
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "before"
+msgstr  "перед"
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "after"
+msgstr  "после"
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "top"
+msgstr  "вверх"
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "bottom"
+msgstr  "вниз"
+
+#: src/gui/user_rule_editor.cpp:496
+msgid   "Rule Editor"
+msgstr  "Редактор правил"
+
+#: src/gui/user_rule_editor.cpp:499
+msgid   "For"
+msgstr  "Для"
+
+#: src/gui/user_rule_editor.cpp:503
+msgid   "Sort Item"
+msgstr  "Сортировать объект"
+
+#: src/gui/user_rule_editor.cpp:506
+msgid   "Sort"
+msgstr  "Сортировать"
+
+#: src/gui/user_rule_editor.cpp:512
+msgid   "Insert at the"
+msgstr  "Вставить в"
+
+#: src/gui/user_rule_editor.cpp:514
+msgid   "of"
+msgstr  "из"
+
+#: src/gui/user_rule_editor.cpp:518 src/output/output.cpp:565
+msgid   "Add the following messages:"
+msgstr  "Добавляет следующие сообщения:"
+
+#: src/gui/user_rule_editor.cpp:522
+msgid   "Replace existing messages"
+msgstr  "Заменить существующие сообщения"
+
+#: src/gui/user_rule_editor.cpp:527
+msgid   "Default Plugin Messages"
+msgstr  "Сообщения плагина по умолчанию"
+
+#: src/gui/user_rule_editor.cpp:547
+msgid   "Installed Plugins"
+msgstr  "Установленные плагины"
+
+#: src/gui/user_rule_editor.cpp:548
+msgid   "Masterlist"
+msgstr  "Мастерлист"
+
+#: src/gui/user_rule_editor.cpp:555
+msgid   "Create New Rule"
+msgstr  "Создать новое правило"
+
+#: src/gui/user_rule_editor.cpp:556
+msgid   "Save Edited Rule"
+msgstr  "Сохранить измененное правило"
+
+#: src/gui/user_rule_editor.cpp:557
+msgid   "Delete Rule"
+msgstr  "Удалить правило"
+
+#: src/gui/user_rule_editor.cpp:559
+msgid   "Move Rule Up"
+msgstr  "Переместить правило выше"
+
+#: src/gui/user_rule_editor.cpp:560
+msgid   "Move Rule Down"
+msgstr  "Переместить правило ниже"
+
+#: src/gui/user_rule_editor.cpp:562
+msgid   "Save and Exit"
+msgstr  "Сохранить и выйти"
+
+#: src/gui/user_rule_editor.cpp:582
+msgid   "Messages must be entered in the correct format. See the User Rules "
+        "Readme for more information."
+msgstr  "Сообщения должны быть введены в корректном формате. Смотрите "
+        "описание пользовательских правил, для получения большей информации."
+
+#: src/gui/user_rule_editor.cpp:758 src/gui/user_rule_editor.cpp:785
+#, boost-format
+msgid   "Rule Syntax Error: %1% Please correct the mistake before continuing."
+msgstr  "Ошибка в синтаксисе правила: %1% Пожалуйста исправьте ошибку, перед "
+        "продолжением."
+
+#: src/gui/user_rule_editor.cpp:774
+msgid   "Are you sure you want to save your changes to the selected rule?"
+msgstr  "Вы уверены, что хотите сохранить изменения в выбранном правиле?"
+
+#: src/gui/user_rule_editor.cpp:795
+msgid   "Are you sure you want to delete the selected rule?"
+msgstr  "Вы уверены, что хотите удалить выбранное правило?"
+
+#: src/gui/user_rule_editor.cpp:934
+msgid   "No mod is specified to sort relative to."
+msgstr  "Не указан мод, по отношению к которому сортировать."
+
+#: src/gui/user_rule_editor.cpp:937
+msgid   "Cannot sort a plugin relative to a group."
+msgstr  "Нельзя отсортировать плагин относительно группы."
+
+#: src/gui/user_rule_editor.cpp:943
+msgid   "No group is specified to insert into."
+msgstr  "Не указана группа для вставки"
+
+#: src/gui/user_rule_editor.cpp:946
+msgid   "Cannot insert into a plugin."
+msgstr  "Нельзя вставить в плагин"
+
+#: src/gui/user_rule_editor.cpp:953
+msgid   "Cannot add messages when none are given."
+msgstr  "Нельзя добавлять сообщения, когда ничего не задано."
+
+#: src/gui/user_rule_editor.cpp:958
+msgid   "No rule mod is specified."
+msgstr  "Нет указанного в правиле мода."
+
+#: src/gui/user_rule_editor.cpp:964
+msgid   "No group is specified to sort relative to."
+msgstr  "Не указана группа, по отношению к которой сортировать."
+
+#: src/gui/user_rule_editor.cpp:967
+msgid   "Cannot sort a group relative to a plugin."
+msgstr  "Нельзя сортировать группу по отношению к плагину"
+
+#: src/gui/user_rule_editor.cpp:971
+msgid   "Cannot insert groups."
+msgstr  "Невозможно вставлять группы"
+
+#: src/gui/user_rule_editor.cpp:976
+msgid   "Cannot add messages to groups."
+msgstr  "Нельзя добавить сообщения к группе"
+
+#: src/gui/user_rule_editor.cpp:982
+msgid   "The rule mod is not being sorted nor having its attached messages "
+        "altered."
+msgstr  "Правило мода не может быть отсортировано, не имея добавленных им "
+        "измененных сообщений."
+
+#: src/output/boss_log.cpp:157 src/output/boss_log.cpp:188
+msgid   "Summary"
+msgstr  "Сводка"
+
+#: src/output/boss_log.cpp:163
+#, boost-format
+msgid   "%1% Plugins"
+msgstr  "%1% Плагины"
+
+#: src/output/boss_log.cpp:167 src/output/boss_log.cpp:336
+msgid   "Recognised Plugins"
+msgstr  "Известные плагины"
+
+#: src/output/boss_log.cpp:169
+msgid   "Restored Load Order"
+msgstr  "Порядок загрузки восстановлен"
+
+#: src/output/boss_log.cpp:173 src/output/boss_log.cpp:359
+msgid   "Unrecognised Plugins"
+msgstr  "Неизвестные плагины"
+
+#: src/output/boss_log.cpp:205
+msgid   "Plugin Type"
+msgstr  "Тип плагина"
+
+#: src/output/boss_log.cpp:206 src/output/boss_log.cpp:232
+msgid   "Count"
+msgstr  "Количество"
+
+#: src/output/boss_log.cpp:209
+msgid   "Recognised (or sorted by user rules)"
+msgstr  "Известный (или отсортированный пользовательскими правилами)"
+
+#: src/output/boss_log.cpp:213 src/output/boss_log.cpp:217
+msgid   "Unrecognised"
+msgstr  "Неизвестный"
+
+#: src/output/boss_log.cpp:221
+msgid   "Inactive"
+msgstr  "Неактивный"
+
+#: src/output/boss_log.cpp:224 src/output/boss_log.cpp:253
+msgid   "All"
+msgstr  "Все"
+
+#: src/output/boss_log.cpp:231
+msgid   "Plugin Message Type"
+msgstr  "Тип сообщения"
+
+#: src/output/boss_log.cpp:236 src/output/boss_log.cpp:240
+#: src/output/output.cpp:497 src/output/output.cpp:499
+msgid   "Warning"
+msgstr  "Предупреждение"
+
+#: src/output/boss_log.cpp:245 src/output/boss_log.cpp:249
+#: src/output/output.cpp:502 src/output/output.cpp:504
+msgid   "Error"
+msgstr  "Ошибка"
+
+#: src/output/boss_log.cpp:263
+msgid   "No change in recognised plugin list since last run."
+msgstr  "Никаких изменений в списке известных плагинов, с последнего запуска."
+
+#: src/output/boss_log.cpp:299
+msgid   "Rule"
+msgstr  "Правило"
+
+#: src/output/boss_log.cpp:300
+msgid   "Applied"
+msgstr  "Принято"
+
+#: src/output/boss_log.cpp:301
+msgid   "Details (if applicable)"
+msgstr  "Детали (если имеются)"
+
+#: src/output/boss_log.cpp:318
+msgid   " Plugins"
+msgstr  " Плагины"
+
+#: src/output/boss_log.cpp:338
+msgid   "Restored Load Order (Using modlist.txt)"
+msgstr  "Восстановлен порядок загрузки(Использован modlist.txt)"
+
+#: src/output/boss_log.cpp:340
+msgid   "Restored Load Order (Using modlist.old)"
+msgstr  "Восстановлен порядок загрузки (Использован modlist.old)"
+
+#: src/output/boss_log.cpp:343
+msgid   "These plugins are recognised by BOSS and have been sorted according "
+        "to its masterlist. Please read any attached messages and act on any "
+        "that require action."
+msgstr  "Эти плагины известны BOSS и были отсортированы, в соответствии с их "
+        "положением в мастерлисте. Пожалуйста, прочтите прикрепленные "
+        "сообщения и выполните все требуемые действия."
+
+#: src/output/boss_log.cpp:361
+msgid   "The following plugins were not found in the masterlist, and must be "
+        "positioned manually, using your favourite mod manager or by using "
+        "BOSS's user rules functionality."
+msgstr  "Следующие плагины не найдены в мастерлисте и должны быть перемещены "
+        "вручную, с использованием вашего любимого менеджера модов или "
+        "функционала пользовательских правил BOSS."
+
+#: src/output/boss_log.cpp:362
+msgid   " You can submit unrecognised plugins for addition to the masterlist "
+        "directly from this log by clicking on a plugin and supplying a link "
+        "and/or description of its contents in the panel that is displayed."
+msgstr  " Вы можете отправить неизвестные плагины, для их добавления в "
+        "мастерлист, напрямую, из HTML-лога, нажатием на плагин и "
+        "предоставлением ссылки и/или описания его содержимого, в открывшейся "
+        "панели."
+
+#: src/output/boss_log.cpp:401
+msgid   "Log Feature Support"
+msgstr  "Поддержка функций лога"
+
+#: src/output/boss_log.cpp:402
+msgid   "Filters"
+msgstr  "Фильтры"
+
+#: src/output/boss_log.cpp:405
+msgid   "The BOSS Log requires Javascript to be enabled in order to function."
+msgstr  "Для работы всех функций лога BOSS требуется включить JavaScript"
+
+#: src/output/boss_log.cpp:417
+msgid   "Colours must be specified using lowercase hex codes."
+msgstr  "Цвета должны быть заданы с помощью строчных шестнадцатеричных кодов."
+
+#: src/output/boss_log.cpp:421
+msgid   "Support for the BOSS Log's more advanced features varies. Here's "
+        "what your browser supports:"
+msgstr  "Поддержка дополнительных функций для лога BOSS варьируется. Здесь "
+        "то, что поддерживает ваш браузер:"
+
+#: src/output/boss_log.cpp:422
+msgid   "Functionality"
+msgstr  "Функциональность"
+
+#: src/output/boss_log.cpp:427
+msgid   "In-Log Plugin Submission"
+msgstr  "Отправка плагинов из лога"
+
+#: src/output/boss_log.cpp:428
+msgid   "Allows unrecognised plugins to be anonymously submitted to the BOSS "
+        "team directly from the BOSS Log."
+msgstr  "Все неизвестные плагины могут быть анонимно предоставлены команде "
+        "BOSS, напрямую из этого лога."
+
+#: src/output/boss_log.cpp:431
+msgid   "Settings Memory"
+msgstr  "Запоминание настроек"
+
+#: src/output/boss_log.cpp:432
+msgid   "Allows the BOSS Log to automatically restore the filter "
+        "configuration last used whenever the BOSS Log is opened."
+msgstr  "Позволяет автоматически восстановить в логе BOSS последнюю "
+        "конфигурацию фильтров, когда бы лог BOSS не был бы открыт."
+
+#: src/output/boss_log.cpp:435
+msgid   "Input Placeholders"
+msgstr  "Входные заполнители"
+
+#: src/output/boss_log.cpp:438
+msgid   "Form Validation"
+msgstr  "Проверка формы"
+
+#: src/output/boss_log.cpp:443
+msgid   "Hide Version Numbers"
+msgstr  "Скрыть номера версии"
+
+#: src/output/boss_log.cpp:444
+msgid   "Hide 'Active' Label"
+msgstr  "Скрыть метку 'Активен'"
+
+#: src/output/boss_log.cpp:445
+msgid   "Hide Checksums"
+msgstr  "Скрыть CRC суммы"
+
+#: src/output/boss_log.cpp:446
+msgid   "Hide Notes"
+msgstr  "Скрыть примечания"
+
+#: src/output/boss_log.cpp:447
+msgid   "Hide Bash Tag Suggestions"
+msgstr  "Скрыть Bash-теги"
+
+#: src/output/boss_log.cpp:448
+msgid   "Hide Requirements"
+msgstr  "Скрыть требования"
+
+#: src/output/boss_log.cpp:449
+msgid   "Hide Incompatibilities"
+msgstr  "Скрыть несовместимости"
+
+#: src/output/boss_log.cpp:450
+msgid   "Hide 'Do Not Clean' Messages"
+msgstr  "Скрыть сообщения 'Не чистить'"
+
+#: src/output/boss_log.cpp:451
+msgid   "Hide All Plugin Messages"
+msgstr  "Скрыть все сообщения"
+
+#: src/output/boss_log.cpp:452
+msgid   "Hide Inactive Plugins"
+msgstr  "Скрыть неактивные плагины"
+
+#: src/output/boss_log.cpp:453
+msgid   "Hide Messageless Plugins"
+msgstr  "Скрыть плагины без сообщений"
+
+#: src/output/boss_log.cpp:455
+#, boost-format
+msgid   "%1% of %2% recognised plugins hidden."
+msgstr  "%1% из %2% известных плагинов скрыты."
+
+#: src/output/boss_log.cpp:456
+#, boost-format
+msgid   "%1% of %2% messages hidden."
+msgstr  "%1% из %2% сообщений скрыты."
+
+#: src/output/boss_log.cpp:462
+msgid   "Submit Plugin"
+msgstr  "Отправка плагина"
+
+#: src/output/boss_log.cpp:463
+msgid   "Plugin"
+msgstr  "Плагин"
+
+#: src/output/boss_log.cpp:465
+msgid   "Download Location"
+msgstr  "Источник загрузки"
+
+#: src/output/boss_log.cpp:466
+msgid   "Additional Notes"
+msgstr  "Дополнительные заметки"
+
+#: src/output/boss_log.cpp:466
+msgid   "Any additional information, such as recommended Bash Tags, load "
+        "order suggestions, ITM/UDR counts and dirty CRCs, can be supplied "
+        "here. If no download link is available, this information is crucial."
+msgstr  "Любая дополнительная информация, такая как рекомендуемые Bash-теги, "
+        "указания по порядку загрузки, количество ITM/UDR записей и "
+        "контрольные суммы \"грязных\" плагинов, могут быть указаны здесь, "
+        "если нет доступной ссылки для загрузки. Эта информация очень важна."
+
+#: src/output/boss_log.cpp:468
+msgid   "Submit"
+msgstr  "Отправить"
+
+#: src/output/boss_log.cpp:469
+msgid   "Close"
+msgstr  "Закрыть"
+
+#: src/output/boss_log.cpp:477
+msgid   "Checking for existing submission..."
+msgstr  "Проверка существования заявки..."
+
+#: src/output/boss_log.cpp:478
+msgid   "Matching submission already exists."
+msgstr  ""
+
+#: src/output/boss_log.cpp:479
+msgid   "Plugin already submitted. Submission updated with new comment."
+msgstr  ""
+
+#: src/output/boss_log.cpp:480
+msgid   "Plugin submitted!"
+msgstr  "Плагин предоставлен!"
+
+#: src/output/boss_log.cpp:481
+msgid   "Plugin submission failed! Authorisation failure. Please report this "
+        "to the BOSS team."
+msgstr  ""
+
+#: src/output/boss_log.cpp:482
+#, boost-format
+msgid   "Plugin submission failed! GitHub API rate limit exceeded. Please try "
+        "again after %1%."
+msgstr  ""
+
+#: src/output/boss_log.cpp:483
+#, fuzzy
+#| msgid        "Plugin submission updated!"
+msgid           "Plugin submission failed!"
+msgstr          "Заявка плагина обновлена!"
+
+#: src/output/boss_log.cpp:484
+msgid   "Web storage quota for this document has been exceeded.Please empty "
+        "your browser\\'s cache. Note that this will delete all locally "
+        "stored data."
+msgstr  "Квота для Web-хранилища этого документа была превышена. Пожалуйста, "
+        "очистите кеш вашего браузера. Обратите внимание, что это приведет к "
+        "удалению всех локально сохраненных данных."
+
+#: src/output/boss_log.cpp:485
+msgid   "Please supply at least a link or some notes."
+msgstr  "Пожалуйста укажите хотя бы ссылку или некоторое описание."
+
+#: src/output/boss_log.cpp:486
+msgid   "Do not clean."
+msgstr  "Не чистить."
+
+#: src/output/boss_log.cpp:511
+msgid   "Please read any attached messages and act on any that require action."
+msgstr  "Пожалуйста, прочтите прикрепленные сообщения и выполните все "
+        "требуемые действия."
+
+#: src/output/output.cpp:477 src/output/output.cpp:479
+#: src/output/output.cpp:512 src/output/output.cpp:514
+msgid   "Note"
+msgstr  "Примечание"
+
+#: src/output/output.cpp:482 src/output/output.cpp:484
+msgid   "Bash Tag suggestion(s)"
+msgstr  "Bash-теги"
+
+#: src/output/output.cpp:487 src/output/output.cpp:489
+msgid   "Requires"
+msgstr  "Требуется"
+
+#: src/output/output.cpp:492 src/output/output.cpp:494
+msgid   "Incompatible with"
+msgstr  "Несовместим с"
+
+#: src/output/output.cpp:507 src/output/output.cpp:509
+msgid   "Contains dirty edits"
+msgstr  "\"Грязные\" правки"
+
+#: src/output/output.cpp:553
+#, boost-format
+msgid   "Sort %1% before %2%"
+msgstr  "Сортировать %1% перед %2%"
+
+#: src/output/output.cpp:555
+#, boost-format
+msgid   "Sort %1% after %2%"
+msgstr  "Сортировать %1% после %2%"
+
+#: src/output/output.cpp:557
+#, boost-format
+msgid   "Insert %1% at the top of %2%"
+msgstr  "Вставлен %1% на верх группы %2%"
+
+#: src/output/output.cpp:559
+#, boost-format
+msgid   "Insert %1% at the bottom of %2%"
+msgstr  "Вставлен %1% в низ группы %2%"
+
+#: src/output/output.cpp:563
+#, boost-format
+msgid   "Add the following messages to %1%:"
+msgstr  "Добавить сообщение к %1%:"
+
+#: src/output/output.cpp:572
+#, boost-format
+msgid   "Replace the messages attached to %1% with:"
+msgstr  "Заменяет сообщения, добавленные к %1% с:"
+
+#: src/output/output.cpp:574
+msgid   "Replace the attached messages with:"
+msgstr  "Заменяет сообщения, добавленные с"
+
+#: src/boss_cli.cpp:100
+msgid   "Description:"
+msgstr  "Описание:"
+
+#: src/boss_cli.cpp:101
+msgid   "  BOSS is a utility that sorts the mod load order of TESIV: "
+        "Oblivion, Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim "
+        "according to a frequently updated  masterlist to minimise "
+        "incompatibilities between mods."
+msgstr  "  BOSS - это утилита, которая сортирует порядок загрузки модов, для "
+        "таких игр как TESIV: Oblivion, Nehrim,  Fallout 3, Fallout: New "
+        "Vegas и TESV: Skyrim, в соответствии с порядком в часто обновляемом "
+        "мастерлисте, чтобы минимизировать несовместимости между модами."
+
+#: src/boss_cli.cpp:105
+msgid   "Examples:"
+msgstr  "Примеры:"
+
+#: src/boss_cli.cpp:107
+msgid   "    updates the masterlist, sorts your mods, and shows the log"
+msgstr  "    обновляет мастерлист, сортирует ваши моды и открывает лог"
+
+#: src/boss_cli.cpp:109
+msgid   "    reverts your load order 1 level and skips showing the log"
+msgstr  "    возвращает ваш прошлый порядок загрузки и пропускает показ лога"
+
+#: src/boss_cli.cpp:111
+msgid   "    reverts your load order 2 levels and shows the log"
+msgstr  "    возвращает ваш порядок загрузки на два запуска назад и "
+        "пропускает показ лога"
+
+#: src/boss_cli.cpp:123
+#, c-format, boost-format
+msgid   "Downloading masterlist: %i of %i objects (%i KB)"
+msgstr  "Загрузка мастерлиста: %i из %i объектов (%i KB)"
+
+#: src/boss_cli.cpp:199
+msgid   "produces this help message"
+msgstr  "вызывает это вспомогательное сообщение"
+
+#: src/boss_cli.cpp:200
+msgid   "prints the version banner"
+msgstr  "выводит всплывающее окно с версией"
+
+#: src/boss_cli.cpp:202
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web before sorting"
+msgstr  "перед сортировкой, автоматически обновляет локальную копию "
+        "мастерлиста до последней, доступной через web, версии."
+
+#: src/boss_cli.cpp:205
+msgid   "inhibit the automatic masterlist updater"
+msgstr  "задерживает автоматическое обновление мастерлиста."
+
+#: src/boss_cli.cpp:207
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web but don't sort right now"
+msgstr  "автоматически обновляет локальную копию мастерлиста до последней "
+        "версии,  доступной через web, но без запуска сортировки."
+
+#: src/boss_cli.cpp:212
+msgid   "don't launch a browser to show the HTML log at program completion"
+msgstr  "не открывать браузер для показа HTML лога по завершению программы."
+
+#: src/boss_cli.cpp:215
+msgid   "revert to a previous load order.  this parameter optionally accepts "
+        "values of 1 or 2, indicating how many undo steps to apply.  if no "
+        "option value is specified, it defaults to 1"
+msgstr  "возвращает предыдущий порядок загрузки.  Этот параметр опционально "
+        "принимает значения 1 или 2, означающих, как много шагов отката "
+        "сделать.  Если значение не установлено , то по умолчанию "
+        "используется 1"
+
+#: src/boss_cli.cpp:221
+msgid   "specify verbosity level (0-3) of the debugging output.  0 is the "
+        "default, showing only WARN and ERROR messges. 1 (INFO and above) is "
+        "implied if this option is specified without an argument.  higher "
+        "values increase the verbosity further"
+msgstr  "Задание уровня детализации (0-3) выводимых отладочных сообщений.  0 "
+        "по умолчанию, показывает только предупреждения и ошибки. 1 (INFO и "
+        "выше) подразумевается, если эта опция указана без аргументов.  "
+        "Большие значения повышают детализацию еще больше"
+
+#: src/boss_cli.cpp:227
+msgid   "override game autodetection.  valid values are: 'Oblivion', "
+        "'Nehrim', 'Fallout3', 'FalloutNV', and 'Skyrim'"
+msgstr  "заменяет автообнаружение игры.  допустимые значения: 'Oblivion', "
+        "'Nehrim', 'Fallout3', 'FalloutNV', и 'Skyrim'"
+
+#: src/boss_cli.cpp:231
+msgid   "show mod file CRCs, so that a file's CRC can be added to the "
+        "masterlist in a conditional"
+msgstr  "показывает контрольные суммы(CRC) модов, так что CRC файла могжет "
+        "быть добавлено в мастерлист, с помощью условий"
+
+#: src/boss_cli.cpp:234
+msgid   "select output format. valid values are: 'html', 'text'"
+msgstr  "выбор формата вывода. допустимые значения: 'html', 'text'"
+
+#: src/boss_cli.cpp:237
+msgid   "run BOSS without actually making any changes to load order"
+msgstr  "запуск BOSS без реального изменения порядка загрузки"
+
+#: src/boss_cli.cpp:344
+msgid   "Invalid selection."
+msgstr  "Неправильный выбор."
+
+#~ msgid        "\tVersion "
+#~ msgstr       "\tВерсия "
+
+#~ msgid        "Appearance"
+#~ msgstr       "Внешний вид"
+
+#~ msgid        "Opacity"
+#~ msgstr       "Непрозрачность"
+
+#~ msgid        "Shadows"
+#~ msgstr       "Тени"
+
+#~ msgid        "Transitions"
+#~ msgstr       "Переходы"
+
+#~ msgid        "Transforms"
+#~ msgstr       "Преобразования"
+
+#~ msgid        "Error: Existing submission check failed!"
+#~ msgstr       "Ошибка: Проверка существования заявки не удалась!"
+
+#~ msgid        "Previous submission found, updating with supplied details..."
+#~ msgstr       "Найдена предыдущая заявка, обновление переданными данными..."
+
+#~ msgid        "Error: Plugin submission could not be updated."
+#~ msgstr       "Ошибка: Заявка плагина не может быть отображена."
+
+#~ msgid        "No previous submission found, creating new submission..."
+#~ msgstr       "Не обнаружено предыдущей заявки, создание новой..."
+
+#~ msgid        "Error: Plugin could not be submitted."
+#~ msgstr       "Ошибка: Плагин не может быть отправлен."
+
+#~ msgid        "Error: Data transfer failed."
+#~ msgstr       "Ошибка: Передача данных не удалась."
+
+#~ msgid        "Exception occurred:"
+#~ msgstr       "Произошло исключение:"
+
+#~ msgid        "No game master .esm file found!"
+#~ msgstr       "Не найден .esm мастерфайл игры!"
+
+#~ msgid        "Cannot find online masterlist revision number!"
+#~ msgstr       "Невозможно найти номер ревизии мастерлиста онлайн!"
+
+#~ msgid        "Cannot find online masterlist revision date!"
+#~ msgstr       "Невозможно найти дату ревизии мастерлиста онлайн!"
+
+#~ msgid        "Cannot read list of files to be updated!"
+#~ msgstr       "Невозможно прочесть список файлов для обновления!"
+
+#~ msgid        "Downloaded file \"%1%\" failed verification test!"
+#~ msgstr       "Загруженный файл \"%1%\" не прошел проверку!"
+
+#~ msgid        "cURL cannot be initialised!"
+#~ msgstr       "cURL не может быть инициализирован!"
+
+#~ msgid        "cURL's error buffer could not be set! cURL response: \"%1%\"."
+#~ msgstr       "Ошибка cURL, буфер не может быть установлен! Ответ cURL: "
+#~      "\"%1%\"."
+
+#~ msgid        "A cURL option could not be set! cURL response: \"%1%\"."
+#~ msgstr       "Опция cURL не может быть установлена! Ответ cURL: \"%1%\"."
+
+#~ msgid        "Proxy hostname or port invalid! cURL response: \"%1%\"."
+#~ msgstr       "Имя прокси или порт недействителен! Ответ cURL: \"%1%\"."
+
+#~ msgid        "Failed to set proxy type! cURL response: \"%1%\"."
+#~ msgstr       "Не удается установить тип прокси! Ответ cURL: \"%1%\"."
+
+#~ msgid        "Proxy authentication username or password invalid! cURL "
+#~      "response: \"%1%\"."
+#~ msgstr       "Имя пользователя или пароль для прокси недействительны! "
+#~      "Ответ cURL: \"%1%\"."
+
+#~ msgid        "Failed to set proxy authentication type! cURL response: \"%1%"
+#~      "\"."
+#~ msgstr       "Невозможно установить тип идентификации прокси! Ответ cURL: "
+#~      "\"%1%\"."
+
+#~ msgid        "cURL could not perform task! cURL response: \"%1%\"."
+#~ msgstr       "cURL не может выполнить задачу! Ответ cURL: \"%1%\"."
+
+#~ msgid        "Cancelled by user."
+#~ msgstr       "Отменено пользователем."
+
+#~ msgid        "Memory allocation failed."
+#~ msgstr       "Ошибка выделения памяти."
+
+#~ msgid        "No Internet connection detected."
+#~ msgstr       "Интернет-подключение не найдено."
+
+#~ msgid        "No tag map has yet been initialised."
+#~ msgstr       "Карты тегов еще не инициализирована"
+
+#~ msgid        "The requested change to the active plugins list would result "
+#~      "in over 255 plugins being active."
+#~ msgstr       "Запрошенные изменения в списке активных плагинов приведут к "
+#~      "наличию более чем 255 активных плагинов."
+
+#~ msgid        "Display Settings"
+#~ msgstr       "Настройки отображения"
+
+#~ msgid        "The BOSS Log can be displayed using an alternative colour "
+#~      "scheme, which can be enabled and customised using the options below. "
+#~      "Colours must be specified using their lowercase hex codes. The "
+#~      "default value for each element is displayed as the placeholder for "
+#~      "its text box, and this value is used if the text box is left empty."
+#~ msgstr       "Лог BOSS может быть отображен с использованием "
+#~      "альтернативной цветовой схемы, которая может быть включена и "
+#~      "настроена нижестоящими опциями. Цвета должны быть заданы с помощью "
+#~      "строчных шестнадцатеричных кодов. Значение по умолчанию для каждого "
+#~      "элемента отобразится как заполнитель его текстового поля, и это "
+#~      "значение используется, если  текстовое поле останется пустым."
+
+#~ msgid        " Some examples of colour codes that can be used may be found "
+#~      "<a href='http://en.wikipedia.org/wiki/Web_colors#Color_table'>here</"
+#~      "a>."
+#~ msgstr       " Примеры цветовых кодов могут быть найдены <a href='http://"
+#~      "ru.wikipedia.org/wiki/%D0%A6%D0%B2%D0%B5%D1%82%D0%B0_HTML'>здесь</a>."
+
+#~ msgid        "Use Alternative Colour Scheme"
+#~ msgstr       "Использовать альтернативную цветовую схему"
+
+#~ msgid        "Element"
+#~ msgstr       "Элемент"
+
+#~ msgid        "Colour"
+#~ msgstr       "Цвет"
+
+#~ msgid        "General Text"
+#~ msgstr       "Основной текст"
+
+#~ msgid        "Window Backgrounds"
+#~ msgstr       "Фон окна"
+
+#~ msgid        "Menu Background"
+#~ msgstr       "Фон меню"
+
+#~ msgid        "Menu Button Hover"
+#~ msgstr       "Покрытие кнопки меню"
+
+#~ msgid        "Active Menu Button"
+#~ msgstr       "Активная кнопка меню"
+
+#~ msgid        "Links"
+#~ msgstr       "Ссылки"
+
+#~ msgid        "Visited Links"
+#~ msgstr       "Посещенные ссылки"
+
+#~ msgid        "CRC Labels"
+#~ msgstr       "Метки контрольных сумм"
+
+#~ msgid        "Active Labels"
+#~ msgstr       "Метки активных"
+
+#~ msgid        "Version Labels"
+#~ msgstr       "Метки версий"
+
+#~ msgid        "Errors"
+#~ msgstr       "Ошибки"
+
+#~ msgid        "Warnings"
+#~ msgstr       "Предупреждения"
+
+#~ msgid        "Dirty Messages"
+#~ msgstr       "Сообщения о \"грязных правках\""
+
+#~ msgid        "Bash Tag Suggestion Prefixes"
+#~ msgstr       "Префиксы Bash-тегов"
+
+#~ msgid        "CSS Settings Panel File Drag Highlight"
+#~ msgstr       "Подсветка панели настроек стилей переноса файла"
+
+#~ msgid        "Filters Background"
+#~ msgstr       "Фон фильтров"
+
+#~ msgid        "Success Messages"
+#~ msgstr       "Сообщения об успехе"
+
+#~ msgid        "Quoted Userlist Messages"
+#~ msgstr       "Цитированные сообщения списка правил"
+
+#~ msgid        "Summary Messages Default Background"
+#~ msgstr       "Фон по умолчанию для общих сообщений"
+
+#~ msgid        "Table Headings"
+#~ msgstr       "Заголовки таблицы"
+
+#~ msgid        "You can <span class='button' id='cssButtonBackup'>back up</"
+#~      "span> your display settings to avoid losing them when you <span "
+#~      "id='loseSettingsClose'>close the BOSS Log</span><span "
+#~      "id='loseSettingsCacheClear'>clear your browser's cache</span>."
+#~ msgstr       "Вы можете <span class='button' id='cssButtonBackup'>сделать "
+#~      "резервную копию</span> ваших настроек стилей, для предотвращения их "
+#~      "потери, в случае, когда вы <span id='loseSettingsClose'>закроете лог "
+#~      "BOSS и </span><span id='loseSettingsCacheClear'>очистите кэш "
+#~      "браузера</span>."
+
+#~ msgid        "Backup files are given nonsensical names by your browser, "
+#~      "but you can rename them to whatever you want. Drag and drop a backup "
+#~      "file into this panel to restore the settings it contains."
+#~ msgstr       "Резервное копирование файлов с присвоенными вашим браузером "
+#~      "именами, но вы можете переименовать их так как вам нужно. Перетащите "
+#~      "файл резервной копии на эту панель для восстановления содержащихся в "
+#~      "нем настроек."
+
+#~ msgid        "Apply"
+#~ msgstr       "Сохранить"
+
+#~ msgid        "Backup/Restore of Display Settings"
+#~ msgstr       "Сохранение/восстановление настроек отображения"
+
+#~ msgid        "Allows the backup and restore of custom display settings."
+#~ msgstr       "Позволяет сделать резервную копию и восстановить из неё "
+#~      "измененные настройки отображения."
+
+#~ msgid        "Do not display this panel again for this browser. If this "
+#~      "checkbox is left unchecked, this panel will be displayed every time "
+#~      "you open the BOSS Log."
+#~ msgstr       "Не показывать в следующий раз эту панель. Если этот флажок "
+#~      "оставить неотмеченным, эта панель будет отображаться каждый раз, при "
+#~      "открытии браузера."
+
+#~ msgid        "Hide Clean Plugins"
+#~ msgstr       "Скрыть \"чистые\" плагины"
+
+#~ msgctxt      "Label for text box. Do not use a single quote in "
+#~      "translation, use '&#x27;' instead"
+#~ msgid        "A link to the plugin&#x27;s download location."
+#~ msgstr       "Ссылка на страницу загрузки плагина."
+
+#~ msgid        "Downloading: %s; %3.0f%% of %3.0f KB"
+#~ msgstr       "Загрузка: %s; %3.0f%% из %3.0f KB"
+
+#~ msgid        "add source file references to debug statements"
+#~ msgstr       "добавление ссылок на исходные файлы для отчета отладки"
+
+#~ msgid        "sets the proxy hostname for the masterlist updater"
+#~ msgstr       "устанавливает имя прокси для обновления мастерлиста."
+
+#~ msgid        "sets the proxy port number for the masterlist updater"
+#~ msgstr       "устанавливает номер порта прокси для обновления мастерлиста."
+
+#~ msgid        "logs the debug output to the BOSSDebugLog.txt file instead "
+#~      "of the command line."
+#~ msgstr       "выводит сообщения отладки в файл BOSSDebugLog.txt вместо "
+#~      "командной строки."
+
+#~ msgid        "Checking for BOSS updates..."
+#~ msgstr       "Проверка обновлений BOSS..."
+
+#~ msgid        "You are already using the latest version of BOSS."
+#~ msgstr       "У вас уже последняя версия BOSS."
+
+#~ msgid        "Update available! New version: %s"
+#~ msgstr       "Доступно обновление! Новая версия: %s"
+
+#~ msgid        "The update may be downloaded from any of the locations "
+#~      "listed in the BOSS Log."
+#~ msgstr       "Обновление может быть загружено из любого другого места, из "
+#~      "представленных в логе  BOSS."
+
+#~ msgid        "Release notes:"
+#~ msgstr       "Заметки к выпуску:"
+
+#~ msgid        "Do you want to download and install the update? (y/n)"
+#~ msgstr       "Вы хотите загрузить и установить обновление? (y/n)"
+
+#~ msgid        "No update has been downloaded or installed."
+#~ msgstr       "Никаких обновлений не было загружено или установлено"
+
+#~ msgid        "New installer successfully downloaded!"
+#~ msgstr       "Новый установщик успешно загружен!"
+
+#~ msgid        "BOSS will now launch the downloaded installer and exit. "
+#~      "Complete the installer to complete the update."
+#~ msgstr       "Теперь BOSS запустит скачанный установщик и закроется. "
+#~      "Завершите установку для завершения обновления."
+
+#~ msgid        "Update cancelled."
+#~ msgstr       "Обновление прервано"
+
+#~ msgid        "BOSS Update check failed. No Internet connection detected."
+#~ msgstr       "Проверка обновлений BOSS не удалась. Не найдено активное "
+#~      "интернет-соединение."
+
+#~ msgid        "Your masterlist is already at the latest revision (r%1%; "
+#~      "%2%). No update necessary."
+#~ msgstr       "Ваш мастерлист уже последней версии (r %1%; %2%). Обновление "
+#~      "не требуется."
+
+#~ msgid        "No internet connection detected. Masterlist auto-updater "
+#~      "could not check for updates."
+#~ msgstr       "Не найдено активное интернет-соединение. Проверка обновлений "
+#~      "не может быть произведена."
+
+#~ msgid        "Downloading: %1%"
+#~ msgstr       "Загрузка: %1%"
+
+#~ msgid        "Switch to running BOSS for Morrowind."
+#~ msgstr       "Переключение на запуск BOSS для Morrowind"
+
+#~ msgid        "&Open API Readme"
+#~ msgstr       "Описание &API"
+
+#~ msgid        "Opens the BOSS API readme in your default web browser."
+#~ msgstr       "Открывает описание BOSS API в браузере по умолчанию."
+
+#~ msgid        "&Check For Updates..."
+#~ msgstr       "&Проверка обновлений..."
+
+#~ msgid        "Checks for updates to BOSS."
+#~ msgstr       "Проверить обновления для BOSS"
+
+#~ msgid        "Masterlist already up-to-date."
+#~ msgstr       "Мастерлист уже обновлен"
+
+#~ msgid        "Masterlist updated successfully."
+#~ msgstr       "Мастерлист успешно обновлен"
+
+#~ msgid        "A \"one-click\" program for users that quickly optimises and "
+#~      "avoids detrimental conflicts in their\n"
+#~      "TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 "
+#~      "and Fallout: New Vegas mod load orders."
+#~ msgstr       "Простая программа для пользователей, которая быстро "
+#~      "оптимизирует и предотвращает конфликты в порядке загрузки модов, для "
+#~      "таких\n"
+#~      " игр как:  TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, "
+#~      "Fallout 3 и Fallout: New Vegas."
+
+#~ msgid        "The automatic updater will download the installer for the "
+#~      "new version to this BOSS folder.\n"
+#~      "\n"
+#~ msgstr       "Автоматическое обновление загрузит установщик новой версии в "
+#~      "эту папку BOSS.\n"
+#~      "\n"
+
+#~ msgid        "It will then launch the installer before exiting. Complete "
+#~      "the installer to complete the update."
+#~ msgstr       "Перед выходом установщик будет запущен. Завершите установку "
+#~      "для завершения обновления."
+
+#~ msgid        "BOSS: Automatic Updater"
+#~ msgstr       "BOSS: Автоматическое обновление"
+
+#~ msgid        "Automatic updater cancelled."
+#~ msgstr       "Автоматическое обновление отменено"
+
+#~ msgid        "Initialising download..."
+#~ msgstr       "Инизиализация загрузки..."
+
+#~ msgid        "New installer successfully downloaded! When you click 'OK', "
+#~      "BOSS will launch the downloaded installer and exit. Complete the "
+#~      "installer to complete the update."
+#~ msgstr       "Новый установщик успешно загружен! Когда вы нажмете "
+#~      "'Готово', BOSS запустит загруженный установщик и  закроется. "
+#~      "Выполните установку для завершения обновления."
+
+#~ msgid        "Update failed. Details: %1%\n"
+#~      "\n"
+#~      "Update cancelled."
+#~ msgstr       "Обновление не удалось. Детали: %1%\n"
+#~      "\n"
+#~      "Обновление отменено."
+
+#~ msgid        "Update failed. Details: %1%; %2%\n"
+#~      "\n"
+#~      "Update cancelled."
+#~ msgstr       "Обновление не удалось. Детали: %1%; %2%\n"
+#~      "\n"
+#~      "Обновление отменено."
+
+#~ msgid        "Update check failed. Details: %1%"
+#~ msgstr       "Проверка обновлений не удалась. Детали: %1%"
+
+#~ msgid        "Update check failed. No Internet connection detected."
+#~ msgstr       "Проверка обновлений не удалась. Не найдено активное интернет-"
+#~      "соединение."
+
+#~ msgid        "BOSS: Check For Updates"
+#~ msgstr       "BOSS: Проверка обновлений"
+
+#~ msgid        "Update available! New version: %1%\n"
+#~      "The update may be downloaded from any of the locations listed in the "
+#~      "BOSS Log."
+#~ msgstr       "Доступно обновление! Новая версия: %1%\n"
+#~      "обновление может быть загружено из любого другого места, из "
+#~      "представленных в логе BOSS."
+
+#~ msgid        "Failed to get release notes. Details: %1%"
+#~ msgstr       "Не удалось получить замечания к выпуску. Детали: %1%"
+
+#~ msgid        "Update available! New version: %1%\n"
+#~      "Release notes:\n"
+#~      "\n"
+#~      "%2%\n"
+#~      "\n"
+#~      "Do you want to download and install the update?"
+#~ msgstr       "Доступно обновление! Новая версия: %1%\n"
+#~      "Замечания к выпуску:\n"
+#~      "\n"
+#~      "%2%\n"
+#~      "\n"
+#~      "Вы хотите загрузить и установить обновление?"
+
+#~ msgid        "Check for BOSS updates on startup"
+#~ msgstr       "Проверять обновления BOSS при запуске"
+
+#~ msgid        "Proxy Hostname:"
+#~ msgstr       "Имя хоста:"
+
+#~ msgid        "Proxy Port Number:"
+#~ msgstr       "Номер порта:"
+
+#~ msgid        "Proxy Username:"
+#~ msgstr       "Имя пользователя:"
+
+#~ msgid        "Proxy Password:"
+#~ msgstr       "Пароль:"
+
+#~ msgid        "Include Source Code References"
+#~ msgstr       "Включает ссылки на исходный код"
+
+#~ msgid        "Log Debug Output"
+#~ msgstr       "Вывод лога отладки"
+
+#~ msgid        "General"
+#~ msgstr       "Основное"
+
+#~ msgid        "Internet"
+#~ msgstr       "Прокси"
+
+#~ msgid        "Debugging"
+#~ msgstr       "Отладка"
+
+#~ msgid        "The output is logged to the BOSSDebugLog.txt file"
+#~ msgstr       "Сообщения будут записаны в файл BOSSDebugLog.txt"
+
+#~ msgid        "Adds source code references to command line output."
+#~ msgstr       "Добавляет ссылки на исходный код в выводимые сообщения "
+#~      "командной строки"
+
+#~ msgid        "The higher the verbosity level, the more information is "
+#~      "outputted to the command line."
+#~ msgstr       "Более глубокий уровень отладки, больше информации будет "
+#~      "выведено в командную строку."
+
+#~ msgid        "Error: No internet connection detected. Masterlist could not "
+#~      "be downloaded."
+#~ msgstr       "Ошибка: Не найдено активное интернет-соединение. Мастерлист "
+#~      "не может быть загружен."

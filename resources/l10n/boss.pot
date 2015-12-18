@@ -1,1952 +1,1367 @@
-msgid ""
-msgstr ""
-"Project-Id-Version: BOSS v2.1.1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-18 13:39-0000\n"
-"PO-Revision-Date: 2012-08-18 13:39-0000\n"
-"Last-Translator: \n"
-"Language-Team: BOSS Development Team\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: translate:1,1t;translate:1c,2,2t\n"
-"X-Poedit-Basepath: .\n"
-"X-Poedit-SearchPath-0: .\\..\\..\\..\\src\\boss-common\\Common\n"
-"X-Poedit-SearchPath-1: .\\..\\..\\..\\src\\boss-common\\Output\n"
-"X-Poedit-SearchPath-2: .\\..\\..\\..\\src\\boss-cli\n"
-"X-Poedit-SearchPath-3: .\\..\\..\\..\\src\\boss-gui\\GUI\n"
-
-#: .\..\..\..\src\boss-common\Common/Classes.cpp:1310
-msgid ""
-"# Settings with names starting with 'b' are boolean and accept values of "
-"'true' or 'false'."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Classes.cpp:1311
-msgid ""
-"# Settings with names starting with 'i' are unsigned integers and accept "
-"varying ranges of whole numbers."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Classes.cpp:1312
-msgid ""
-"# Settings with names starting with 's' are strings and their accepted "
-"values vary."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Classes.cpp:1313
-msgid ""
-"# See the BOSS ReadMe for details on what each setting does and the accepted "
-"values for integer and string settings."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:122
-#: .\..\..\..\src\boss-common\Common/Error.cpp:196
-msgid "No error."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:124
-msgid "No game master .esm file found!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:126
-msgid "\"%1%\" cannot be read!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:128
-msgid "\"%1%\" cannot be written to!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:130
-msgid "\"%1%\" is not encoded in valid UTF-8!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:132
-msgid "\"%1%\" cannot be found!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:134
-msgid "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:136
-msgid "\"%1%\" is not a valid regular expression. Item skipped."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:138
-msgid "No game detected!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:140
-msgid "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:142
-msgid "Master file \"%1%\" loading after non-master plugins!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:146
-msgid "Cannot find online masterlist revision number!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:148
-msgid "Cannot find online masterlist revision date!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:150
-msgid "Cannot read list of files to be updated!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:152
-msgid "Downloaded file \"%1%\" failed verification test!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:154
-msgid ""
-"The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%"
-"\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:156
-msgid "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:158
-msgid "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:160
-msgid "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:162
-msgid "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:164
-msgid "cURL cannot be initialised!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:166
-msgid "cURL's error buffer could not be set! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:168
-msgid "A cURL option could not be set! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:170
-msgid "Proxy hostname or port invalid! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:172
-msgid "Failed to set proxy type! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:174
-msgid ""
-"Proxy authentication username or password invalid! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:176
-msgid "Failed to set proxy authentication type! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:178
-msgid "cURL could not perform task! cURL response: \"%1%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:180
-msgid "Cancelled by user."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:182
-msgid "Parsing of \"%1%\" failed!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:184
-msgid ""
-"The modification date of \"%1%\" cannot be written! Filesystem response: "
-"\"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:186
-msgid "The window \"%1%\" failed to initialise. Details: \"%2%\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:188
-msgid "Memory allocation failed."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:190
-msgid "No Internet connection detected."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:192
-msgid "No tag map has yet been initialised."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.cpp:194
-msgid ""
-"The requested change to the active plugins list would result in over 255 "
-"plugins being active."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:503
-msgid "Rule is disabled."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:519
-#: .\..\..\..\src\boss-common\Common/Game.cpp:557
-#: .\..\..\..\src\boss-common\Common/Game.cpp:596
-msgid " is not installed or in the masterlist."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:523
-#: .\..\..\..\src\boss-common\Common/Game.cpp:562
-msgid " is already in the masterlist."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:527
-#: .\..\..\..\src\boss-common\Common/Game.cpp:566
-msgid " is not in the masterlist, cannot override."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:535
-msgid " is not installed, and is not in the masterlist."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:539
-msgid " is not in the masterlist and has not been sorted by a rule."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:577
-#: .\..\..\..\src\boss-common\Common/Game.cpp:615
-#: .\..\..\..\src\boss-common\Common/Game.cpp:633
-msgid "The group "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:577
-#: .\..\..\..\src\boss-common\Common/Game.cpp:615
-#: .\..\..\..\src\boss-common\Common/Game.cpp:633
-msgid " is not in the masterlist or is malformatted."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:682
-#: .\..\..\..\src\boss-common\Common/Game.cpp:699
-msgid "Version: "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:684
-#: .\..\..\..\src\boss-common\Common/Game.cpp:701
-#: .\..\..\..\src\boss-common\Common/Game.cpp:782
-#: .\..\..\..\src\boss-common\Common/Game.cpp:784
-msgid "Checksum: "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:754
-msgid ""
-"The order of plugins set by BOSS differs from their order in its masterlist, "
-"as one or more of the installed plugins is false-flagged. For more "
-"information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged "
-"Plugins\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:757
-msgid "Could not enforce load order master/plugin partition. Details: "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:776
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1085
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:75
-msgid "Version "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:778
-msgid "Active"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:797
-msgid "Error: "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:832
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:446
-msgid "Critical Error: "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:833
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:447
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:489
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:498
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:530
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:574
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:613
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:488
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:497
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:537
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:592
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:642
-msgid ""
-"Check the Troubleshooting section of the ReadMe for more information and "
-"possible solutions."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Game.cpp:834
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:448
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:531
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:575
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:614
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:538
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:593
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:643
-msgid "Utility will end now."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:493
-#: .\..\..\..\src\boss-common\Output/Output.cpp:495
-#: .\..\..\..\src\boss-common\Output/Output.cpp:528
-#: .\..\..\..\src\boss-common\Output/Output.cpp:530
-msgid "Note"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:498
-#: .\..\..\..\src\boss-common\Output/Output.cpp:500
-msgid "Bash Tag suggestion(s)"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:503
-#: .\..\..\..\src\boss-common\Output/Output.cpp:505
-msgid "Requires"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:508
-#: .\..\..\..\src\boss-common\Output/Output.cpp:510
-msgid "Incompatible with"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:513
-#: .\..\..\..\src\boss-common\Output/Output.cpp:515
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1907
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1909
-msgid "Warning"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:518
-#: .\..\..\..\src\boss-common\Output/Output.cpp:520
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1911
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1913
-msgid "Error"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:523
-#: .\..\..\..\src\boss-common\Output/Output.cpp:525
-msgid "Contains dirty edits"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:568
-msgid "Sort %1% before %2%"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:570
-msgid "Sort %1% after %2%"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:572
-msgid "Insert %1% at the top of %2%"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:574
-msgid "Insert %1% at the bottom of %2%"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:578
-msgid "Add the following messages to %1%:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:580
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:217
-msgid "Add the following messages:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:587
-msgid "Replace the messages attached to %1% with:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:589
-msgid "Replace the attached messages with:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1081
-msgid "\tVersion "
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1093
-msgid "Log Feature Support"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1094
-msgid "Display Settings"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1095
-msgid "Filters"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1099
-msgid "The BOSS Log requires Javascript to be enabled in order to function."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1106
-msgid "Colours must be specified using lowercase hex codes."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1110
-msgid ""
-"The BOSS Log can be displayed using an alternative colour scheme, which can "
-"be enabled and customised using the options below. Colours must be specified "
-"using their lowercase hex codes. The default value for each element is "
-"displayed as the placeholder for its text box, and this value is used if the "
-"text box is left empty."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1111
-msgid ""
-" Some examples of colour codes that can be used may be found <a href='http://"
-"en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1113
-msgid "Use Alternative Colour Scheme"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1115
-msgid "Element"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1115
-msgid "Colour"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1117
-msgid "General Text"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1118
-msgid "Window Backgrounds"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1119
-msgid "Menu Background"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1120
-msgid "Menu Button Hover"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1121
-msgid "Active Menu Button"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1122
-msgid "Links"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1123
-msgid "Visited Links"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1124
-msgid "CRC Labels"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1125
-msgid "Active Labels"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1126
-msgid "Version Labels"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1127
-msgid "Errors"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1128
-msgid "Warnings"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1129
-msgid "Dirty Messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1130
-msgid "Bash Tag Suggestion Prefixes"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1131
-msgid "CSS Settings Panel File Drag Highlight"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1132
-msgid "Filters Background"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1133
-msgid "Success Messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1134
-msgid "Quoted Userlist Messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1135
-msgid "Summary Messages Default Background"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1136
-msgid "Table Headings"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1138
-msgid ""
-"You can <span class='button' id='cssButtonBackup'>back up</span> your "
-"display settings to avoid losing them when you <span "
-"id='loseSettingsClose'>close the BOSS Log</span><span "
-"id='loseSettingsCacheClear'>clear your browser's cache</span>."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1138
-msgid ""
-"Backup files are given nonsensical names by your browser, but you can rename "
-"them to whatever you want. Drag and drop a backup file into this panel to "
-"restore the settings it contains."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1139
-msgid "Apply"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1144
-msgid ""
-"Support for the BOSS Log's more advanced features varies. Here's what your "
-"browser supports:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1145
-msgid "Functionality"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1148
-msgid "In-Log Plugin Submission"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1148
-msgid ""
-"Allows unrecognised plugins to be anonymously submitted to the BOSS team "
-"directly from the BOSS Log."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1149
-msgid "Backup/Restore of Display Settings"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1149
-msgid "Allows the backup and restore of custom display settings."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1150
-msgid "Settings Memory"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1150
-msgid ""
-"Allows the BOSS Log to automatically restore the display settings and filter "
-"configuration last used, and to hide this panel, whenever the BOSS Log is "
-"opened."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1152
-msgid "Appearance"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1155
-msgid "Opacity"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1156
-msgid "Shadows"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1157
-msgid "Transitions"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1158
-msgid "Transforms"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1159
-msgid "Input Placeholders"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1160
-msgid "Form Validation"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1162
-msgid ""
-"Do not display this panel again for this browser. If this checkbox is left "
-"unchecked, this panel will be displayed every time you open the BOSS Log."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1167
-msgid "Hide Version Numbers"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1168
-msgid "Hide 'Active' Label"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1169
-msgid "Hide Checksums"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1170
-msgid "Hide Notes"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1171
-msgid "Hide Bash Tag Suggestions"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1172
-msgid "Hide Requirements"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1173
-msgid "Hide Incompatibilities"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1174
-msgid "Hide 'Do Not Clean' Messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1175
-msgid "Hide All Plugin Messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1176
-msgid "Hide Inactive Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1177
-msgid "Hide Messageless Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1178
-msgid "Hide Clean Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1180
-msgid "%1% of %2% recognised plugins hidden."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1181
-msgid "%1% of %2% messages hidden."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1187
-msgid "Submit Plugin"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1188
-msgid "Plugin"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1190
-msgid "Download Location"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1190
-msgctxt ""
-"Label for text box. Do not use a single quote in translation, use '&#x27;' "
-"instead"
-msgid "A link to the plugin&#x27;s download location."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1191
-msgid "Additional Notes"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1191
-msgid ""
-"Any additional information, such as recommended Bash Tags, load order "
-"suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no "
-"download link is available, this information is crucial."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1193
-msgid "Submit"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1194
-msgid "Close"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1214
-msgid "Checking for existing submission..."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1228
-msgid "Error: Existing submission check failed!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1244
-msgid "Previous submission found, updating with supplied details..."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1250
-msgid "Plugin submission updated!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1252
-msgid "Error: Plugin submission could not be updated."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1275
-msgid "No previous submission found, creating new submission..."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1281
-msgid "Plugin submitted!"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1283
-msgid "Error: Plugin could not be submitted."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1289
-msgid "Error: Data transfer failed."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1321
-msgid ""
-"Web storage quota for this document has been exceeded. Please empty your "
-"browser\\'s cache. Note that this will delete all locally stored data."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1508
-msgid "Please supply at least a link or some notes."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1522
-msgid "Exception occurred:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1603
-msgid "Do not clean."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1860
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1891
-msgid "Summary"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1863
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1954
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:883
-msgid "User Rules"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1866
-msgid "%1% Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1870
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1986
-msgid "Recognised Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1872
-msgid "Restored Load Order"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1876
-#: .\..\..\..\src\boss-common\Output/Output.cpp:2009
-msgid "Unrecognised Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1894
-msgid "Plugin Type"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1894
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1904
-msgid "Count"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1895
-msgid "Recognised (or sorted by user rules)"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1897
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1899
-msgid "Unrecognised"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1900
-msgid "Inactive"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1901
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1914
-msgid "All"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1904
-msgid "Plugin Message Type"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1923
-msgid "No change in recognised plugin list since last run."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1955
-msgid "Rule"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1955
-msgid "Applied"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1955
-msgid "Details (if applicable)"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1969
-msgid " Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1988
-msgid "Restored Load Order (Using modlist.txt)"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1990
-msgid "Restored Load Order (Using modlist.old)"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:1993
-msgid ""
-"These plugins are recognised by BOSS and have been sorted according to its "
-"masterlist. Please read any attached messages and act on any that require "
-"action."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:2011
-msgid ""
-"The following plugins were not found in the masterlist, and must be "
-"positioned manually, using your favourite mod manager or by using BOSS's "
-"user rules functionality."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:2012
-msgid ""
-" You can submit unrecognised plugins for addition to the masterlist directly "
-"from this log by clicking on a plugin and supplying a link and/or "
-"description of its contents in the panel that is displayed."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Output/Output.cpp:2089
-msgid "Please read any attached messages and act on any that require action."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:88
-msgid "Description:"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:89
-msgid ""
-"  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, "
-"Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a "
-"frequently updated  masterlist to minimise incompatibilities between mods."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:93
-msgid "Examples:"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:95
-msgid "    updates the masterlist, sorts your mods, and shows the log"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:97
-msgid "    reverts your load order 1 level and skips showing the log"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:99
-msgid "    reverts your load order 2 levels and shows the log"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:113
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:122
-#, c-format
-msgid "Downloading: %s; %3.0f%% of %3.0f KB"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:195
-msgid "produces this help message"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:196
-msgid "prints the version banner"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:198
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web before sorting"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:201
-msgid "inhibit the automatic masterlist updater"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:203
-msgid ""
-"automatically update the local copy of the masterlist to the latest version "
-"available on the web but don't sort right now"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:208
-msgid "don't launch a browser to show the HTML log at program completion"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:211
-msgid ""
-"revert to a previous load order.  this parameter optionally accepts values "
-"of 1 or 2, indicating how many undo steps to apply.  if no option value is "
-"specified, it defaults to 1"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:217
-msgid ""
-"specify verbosity level (0-3) of the debugging output.  0 is the default, "
-"showing only WARN and ERROR messges. 1 (INFO and above) is implied if this "
-"option is specified without an argument.  higher values increase the "
-"verbosity further"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:223
-msgid ""
-"override game autodetection.  valid values are: 'Oblivion', 'Nehrim', "
-"'Fallout3', 'FalloutNV', and 'Skyrim'"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:227
-msgid "add source file references to debug statements"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:229
-msgid ""
-"show mod file CRCs, so that a file's CRC can be added to the masterlist in a "
-"conditional"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:232
-msgid "select output format. valid values are: 'html', 'text'"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:235
-msgid "run BOSS without actually making any changes to load order"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:237
-msgid "sets the proxy hostname for the masterlist updater"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:239
-msgid "sets the proxy port number for the masterlist updater"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:241
-msgid ""
-"logs the debug output to the BOSSDebugLog.txt file instead of the command "
-"line."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:330
-msgid "Checking for BOSS updates..."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:335
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1026
-msgid "You are already using the latest version of BOSS."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:341
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:346
-#, c-format
-msgid "Update available! New version: %s"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:342
-msgid ""
-"The update may be downloaded from any of the locations listed in the BOSS "
-"Log."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:355
-msgid "Release notes:"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:356
-msgid "Do you want to download and install the update? (y/n)"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:362
-msgid "No update has been downloaded or installed."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:369
-msgid "New installer successfully downloaded!"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:370
-msgid ""
-"BOSS will now launch the downloaded installer and exit. Complete the "
-"installer to complete the update."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:384
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:965
-msgid "Update cancelled."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:401
-msgid "BOSS Update check failed. No Internet connection detected."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:428
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:203
-msgid "Please pick which game to run BOSS for:"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:434
-msgid "Invalid selection."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:471
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:468
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:97
-msgid "Updating to the latest masterlist from the Google Code repository..."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:478
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:476
-msgid ""
-"Your masterlist is already at the latest revision (r%1%; %2%). No update "
-"necessary."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:481
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:480
-msgid "Your masterlist has been updated to revision %1% (%2%)."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:487
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:496
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:486
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:495
-msgid "Error: masterlist update failed."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:488
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:497
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:487
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:496
-msgid "Details: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:493
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:492
-msgid ""
-"No internet connection detected. Masterlist auto-updater could not check for "
-"updates."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:520
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:443
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:517
-msgid "BOSS working..."
-msgstr ""
-
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:529
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:573
-#: .\..\..\..\src\boss-cli/BOSS-CLI.cpp:612
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:536
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:591
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:641
-msgid "Critical Error: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/ElementIDs.cpp:55
-#: .\..\..\..\src\boss-gui\GUI/ElementIDs.cpp:70
-msgid "Downloading: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/ElementIDs.cpp:57
-#: .\..\..\..\src\boss-gui\GUI/ElementIDs.cpp:72
-msgid "Are you sure you want to cancel?"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/ElementIDs.cpp:57
-#: .\..\..\..\src\boss-gui\GUI/ElementIDs.cpp:72
-msgid "BOSS: Updater"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:107
-msgid "Error: %1% Details: %2%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:108
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:159
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:174
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:423
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:682
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:698
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:722
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:109
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:120
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:136
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:181
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:457
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:484
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:753
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:761
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:771
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:779
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:903
-msgid "BOSS: Error"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:158
-msgid "Error: could not apply translation: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:173
-msgid "Error: The BOSS GUI is already running. This instance will now quit."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:199
-msgid " (not detected)"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:204
-msgid "BOSS: Select Game"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:245
-msgid "Plain Text"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:249
-msgid "Last Run"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:250
-msgid "2nd Last Run"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:257
-msgid "&View BOSS Log"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:257
-msgid "Opens your BOSSlog."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:258
-msgid "&Run BOSS"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:258
-msgid "Runs BOSS with the options you have chosen."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:260
-msgid "&Quit"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:260
-msgid "Quit BOSS."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:261
-msgid "&File"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:264
-msgid "&User Rules..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:264
-msgid "Opens your userlist in your default text editor."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:265
-msgid "&Settings..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:265
-msgid "Opens the Settings window."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:266
-msgid "&Edit"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:269
-msgid "&Oblivion"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:269
-msgid "Switch to running BOSS for Oblivion."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:270
-msgid "&Nehrim"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:270
-msgid "Switch to running BOSS for Nehrim."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:271
-msgid "&Skyrim"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:271
-msgid "Switch to running BOSS for Skyrim."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:272
-msgid "&Fallout 3"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:272
-msgid "Switch to running BOSS for Fallout 3."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:273
-msgid "&Fallout: New Vegas"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:273
-msgid "Switch to running BOSS for Fallout: New Vegas."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:274
-msgid "&Morrowind"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:274
-msgid "Switch to running BOSS for Morrowind."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:275
-msgid "&Active Game"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:278
-msgid "Open &Main Readme"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:278
-msgid "Opens the main BOSS readme in your default web browser."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:279
-msgid "Open &Userlist Syntax Doc"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:279
-msgid ""
-"Opens the BOSS userlist syntax documentation in your default web browser."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:280
-msgid "Open &Masterlist Syntax Doc"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:280
-msgid ""
-"Opens the BOSS masterlist syntax documentation in your default web browser."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:281
-msgid "&Open API Readme"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:281
-msgid "Opens the BOSS API readme in your default web browser."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:282
-msgid "Open &Version History"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:282
-msgid "Opens the BOSS version history in your default web browser."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:283
-msgid "View &Copyright Licenses"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:283
-msgid ""
-"View the GNU General Public License v3.0 and GNU Free Documentation License "
-"v1.3."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:285
-msgid "&Check For Updates..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:285
-msgid "Checks for updates to BOSS."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:286
-msgid "&About BOSS..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:286
-msgid "Shows information about BOSS."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:287
-msgid "&Help"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:298
-msgid "Output Options"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:302
-msgid "Show BOSS Log On Completion"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:303
-msgid "Display File CRCs"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:304
-msgid "BOSS Log Format: "
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:312
-msgid "Edit User Rules"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:313
-msgid "Run BOSS"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:314
-msgid "View BOSS Log"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:321
-msgid "Run Options"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:327
-msgid "Sort Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:330
-msgid "Update Masterlist"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:331
-msgid "Perform Trial Run"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:336
-msgid "Update Masterlist Only"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:340
-msgid "Undo Changes"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:341
-msgid "Undo Level: "
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:350
-msgid ""
-"This decides both the format of BOSSlog generated when you click the \"Run "
-"BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog"
-"\" button."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:351
-msgid ""
-"The format of BOSSlog this opens is decided by the setting of the \"BOSSlog "
-"Format\" Output Option above."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:352
-msgid ""
-"Runs BOSS, simulating its changes to your load order, but doesn't actually "
-"reorder your mods."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:404
-msgid "Ready"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:422
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:681
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:119
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:135
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:180
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:902
-msgid "Error: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:443
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:92
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:127
-msgid "BOSS: Working..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:477
-msgid "Masterlist already up-to-date."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:481
-msgid "Masterlist updated successfully."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:668
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:86
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:473
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:495
-msgid "BOSS: User Rules Manager"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:697
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:721
-msgid "Error: \"%1%\" cannot be found."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:733
-msgid ""
-"A \"one-click\" program for users that quickly optimises and avoids "
-"detrimental conflicts in their\n"
-"TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and "
-"Fallout: New Vegas mod load orders."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:939
-msgid ""
-"The automatic updater will download the installer for the new version to "
-"this BOSS folder.\n"
-"\n"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:940
-msgid ""
-"It will then launch the installer before exiting. Complete the installer to "
-"complete the update."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:942
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:944
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:948
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:956
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:966
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:972
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:981
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1085
-msgid "BOSS: Automatic Updater"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:944
-msgid "Automatic updater cancelled."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:948
-msgid "Initialising download..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:956
-msgid ""
-"New installer successfully downloaded! When you click 'OK', BOSS will launch "
-"the downloaded installer and exit. Complete the installer to complete the "
-"update."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:971
-msgid ""
-"Update failed. Details: %1%\n"
-"\n"
-"Update cancelled."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:980
-msgid ""
-"Update failed. Details: %1%; %2%\n"
-"\n"
-"Update cancelled."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:991
-msgid "BOSS: Settings"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1037
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1049
-msgid "Update check failed. Details: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1043
-msgid "Update check failed. No Internet connection detected."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1060
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1066
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1074
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1091
-msgid "BOSS: Check For Updates"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1073
-msgid ""
-"Update available! New version: %1%\n"
-"The update may be downloaded from any of the locations listed in the BOSS "
-"Log."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1084
-msgid "Failed to get release notes. Details: %1%"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/MainWindow.cpp:1090
-msgid ""
-"Update available! New version: %1%\n"
-"Release notes:\n"
-"\n"
-"%2%\n"
-"\n"
-"Do you want to download and install the update?"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:41
-msgid "Standard (0)"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:42
-msgid "Level 1"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:43
-msgid "Level 2"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:44
-msgid "Level 3"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:48
-msgid "Autodetect"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:86
-msgid "Default Game:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:90
-msgid "Language:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:93
-msgid "Check for BOSS updates on startup"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:94
-msgid "Use User Rules Manager"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:95
-msgid "Close the GUI after running BOSS"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:97
-msgid "Language settings will be applied after the BOSS GUI is restarted."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:106
-msgid "Proxy Hostname:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:109
-msgid "Proxy Port Number:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:112
-msgid "Proxy Username:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:115
-msgid "Proxy Password:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:127
-msgid "Debug Output Verbosity:"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:130
-msgid "Include Source Code References"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:131
-msgid "Log Debug Output"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:136
-msgid "General"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:137
-msgid "Internet"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:138
-msgid "Debugging"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:142
-msgid "OK"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:143
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:261
-msgid "Cancel"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:154
-msgid "The output is logged to the BOSSDebugLog.txt file"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:155
-msgid "Adds source code references to command line output."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/SettingsWindow.cpp:156
-msgid ""
-"The higher the verbosity level, the more information is outputted to the "
-"command line."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:85
-msgid ""
-"The User Rules Manager requires the BOSS masterlist for %1% to have been "
-"downloaded, but it cannot be detected. Do you wish to download the latest "
-"masterlist now?"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:92
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:127
-msgid "Initialising User Rules Manager..."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:108
-msgid ""
-"Error: No internet connection detected. Masterlist could not be downloaded."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:150
-msgid "before"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:151
-msgid "after"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:155
-msgid "top"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:156
-msgid "bottom"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:195
-msgid "Rule Editor"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:198
-msgid "For"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:202
-msgid "Sort Item"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:205
-msgid "Sort"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:211
-msgid "Insert at the"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:213
-msgid "of"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:221
-msgid "Replace existing messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:225
-msgid "Default Plugin Messages"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:245
-msgid "Installed Plugins"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:246
-msgid "Masterlist"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:253
-msgid "Create New Rule"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:254
-msgid "Save Edited Rule"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:255
-msgid "Delete Rule"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:257
-msgid "Move Rule Up"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:258
-msgid "Move Rule Down"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:260
-msgid "Save and Exit"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:280
-msgid ""
-"Messages must be entered in the correct format. See the User Rules Readme "
-"for more information."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:456
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:483
-msgid "Rule Syntax Error: %1% Please correct the mistake before continuing."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:472
-msgid "Are you sure you want to save your changes to the selected rule?"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:494
-msgid "Are you sure you want to delete the selected rule?"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:572
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:591
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:860
-msgid "User Rules Manager"
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:607
-msgid "No mod is specified to sort relative to."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:609
-msgid "Cannot sort a plugin relative to a group."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:612
-msgid "No group is specified to insert into."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:614
-msgid "Cannot insert into a plugin."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:618
-msgid "Cannot add messages when none are given."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:621
-msgid "No rule mod is specified."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:625
-msgid "No group is specified to sort relative to."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:627
-msgid "Cannot sort a group relative to a plugin."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:629
-msgid "Cannot insert groups."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:632
-msgid "Cannot add messages to groups."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:635
-msgid ""
-"The rule mod is not being sorted nor having its attached messages altered."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:752
-msgid "Rule Syntax Error: Cannot sort a plugin relative to a group."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:760
-msgid "Rule Syntax Error: Cannot insert into a plugin."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:770
-msgid "Rule Syntax Error: Cannot sort a group relative to a plugin."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:778
-msgid "Rule Syntax Error: Cannot insert groups."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:871
-msgid ""
-"The rule sorting the unrecognised plugin \"%1%\" has been disabled as the "
-"plugin is now recognised. If you wish to override its position in the "
-"masterlist, re-enable the rule."
-msgstr ""
-
-#: .\..\..\..\src\boss-gui\GUI/UserRuleEditor.cpp:872
-msgid "BOSS: Rule Disabled"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:121
-msgid "Masterlist Parsing Error: Expected a %1% at:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:122
-msgid "Ini Parsing Error: Expected a %1% at:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:123
-msgid "Userlist Parsing Error: Expected a %1% at:"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:124
-msgid "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:125
-msgid "Masterlist parsing aborted. Utility will end now."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:126
-msgid ""
-"Ini parsing aborted. Some or all of the options may not have been set "
-"correctly."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:127
-msgid "Userlist parsing aborted. No rules will be applied."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:130
-msgid "includes a sort line in a rule with a FOR rule keyword."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:131
-msgid "tries to add a group."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:132
-msgid "tries to sort the group \"ESMs\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:133
-msgid "tries to sort the master .ESM file."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:134
-msgid "references a mod and a group."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:135
-msgid "tries to sort a group before the group \"ESMs\"."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:136
-msgid "tries to sort a mod before the master .ESM file."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:137
-msgid ""
-"tries to insert a mod into the top of the group \"ESMs\", before the master ."
-"ESM file."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:138
-msgid "tries to insert a group or insert something into a mod."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:139
-msgid "tries to attach a message to a group."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:140
-msgid "has more than one sort line."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:141
-msgid "has more than one REPLACE-using message line."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:142
-msgid "has a REPLACE-using message line that is not the first message line."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:143
-msgid "has a sort line that is not the second line of the rule."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:144
-msgid "tries to sort a mod or group relative to itself."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:145
-msgid "tries to attach an malformatted message."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:146
-msgid "tries to sort a plugin before a master file."
-msgstr ""
-
-#: .\..\..\..\src\boss-common\Common/Error.h:147
-msgid "tries to sort a master file before a plugin."
-msgstr ""
+# Translation template for the BOSS program
+# Copyright (C) 2015 BOSS Development Team
+# This file is distributed under the same license as the BOSS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+#, fuzzy
+msgid   ""
+msgstr  "Project-Id-Version: BOSS 2.3.0\n"
+        "Report-Msgid-Bugs-To: \n"
+        "POT-Creation-Date: 2015-12-18 11:54-0500\n"
+        "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+        "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+        "Language-Team: LANGUAGE <LL@li.org>\n"
+        "Language: \n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=CHARSET\n"
+        "Content-Transfer-Encoding: 8bit\n"
+
+#: src/common/error.h:102
+#, boost-format
+msgid   "Masterlist Parsing Error: Expected a %1% at:"
+msgstr  ""
+
+#: src/common/error.h:104
+#, boost-format
+msgid   "Ini Parsing Error: Expected a %1% at:"
+msgstr  ""
+
+#: src/common/error.h:106
+#, boost-format
+msgid   "Userlist Parsing Error: Expected a %1% at:"
+msgstr  ""
+
+#: src/common/error.h:108
+#, boost-format
+msgid   "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+msgstr  ""
+
+#: src/common/error.h:110
+msgid   "Masterlist parsing aborted. Utility will end now."
+msgstr  ""
+
+#: src/common/error.h:112
+msgid   "Ini parsing aborted. Some or all of the options may not have been "
+        "set correctly."
+msgstr  ""
+
+#: src/common/error.h:114
+msgid   "Userlist parsing aborted. No rules will be applied."
+msgstr  ""
+
+#: src/common/error.h:119
+msgid   "includes a sort line in a rule with a FOR rule keyword."
+msgstr  ""
+
+#: src/common/error.h:121
+msgid   "tries to add a group."
+msgstr  ""
+
+#: src/common/error.h:123
+msgid   "tries to sort the group \"ESMs\"."
+msgstr  ""
+
+#: src/common/error.h:125
+msgid   "tries to sort the master .ESM file."
+msgstr  ""
+
+#: src/common/error.h:127
+msgid   "references a mod and a group."
+msgstr  ""
+
+#: src/common/error.h:129
+msgid   "tries to sort a group before the group \"ESMs\"."
+msgstr  ""
+
+#: src/common/error.h:131
+msgid   "tries to sort a mod before the master .ESM file."
+msgstr  ""
+
+#: src/common/error.h:133
+msgid   "tries to insert a mod into the top of the group \"ESMs\", before the "
+        "master .ESM file."
+msgstr  ""
+
+#: src/common/error.h:135
+msgid   "tries to insert a group or insert something into a mod."
+msgstr  ""
+
+#: src/common/error.h:137
+msgid   "tries to attach a message to a group."
+msgstr  ""
+
+#: src/common/error.h:139
+msgid   "has more than one sort line."
+msgstr  ""
+
+#: src/common/error.h:141
+msgid   "has more than one REPLACE-using message line."
+msgstr  ""
+
+#: src/common/error.h:143
+msgid   "has a REPLACE-using message line that is not the first message line."
+msgstr  ""
+
+#: src/common/error.h:145
+msgid   "has a sort line that is not the second line of the rule."
+msgstr  ""
+
+#: src/common/error.h:147
+msgid   "tries to sort a mod or group relative to itself."
+msgstr  ""
+
+#: src/common/error.h:149
+msgid   "tries to attach an malformatted message."
+msgstr  ""
+
+#: src/common/error.h:151
+msgid   "tries to sort a plugin before a master file."
+msgstr  ""
+
+#: src/common/error.h:153
+msgid   "tries to sort a master file before a plugin."
+msgstr  ""
+
+#: src/common/settings.cpp:93
+msgid   "# Settings with names starting with 'b' are boolean and accept "
+        "values of 'true' or 'false'."
+msgstr  ""
+
+#: src/common/settings.cpp:94
+msgid   "# Settings with names starting with 'i' are unsigned integers and "
+        "accept varying ranges of whole numbers."
+msgstr  ""
+
+#: src/common/settings.cpp:95
+msgid   "# Settings with names starting with 's' are strings and their "
+        "accepted values vary."
+msgstr  ""
+
+#: src/common/settings.cpp:96
+msgid   "# See the BOSS ReadMe for details on what each setting does and the "
+        "accepted values for integer and string settings."
+msgstr  ""
+
+#: src/common/error.cpp:107 src/common/error.cpp:146
+msgid   "No error."
+msgstr  ""
+
+#: src/common/error.cpp:109
+#, boost-format
+msgid   "\"%1%\" cannot be read!"
+msgstr  ""
+
+#: src/common/error.cpp:111
+#, boost-format
+msgid   "\"%1%\" cannot be written to!"
+msgstr  ""
+
+#: src/common/error.cpp:113
+#, boost-format
+msgid   "\"%1%\" is not encoded in valid UTF-8!"
+msgstr  ""
+
+#: src/common/error.cpp:115
+#, boost-format
+msgid   "\"%1%\" cannot be found!"
+msgstr  ""
+
+#: src/common/error.cpp:117
+#, boost-format
+msgid   "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
+msgstr  ""
+
+#: src/common/error.cpp:119
+#, boost-format
+msgid   "\"%1%\" is not a valid regular expression. Item skipped."
+msgstr  ""
+
+#: src/common/error.cpp:121
+msgid   "No game detected!"
+msgstr  ""
+
+#: src/common/error.cpp:123
+#, boost-format
+msgid   "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:125
+#, boost-format
+msgid   "Master file \"%1%\" loading after non-master plugins!"
+msgstr  ""
+
+#: src/common/error.cpp:129
+#, boost-format
+msgid   "Git operation failed. Error: %1%"
+msgstr  ""
+
+#: src/common/error.cpp:131
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be read! Filesystem "
+        "response: \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:133
+#, boost-format
+msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:135
+#, boost-format
+msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:137
+#, boost-format
+msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:139
+#, boost-format
+msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:141
+#, boost-format
+msgid   "Parsing of \"%1%\" failed!"
+msgstr  ""
+
+#: src/common/error.cpp:143
+#, boost-format
+msgid   "The modification date of \"%1%\" cannot be written! Filesystem "
+        "response: \"%2%\"."
+msgstr  ""
+
+#: src/common/error.cpp:145
+#, boost-format
+msgid   "The window \"%1%\" failed to initialise. Details: \"%2%\"."
+msgstr  ""
+
+#: src/common/game.cpp:500
+msgid   "Rule is disabled."
+msgstr  ""
+
+#: src/common/game.cpp:524 src/common/game.cpp:587 src/common/game.cpp:640
+msgid   " is not installed or in the masterlist."
+msgstr  ""
+
+#: src/common/game.cpp:531 src/common/game.cpp:594
+msgid   " is already in the masterlist."
+msgstr  ""
+
+#: src/common/game.cpp:537 src/common/game.cpp:601
+msgid   " is not in the masterlist, cannot override."
+msgstr  ""
+
+#: src/common/game.cpp:551
+msgid   " is not installed, and is not in the masterlist."
+msgstr  ""
+
+#: src/common/game.cpp:557
+msgid   " is not in the masterlist and has not been sorted by a rule."
+msgstr  ""
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   "The group "
+msgstr  ""
+
+#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+msgid   " is not in the masterlist or is malformatted."
+msgstr  ""
+
+#: src/common/game.cpp:748 src/common/game.cpp:766
+msgid   "Version: "
+msgstr  ""
+
+#: src/common/game.cpp:750 src/common/game.cpp:768 src/common/game.cpp:854
+#: src/common/game.cpp:856
+msgid   "Checksum: "
+msgstr  ""
+
+#: src/common/game.cpp:824
+msgid   "The order of plugins set by BOSS differs from their order in its "
+        "masterlist, as one or more of the installed plugins is false-"
+        "flagged. For more information, see \"file:../Docs/BOSS%20Readme."
+        "html#appendix-c False-Flagged Plugins\"."
+msgstr  ""
+
+#: src/common/game.cpp:827
+msgid   "Could not enforce load order master/plugin partition. Details: "
+msgstr  ""
+
+#: src/common/game.cpp:848 src/output/boss_log.cpp:388
+#: src/output/boss_log.cpp:392 src/boss_cli.cpp:88
+msgid   "Version "
+msgstr  ""
+
+#: src/common/game.cpp:850
+msgid   "Active"
+msgstr  ""
+
+#: src/common/game.cpp:872
+msgid   "Error: "
+msgstr  ""
+
+#: src/common/game.cpp:907 src/boss_cli.cpp:356
+msgid   "Critical Error: "
+msgstr  ""
+
+#: src/common/game.cpp:908 src/gui/main_window.cpp:551
+#: src/gui/main_window.cpp:608 src/gui/main_window.cpp:661 src/boss_cli.cpp:357
+#: src/boss_cli.cpp:424 src/boss_cli.cpp:470 src/boss_cli.cpp:512
+msgid   "Check the Troubleshooting section of the ReadMe for more information "
+        "and possible solutions."
+msgstr  ""
+
+#: src/common/game.cpp:909 src/gui/main_window.cpp:552
+#: src/gui/main_window.cpp:609 src/gui/main_window.cpp:662 src/boss_cli.cpp:358
+#: src/boss_cli.cpp:425 src/boss_cli.cpp:471 src/boss_cli.cpp:513
+msgid   "Utility will end now."
+msgstr  ""
+
+#: src/gui/settings_window.cpp:48
+msgid   "Standard (0)"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:49
+msgid   "Level 1"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:50
+msgid   "Level 2"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:51
+msgid   "Level 3"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:53
+msgid   "Autodetect"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:75
+msgid   "Use User Rules Manager"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:77
+msgid   "Close the GUI after running BOSS"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:97
+msgid   "Default Game:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:99
+msgid   "Language:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:101
+msgid   "Debug Output Verbosity:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:103
+msgid   "Oblivion Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:105
+msgid   "Nehrim Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:107
+msgid   "Skyrim Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:109
+msgid   "Fallout 3 Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:111
+msgid   "Falllout: New Vegas Masterlist URL:"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:118
+msgid   "Language settings will be applied after the BOSS GUI is restarted."
+msgstr  ""
+
+#: src/gui/settings_window.cpp:123
+msgid   "OK"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:124 src/gui/user_rule_editor.cpp:563
+msgid   "Cancel"
+msgstr  ""
+
+#: src/gui/settings_window.cpp:131
+msgid   "The higher the verbosity level, the more information is outputted to "
+        "BOSSDebugLog.txt."
+msgstr  ""
+
+#: src/gui/main_window.cpp:125
+#, boost-format
+msgid   "Error: %1% Details: %2%"
+msgstr  ""
+
+#: src/gui/main_window.cpp:126 src/gui/main_window.cpp:176
+#: src/gui/main_window.cpp:190 src/gui/main_window.cpp:692
+#: src/gui/main_window.cpp:715 src/gui/main_window.cpp:850
+#: src/gui/main_window.cpp:865 src/gui/user_rule_editor.cpp:123
+#: src/gui/user_rule_editor.cpp:130 src/gui/user_rule_editor.cpp:139
+#: src/gui/user_rule_editor.cpp:146 src/gui/user_rule_editor.cpp:283
+#: src/gui/user_rule_editor.cpp:442 src/gui/user_rule_editor.cpp:480
+#: src/gui/user_rule_editor.cpp:759 src/gui/user_rule_editor.cpp:786
+msgid   "BOSS: Error"
+msgstr  ""
+
+#: src/gui/main_window.cpp:175
+#, boost-format
+msgid   "Error: could not apply translation: %1%"
+msgstr  ""
+
+#: src/gui/main_window.cpp:189
+msgid   "Error: The BOSS GUI is already running. This instance will now quit."
+msgstr  ""
+
+#: src/gui/main_window.cpp:215
+msgid   " (not detected)"
+msgstr  ""
+
+#: src/gui/main_window.cpp:221 src/boss_cli.cpp:338
+msgid   "Please pick which game to run BOSS for:"
+msgstr  ""
+
+#: src/gui/main_window.cpp:222
+msgid   "BOSS: Select Game"
+msgstr  ""
+
+#: src/gui/main_window.cpp:260
+msgid   "Plain Text"
+msgstr  ""
+
+#: src/gui/main_window.cpp:262
+msgid   "Last Run"
+msgstr  ""
+
+#: src/gui/main_window.cpp:263
+msgid   "2nd Last Run"
+msgstr  ""
+
+#: src/gui/main_window.cpp:270
+msgid   "&View BOSS Log"
+msgstr  ""
+
+#: src/gui/main_window.cpp:271
+msgid   "Opens your BOSSlog."
+msgstr  ""
+
+#: src/gui/main_window.cpp:273
+msgid   "&Run BOSS"
+msgstr  ""
+
+#: src/gui/main_window.cpp:274
+msgid   "Runs BOSS with the options you have chosen."
+msgstr  ""
+
+#: src/gui/main_window.cpp:277
+msgid   "&Quit"
+msgstr  ""
+
+#: src/gui/main_window.cpp:278
+msgid   "Quit BOSS."
+msgstr  ""
+
+#: src/gui/main_window.cpp:279
+msgid   "&File"
+msgstr  ""
+
+#: src/gui/main_window.cpp:283
+msgid   "&User Rules..."
+msgstr  ""
+
+#: src/gui/main_window.cpp:284
+msgid   "Opens your userlist in your default text editor."
+msgstr  ""
+
+#: src/gui/main_window.cpp:286
+msgid   "&Settings..."
+msgstr  ""
+
+#: src/gui/main_window.cpp:287
+msgid   "Opens the Settings window."
+msgstr  ""
+
+#: src/gui/main_window.cpp:288
+msgid   "&Edit"
+msgstr  ""
+
+#: src/gui/main_window.cpp:292
+msgid   "Switch to running BOSS for Oblivion."
+msgstr  ""
+
+#: src/gui/main_window.cpp:294
+msgid   "Switch to running BOSS for Nehrim."
+msgstr  ""
+
+#: src/gui/main_window.cpp:296
+msgid   "Switch to running BOSS for Skyrim."
+msgstr  ""
+
+#: src/gui/main_window.cpp:298
+msgid   "Switch to running BOSS for Fallout 3."
+msgstr  ""
+
+#: src/gui/main_window.cpp:300
+msgid   "Switch to running BOSS for Fallout: New Vegas."
+msgstr  ""
+
+#: src/gui/main_window.cpp:301
+msgid   "&Active Game"
+msgstr  ""
+
+#: src/gui/main_window.cpp:305
+msgid   "Open &Main Readme"
+msgstr  ""
+
+#: src/gui/main_window.cpp:306
+msgid   "Opens the main BOSS readme in your default web browser."
+msgstr  ""
+
+#: src/gui/main_window.cpp:308
+msgid   "Open &Userlist Syntax Doc"
+msgstr  ""
+
+#: src/gui/main_window.cpp:309
+msgid   "Opens the BOSS userlist syntax documentation in your default web "
+        "browser."
+msgstr  ""
+
+#: src/gui/main_window.cpp:311
+msgid   "Open &Masterlist Syntax Doc"
+msgstr  ""
+
+#: src/gui/main_window.cpp:312
+msgid   "Opens the BOSS masterlist syntax documentation in your default web "
+        "browser."
+msgstr  ""
+
+#: src/gui/main_window.cpp:314
+msgid   "Open &Version History"
+msgstr  ""
+
+#: src/gui/main_window.cpp:315
+msgid   "Opens the BOSS version history in your default web browser."
+msgstr  ""
+
+#: src/gui/main_window.cpp:317
+msgid   "View &Copyright Licenses"
+msgstr  ""
+
+#: src/gui/main_window.cpp:318
+msgid   "View the GNU General Public License v3.0 and GNU Free Documentation "
+        "License v1.3."
+msgstr  ""
+
+#: src/gui/main_window.cpp:321
+msgid   "&About BOSS..."
+msgstr  ""
+
+#: src/gui/main_window.cpp:322
+msgid   "Shows information about BOSS."
+msgstr  ""
+
+#: src/gui/main_window.cpp:323
+msgid   "&Help"
+msgstr  ""
+
+#: src/gui/main_window.cpp:337
+msgid   "Output Options"
+msgstr  ""
+
+#: src/gui/main_window.cpp:342
+msgid   "Show BOSS Log On Completion"
+msgstr  ""
+
+#: src/gui/main_window.cpp:343
+msgid   "Display File CRCs"
+msgstr  ""
+
+#: src/gui/main_window.cpp:344
+msgid   "BOSS Log Format: "
+msgstr  ""
+
+#: src/gui/main_window.cpp:352
+msgid   "Edit User Rules"
+msgstr  ""
+
+#: src/gui/main_window.cpp:353
+msgid   "Run BOSS"
+msgstr  ""
+
+#: src/gui/main_window.cpp:354
+msgid   "View BOSS Log"
+msgstr  ""
+
+#: src/gui/main_window.cpp:363
+msgid   "Run Options"
+msgstr  ""
+
+#: src/gui/main_window.cpp:369
+msgid   "Sort Plugins"
+msgstr  ""
+
+#: src/gui/main_window.cpp:372
+msgid   "Update Masterlist"
+msgstr  ""
+
+#: src/gui/main_window.cpp:373
+msgid   "Perform Trial Run"
+msgstr  ""
+
+#: src/gui/main_window.cpp:378
+msgid   "Update Masterlist Only"
+msgstr  ""
+
+#: src/gui/main_window.cpp:382
+msgid   "Undo Changes"
+msgstr  ""
+
+#: src/gui/main_window.cpp:383
+msgid   "Undo Level: "
+msgstr  ""
+
+#: src/gui/main_window.cpp:392
+msgid   "This decides both the format of BOSSlog generated when you click the "
+        "\"Run BOSS\" button and the BOSSlog format opened when you click the "
+        "\"View BOSSlog\" button."
+msgstr  ""
+
+#: src/gui/main_window.cpp:393
+msgid   "The format of BOSSlog this opens is decided by the setting of the "
+        "\"BOSSlog Format\" Output Option above."
+msgstr  ""
+
+#: src/gui/main_window.cpp:394
+msgid   "Runs BOSS, simulating its changes to your load order, but doesn't "
+        "actually reorder your mods."
+msgstr  ""
+
+#: src/gui/main_window.cpp:446
+msgid   "Ready"
+msgstr  ""
+
+#: src/gui/main_window.cpp:454
+msgid   "BOSS: Settings"
+msgstr  ""
+
+#: src/gui/main_window.cpp:470 src/gui/user_rule_editor.cpp:408
+#: src/gui/user_rule_editor.cpp:430
+msgid   "BOSS: Working..."
+msgstr  ""
+
+#: src/gui/main_window.cpp:471 src/gui/main_window.cpp:530 src/boss_cli.cpp:413
+msgid   "BOSS working..."
+msgstr  ""
+
+#: src/gui/main_window.cpp:496 src/gui/user_rule_editor.cpp:414
+#: src/boss_cli.cpp:377
+msgid   "Updating to the latest masterlist from the online repository..."
+msgstr  ""
+
+#: src/gui/main_window.cpp:500 src/boss_cli.cpp:381
+#, boost-format
+msgid   "Masterlist updated; at revision: %1%."
+msgstr  ""
+
+#: src/gui/main_window.cpp:504 src/gui/user_rule_editor.cpp:423
+#: src/boss_cli.cpp:385
+msgid   "Error: masterlist update failed."
+msgstr  ""
+
+#: src/gui/main_window.cpp:505 src/gui/user_rule_editor.cpp:424
+#: src/boss_cli.cpp:386
+#, boost-format
+msgid   "Details: %1%"
+msgstr  ""
+
+#: src/gui/main_window.cpp:511 src/boss_cli.cpp:392
+#, boost-format
+msgid   "Masterlist updating disabled; at revision: %1%."
+msgstr  ""
+
+#: src/gui/main_window.cpp:550 src/gui/main_window.cpp:607
+#: src/gui/main_window.cpp:660 src/boss_cli.cpp:423 src/boss_cli.cpp:469
+#: src/boss_cli.cpp:511
+#, boost-format
+msgid   "Critical Error: %1%"
+msgstr  ""
+
+#: src/gui/main_window.cpp:691 src/gui/main_window.cpp:714
+#, boost-format
+msgid   "Error: \"%1%\" cannot be found."
+msgstr  ""
+
+#: src/gui/main_window.cpp:726
+msgid   "Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New "
+        "Vegas."
+msgstr  ""
+
+#: src/gui/main_window.cpp:834 src/gui/user_rule_editor.cpp:401
+#: src/gui/user_rule_editor.cpp:775 src/gui/user_rule_editor.cpp:796
+msgid   "BOSS: User Rules Manager"
+msgstr  ""
+
+#: src/gui/main_window.cpp:849 src/gui/main_window.cpp:864
+#: src/gui/user_rule_editor.cpp:282 src/gui/user_rule_editor.cpp:441
+#: src/gui/user_rule_editor.cpp:479
+#, boost-format
+msgid   "Error: %1%"
+msgstr  ""
+
+#: src/gui/element_ids.cpp:67
+#, boost-format
+msgid   "Downloading masterlist: %1% of %2% objects (%3% KB)"
+msgstr  ""
+
+#: src/gui/element_ids.cpp:69
+msgid   "Are you sure you want to cancel?"
+msgstr  ""
+
+#: src/gui/element_ids.cpp:70
+msgid   "BOSS: Updater"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:122
+msgid   "Rule Syntax Error: Cannot sort a plugin relative to a group."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:129
+msgid   "Rule Syntax Error: Cannot insert into a plugin."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:138
+msgid   "Rule Syntax Error: Cannot sort a group relative to a plugin."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:145
+msgid   "Rule Syntax Error: Cannot insert groups."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:238 src/gui/user_rule_editor.cpp:892
+#: src/gui/user_rule_editor.cpp:914
+msgid   "User Rules Manager"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:250
+#, boost-format
+msgid   "The rule sorting the unrecognised plugin \"%1%\" has been disabled "
+        "as the plugin is now recognised. If you wish to override its "
+        "position in the masterlist, re-enable the rule."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:251
+msgid   "BOSS: Rule Disabled"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:264 src/output/boss_log.cpp:160
+#: src/output/boss_log.cpp:295
+msgid   "User Rules"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:400
+#, boost-format
+msgid   "The User Rules Manager requires the BOSS masterlist for %1% to have "
+        "been downloaded, but it cannot be detected. Do you wish to download "
+        "the latest masterlist now?"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:409 src/gui/user_rule_editor.cpp:431
+msgid   "Initialising User Rules Manager..."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:419
+#, boost-format
+msgid   "Masterlist revision: %1%."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "before"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "after"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "top"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:457
+msgid   "bottom"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:496
+msgid   "Rule Editor"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:499
+msgid   "For"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:503
+msgid   "Sort Item"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:506
+msgid   "Sort"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:512
+msgid   "Insert at the"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:514
+msgid   "of"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:518 src/output/output.cpp:565
+msgid   "Add the following messages:"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:522
+msgid   "Replace existing messages"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:527
+msgid   "Default Plugin Messages"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:547
+msgid   "Installed Plugins"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:548
+msgid   "Masterlist"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:555
+msgid   "Create New Rule"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:556
+msgid   "Save Edited Rule"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:557
+msgid   "Delete Rule"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:559
+msgid   "Move Rule Up"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:560
+msgid   "Move Rule Down"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:562
+msgid   "Save and Exit"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:582
+msgid   "Messages must be entered in the correct format. See the User Rules "
+        "Readme for more information."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:758 src/gui/user_rule_editor.cpp:785
+#, boost-format
+msgid   "Rule Syntax Error: %1% Please correct the mistake before continuing."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:774
+msgid   "Are you sure you want to save your changes to the selected rule?"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:795
+msgid   "Are you sure you want to delete the selected rule?"
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:934
+msgid   "No mod is specified to sort relative to."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:937
+msgid   "Cannot sort a plugin relative to a group."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:943
+msgid   "No group is specified to insert into."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:946
+msgid   "Cannot insert into a plugin."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:953
+msgid   "Cannot add messages when none are given."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:958
+msgid   "No rule mod is specified."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:964
+msgid   "No group is specified to sort relative to."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:967
+msgid   "Cannot sort a group relative to a plugin."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:971
+msgid   "Cannot insert groups."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:976
+msgid   "Cannot add messages to groups."
+msgstr  ""
+
+#: src/gui/user_rule_editor.cpp:982
+msgid   "The rule mod is not being sorted nor having its attached messages "
+        "altered."
+msgstr  ""
+
+#: src/output/boss_log.cpp:157 src/output/boss_log.cpp:188
+msgid   "Summary"
+msgstr  ""
+
+#: src/output/boss_log.cpp:163
+#, boost-format
+msgid   "%1% Plugins"
+msgstr  ""
+
+#: src/output/boss_log.cpp:167 src/output/boss_log.cpp:336
+msgid   "Recognised Plugins"
+msgstr  ""
+
+#: src/output/boss_log.cpp:169
+msgid   "Restored Load Order"
+msgstr  ""
+
+#: src/output/boss_log.cpp:173 src/output/boss_log.cpp:359
+msgid   "Unrecognised Plugins"
+msgstr  ""
+
+#: src/output/boss_log.cpp:205
+msgid   "Plugin Type"
+msgstr  ""
+
+#: src/output/boss_log.cpp:206 src/output/boss_log.cpp:232
+msgid   "Count"
+msgstr  ""
+
+#: src/output/boss_log.cpp:209
+msgid   "Recognised (or sorted by user rules)"
+msgstr  ""
+
+#: src/output/boss_log.cpp:213 src/output/boss_log.cpp:217
+msgid   "Unrecognised"
+msgstr  ""
+
+#: src/output/boss_log.cpp:221
+msgid   "Inactive"
+msgstr  ""
+
+#: src/output/boss_log.cpp:224 src/output/boss_log.cpp:253
+msgid   "All"
+msgstr  ""
+
+#: src/output/boss_log.cpp:231
+msgid   "Plugin Message Type"
+msgstr  ""
+
+#: src/output/boss_log.cpp:236 src/output/boss_log.cpp:240
+#: src/output/output.cpp:497 src/output/output.cpp:499
+msgid   "Warning"
+msgstr  ""
+
+#: src/output/boss_log.cpp:245 src/output/boss_log.cpp:249
+#: src/output/output.cpp:502 src/output/output.cpp:504
+msgid   "Error"
+msgstr  ""
+
+#: src/output/boss_log.cpp:263
+msgid   "No change in recognised plugin list since last run."
+msgstr  ""
+
+#: src/output/boss_log.cpp:299
+msgid   "Rule"
+msgstr  ""
+
+#: src/output/boss_log.cpp:300
+msgid   "Applied"
+msgstr  ""
+
+#: src/output/boss_log.cpp:301
+msgid   "Details (if applicable)"
+msgstr  ""
+
+#: src/output/boss_log.cpp:318
+msgid   " Plugins"
+msgstr  ""
+
+#: src/output/boss_log.cpp:338
+msgid   "Restored Load Order (Using modlist.txt)"
+msgstr  ""
+
+#: src/output/boss_log.cpp:340
+msgid   "Restored Load Order (Using modlist.old)"
+msgstr  ""
+
+#: src/output/boss_log.cpp:343
+msgid   "These plugins are recognised by BOSS and have been sorted according "
+        "to its masterlist. Please read any attached messages and act on any "
+        "that require action."
+msgstr  ""
+
+#: src/output/boss_log.cpp:361
+msgid   "The following plugins were not found in the masterlist, and must be "
+        "positioned manually, using your favourite mod manager or by using "
+        "BOSS's user rules functionality."
+msgstr  ""
+
+#: src/output/boss_log.cpp:362
+msgid   " You can submit unrecognised plugins for addition to the masterlist "
+        "directly from this log by clicking on a plugin and supplying a link "
+        "and/or description of its contents in the panel that is displayed."
+msgstr  ""
+
+#: src/output/boss_log.cpp:401
+msgid   "Log Feature Support"
+msgstr  ""
+
+#: src/output/boss_log.cpp:402
+msgid   "Filters"
+msgstr  ""
+
+#: src/output/boss_log.cpp:405
+msgid   "The BOSS Log requires Javascript to be enabled in order to function."
+msgstr  ""
+
+#: src/output/boss_log.cpp:417
+msgid   "Colours must be specified using lowercase hex codes."
+msgstr  ""
+
+#: src/output/boss_log.cpp:421
+msgid   "Support for the BOSS Log's more advanced features varies. Here's "
+        "what your browser supports:"
+msgstr  ""
+
+#: src/output/boss_log.cpp:422
+msgid   "Functionality"
+msgstr  ""
+
+#: src/output/boss_log.cpp:427
+msgid   "In-Log Plugin Submission"
+msgstr  ""
+
+#: src/output/boss_log.cpp:428
+msgid   "Allows unrecognised plugins to be anonymously submitted to the BOSS "
+        "team directly from the BOSS Log."
+msgstr  ""
+
+#: src/output/boss_log.cpp:431
+msgid   "Settings Memory"
+msgstr  ""
+
+#: src/output/boss_log.cpp:432
+msgid   "Allows the BOSS Log to automatically restore the filter "
+        "configuration last used whenever the BOSS Log is opened."
+msgstr  ""
+
+#: src/output/boss_log.cpp:435
+msgid   "Input Placeholders"
+msgstr  ""
+
+#: src/output/boss_log.cpp:438
+msgid   "Form Validation"
+msgstr  ""
+
+#: src/output/boss_log.cpp:443
+msgid   "Hide Version Numbers"
+msgstr  ""
+
+#: src/output/boss_log.cpp:444
+msgid   "Hide 'Active' Label"
+msgstr  ""
+
+#: src/output/boss_log.cpp:445
+msgid   "Hide Checksums"
+msgstr  ""
+
+#: src/output/boss_log.cpp:446
+msgid   "Hide Notes"
+msgstr  ""
+
+#: src/output/boss_log.cpp:447
+msgid   "Hide Bash Tag Suggestions"
+msgstr  ""
+
+#: src/output/boss_log.cpp:448
+msgid   "Hide Requirements"
+msgstr  ""
+
+#: src/output/boss_log.cpp:449
+msgid   "Hide Incompatibilities"
+msgstr  ""
+
+#: src/output/boss_log.cpp:450
+msgid   "Hide 'Do Not Clean' Messages"
+msgstr  ""
+
+#: src/output/boss_log.cpp:451
+msgid   "Hide All Plugin Messages"
+msgstr  ""
+
+#: src/output/boss_log.cpp:452
+msgid   "Hide Inactive Plugins"
+msgstr  ""
+
+#: src/output/boss_log.cpp:453
+msgid   "Hide Messageless Plugins"
+msgstr  ""
+
+#: src/output/boss_log.cpp:455
+#, boost-format
+msgid   "%1% of %2% recognised plugins hidden."
+msgstr  ""
+
+#: src/output/boss_log.cpp:456
+#, boost-format
+msgid   "%1% of %2% messages hidden."
+msgstr  ""
+
+#: src/output/boss_log.cpp:462
+msgid   "Submit Plugin"
+msgstr  ""
+
+#: src/output/boss_log.cpp:463
+msgid   "Plugin"
+msgstr  ""
+
+#: src/output/boss_log.cpp:465
+msgid   "Download Location"
+msgstr  ""
+
+#: src/output/boss_log.cpp:466
+msgid   "Additional Notes"
+msgstr  ""
+
+#: src/output/boss_log.cpp:466
+msgid   "Any additional information, such as recommended Bash Tags, load "
+        "order suggestions, ITM/UDR counts and dirty CRCs, can be supplied "
+        "here. If no download link is available, this information is crucial."
+msgstr  ""
+
+#: src/output/boss_log.cpp:468
+msgid   "Submit"
+msgstr  ""
+
+#: src/output/boss_log.cpp:469
+msgid   "Close"
+msgstr  ""
+
+#: src/output/boss_log.cpp:477
+msgid   "Checking for existing submission..."
+msgstr  ""
+
+#: src/output/boss_log.cpp:478
+msgid   "Matching submission already exists."
+msgstr  ""
+
+#: src/output/boss_log.cpp:479
+msgid   "Plugin already submitted. Submission updated with new comment."
+msgstr  ""
+
+#: src/output/boss_log.cpp:480
+msgid   "Plugin submitted!"
+msgstr  ""
+
+#: src/output/boss_log.cpp:481
+msgid   "Plugin submission failed! Authorisation failure. Please report this "
+        "to the BOSS team."
+msgstr  ""
+
+#: src/output/boss_log.cpp:482
+#, boost-format
+msgid   "Plugin submission failed! GitHub API rate limit exceeded. Please try "
+        "again after %1%."
+msgstr  ""
+
+#: src/output/boss_log.cpp:483
+msgid   "Plugin submission failed!"
+msgstr  ""
+
+#: src/output/boss_log.cpp:484
+msgid   "Web storage quota for this document has been exceeded.Please empty "
+        "your browser\\'s cache. Note that this will delete all locally "
+        "stored data."
+msgstr  ""
+
+#: src/output/boss_log.cpp:485
+msgid   "Please supply at least a link or some notes."
+msgstr  ""
+
+#: src/output/boss_log.cpp:486
+msgid   "Do not clean."
+msgstr  ""
+
+#: src/output/boss_log.cpp:511
+msgid   "Please read any attached messages and act on any that require action."
+msgstr  ""
+
+#: src/output/output.cpp:477 src/output/output.cpp:479
+#: src/output/output.cpp:512 src/output/output.cpp:514
+msgid   "Note"
+msgstr  ""
+
+#: src/output/output.cpp:482 src/output/output.cpp:484
+msgid   "Bash Tag suggestion(s)"
+msgstr  ""
+
+#: src/output/output.cpp:487 src/output/output.cpp:489
+msgid   "Requires"
+msgstr  ""
+
+#: src/output/output.cpp:492 src/output/output.cpp:494
+msgid   "Incompatible with"
+msgstr  ""
+
+#: src/output/output.cpp:507 src/output/output.cpp:509
+msgid   "Contains dirty edits"
+msgstr  ""
+
+#: src/output/output.cpp:553
+#, boost-format
+msgid   "Sort %1% before %2%"
+msgstr  ""
+
+#: src/output/output.cpp:555
+#, boost-format
+msgid   "Sort %1% after %2%"
+msgstr  ""
+
+#: src/output/output.cpp:557
+#, boost-format
+msgid   "Insert %1% at the top of %2%"
+msgstr  ""
+
+#: src/output/output.cpp:559
+#, boost-format
+msgid   "Insert %1% at the bottom of %2%"
+msgstr  ""
+
+#: src/output/output.cpp:563
+#, boost-format
+msgid   "Add the following messages to %1%:"
+msgstr  ""
+
+#: src/output/output.cpp:572
+#, boost-format
+msgid   "Replace the messages attached to %1% with:"
+msgstr  ""
+
+#: src/output/output.cpp:574
+msgid   "Replace the attached messages with:"
+msgstr  ""
+
+#: src/boss_cli.cpp:100
+msgid   "Description:"
+msgstr  ""
+
+#: src/boss_cli.cpp:101
+msgid   "  BOSS is a utility that sorts the mod load order of TESIV: "
+        "Oblivion, Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim "
+        "according to a frequently updated  masterlist to minimise "
+        "incompatibilities between mods."
+msgstr  ""
+
+#: src/boss_cli.cpp:105
+msgid   "Examples:"
+msgstr  ""
+
+#: src/boss_cli.cpp:107
+msgid   "    updates the masterlist, sorts your mods, and shows the log"
+msgstr  ""
+
+#: src/boss_cli.cpp:109
+msgid   "    reverts your load order 1 level and skips showing the log"
+msgstr  ""
+
+#: src/boss_cli.cpp:111
+msgid   "    reverts your load order 2 levels and shows the log"
+msgstr  ""
+
+#: src/boss_cli.cpp:123
+#, c-format, boost-format
+msgid   "Downloading masterlist: %i of %i objects (%i KB)"
+msgstr  ""
+
+#: src/boss_cli.cpp:199
+msgid   "produces this help message"
+msgstr  ""
+
+#: src/boss_cli.cpp:200
+msgid   "prints the version banner"
+msgstr  ""
+
+#: src/boss_cli.cpp:202
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web before sorting"
+msgstr  ""
+
+#: src/boss_cli.cpp:205
+msgid   "inhibit the automatic masterlist updater"
+msgstr  ""
+
+#: src/boss_cli.cpp:207
+msgid   "automatically update the local copy of the masterlist to the latest "
+        "version available on the web but don't sort right now"
+msgstr  ""
+
+#: src/boss_cli.cpp:212
+msgid   "don't launch a browser to show the HTML log at program completion"
+msgstr  ""
+
+#: src/boss_cli.cpp:215
+msgid   "revert to a previous load order.  this parameter optionally accepts "
+        "values of 1 or 2, indicating how many undo steps to apply.  if no "
+        "option value is specified, it defaults to 1"
+msgstr  ""
+
+#: src/boss_cli.cpp:221
+msgid   "specify verbosity level (0-3) of the debugging output.  0 is the "
+        "default, showing only WARN and ERROR messges. 1 (INFO and above) is "
+        "implied if this option is specified without an argument.  higher "
+        "values increase the verbosity further"
+msgstr  ""
+
+#: src/boss_cli.cpp:227
+msgid   "override game autodetection.  valid values are: 'Oblivion', "
+        "'Nehrim', 'Fallout3', 'FalloutNV', and 'Skyrim'"
+msgstr  ""
+
+#: src/boss_cli.cpp:231
+msgid   "show mod file CRCs, so that a file's CRC can be added to the "
+        "masterlist in a conditional"
+msgstr  ""
+
+#: src/boss_cli.cpp:234
+msgid   "select output format. valid values are: 'html', 'text'"
+msgstr  ""
+
+#: src/boss_cli.cpp:237
+msgid   "run BOSS without actually making any changes to load order"
+msgstr  ""
+
+#: src/boss_cli.cpp:344
+msgid   "Invalid selection."
+msgstr  ""
