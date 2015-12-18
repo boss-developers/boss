@@ -115,9 +115,11 @@ function create_new_translation() {
 
 function update_translations() {
 	for lang in "${language_files[@]}"; do
+		echo "Udating ${lang}..."
 		msgmerge --update \
 		         --indent \
 		         --previous \
+		         --quiet \
 		         "${lang}" \
 		         "${template_directory}${template_file}"
 	done
@@ -129,7 +131,8 @@ function translation_files_menu() {
 		echo "Generate Translation Files"
 		echo "	1) Create New Translation"
 		echo "	2) Update Existing Translation"
-		echo "	3) Quit"
+		echo "	3) Return to Translation Files menu"
+		echo "	4) Quit"
 
 		echo -n "Choice: "
 		read generate_translation_choice
@@ -146,10 +149,15 @@ function translation_files_menu() {
 				update_translations
 				;;
 			3 \
-			  | "Quit" \
-			  | "quit")
+			  | "Return" \
+			  | "return")
 				generate_translation_choice=3
 				break
+				;;
+			4 \
+			  | "Quit" \
+			  | "quit")
+				exit
 				;;
 			*)
 				echo "Invalid Option"
@@ -165,7 +173,8 @@ function translation_menu() {
 		echo "	1) Extract Strings"
 		echo "	2) Generate Translation Files"
 		echo "	3) Compile Translation Files"
-		echo "	4) Quit"
+		echo "	4) Return to Main Menu"
+		echo "	5) Quit"
 
 		echo -n "Choice: "
 		read translation_choice
@@ -188,10 +197,15 @@ function translation_menu() {
 				compile_translations
 				;;
 			4 \
-			  | "Quit" \
-			  | "quit")
+			  | "Return" \
+			  | "return")
 				translation_choice=4
 				break
+				;;
+			5 \
+			  | "Quit" \
+			  | "quit")
+				exit
 				;;
 			*)
 				echo "Invalid Option"
@@ -226,7 +240,7 @@ function main() {
 			  | "Quit" \
 			  | "quit")
 				main_choice=3
-				break
+				exit
 				;;
 			*)
 				echo "Invalid Option"
