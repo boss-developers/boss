@@ -84,7 +84,7 @@ function translation_files_menu() {
 				mkdir -p "${template_directory}${locale_choice}"
 				msginit --locale="${locale_choice}" \
 				        --input="${template_directory}${template_file}" \
-				        --output-file="${template_directory}${locale_choice}/boss.po"
+				        --output-file="${template_directory}${locale_choice}/messages.po"
 				;;
 			2 \
 			  | "Update Existing Translation" \
