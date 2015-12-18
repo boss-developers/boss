@@ -26,7 +26,7 @@ function package_archive() {
 	           "resources/style.css" \
 	           "resources/script.js")
 	for lang in "es" "ru" "zh"; do
-		file_list+=("resources/l10n/${lang}/LC_MESSAGES/messages.po")
+		file_list+=("resources/l10n/${lang}/LC_MESSAGES/messages.mo")
 	done
 	# TODO(MCP): Rename the directories for the games in the BOSS directory to be consistent with the repository names
 	for game in "oblivion" "falloutnv" "skyrim" "fallout3" "nehrim"; do
