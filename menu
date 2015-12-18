@@ -21,16 +21,17 @@ games=("oblivion" \
        "fallout3" \
        "nehrim")
 
-languages=("es" \
-           "ru" \
-           "zh")
-for lang in "${languages[@]}"; do
-	language_binaries+=("resources/l10n/${lang}/LC_MESSAGES/messages.mo")
-	language_files+=("resources/l10n/${lang}/LC_MESSAGES/messages.po")
-done
-
 template_directory="resources/l10n/"
 template_file="boss.pot"
+
+wx_locale_path="../wxWidgets/locale/"
+languages=("es" \
+           "ru" \
+           "zh_CN")
+for lang in "${languages[@]}"; do
+	language_binaries+=("${template_directory}${lang}/LC_MESSAGES/boss.mo")
+	language_files+=("${template_directory}${lang}/LC_MESSAGES/boss.po")
+done
 
 function package_archive() {
 	local archive_name="boss.zip"
@@ -42,6 +43,10 @@ function package_archive() {
 	                 "resources/promise-1.0.0.min.js" \
 	                 "resources/style.css" \
 	                 "resources/script.js")
+	for lang in "${languages[@]}"; do
+		cp -u "${wx_locale_path}${lang}.mo" "${template_directory}${lang}/LC_MESSAGES/wxstd.mo"
+		language_binaries+=("${template_directory}${lang}/LC_MESSAGES/wxstd.mo")
+	done
 	file_list+=("${language_binaries[@]}")
 	# TODO(MCP): Rename the directories for the games in the BOSS directory to be consistent with the repository names
 
@@ -97,8 +102,8 @@ function extract_strings() {
 
 function compile_translations(){
 	for lang in "${languages[@]}"; do
-		msgfmt --output-file="${template_directory}${lang}/LC_MESSAGES/messages.mo" \
-		                     "${template_directory}${lang}/LC_MESSAGES/messages.po"
+		msgfmt --output-file="${template_directory}${lang}/LC_MESSAGES/boss.mo" \
+		                     "${template_directory}${lang}/LC_MESSAGES/boss.po"
 	done
 }
 
@@ -110,7 +115,7 @@ function create_new_translation() {
 	mkdir -p "${template_directory}${locale_choice}"
 	msginit --locale="${locale_choice}" \
 	        --input="${template_directory}${template_file}" \
-	        --output-file="${template_directory}${locale_choice}/messages.po"
+	        --output-file="${template_directory}${locale_choice}/boss.po"
 }
 
 function update_translations() {
