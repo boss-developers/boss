@@ -46,6 +46,7 @@ function package_archive() {
 	for lang in "${languages[@]}"; do
 		cp -u "${wx_locale_path}${lang}.mo" "${template_directory}${lang}/LC_MESSAGES/wxstd.mo"
 		language_binaries+=("${template_directory}${lang}/LC_MESSAGES/wxstd.mo")
+		echo "Copied ${wx_locale_path}${lang}.mo to ${template_directory}${lang}/LC_MESSAGES/wxstd.mo"
 	done
 	file_list+=("${language_binaries[@]}")
 	# TODO(MCP): Rename the directories for the games in the BOSS directory to be consistent with the repository names
