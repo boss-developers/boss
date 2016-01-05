@@ -25,6 +25,17 @@
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
 */
 
+#if _WIN32 || _WIN64
+#	ifndef _UNICODE
+#		define _UNICODE  // Tell compiler we're using Unicode, notice the _
+#	endif
+#	ifndef UNICODE
+#		define UNICODE
+#	endif
+#	include <windows.h>
+#	include <shlobj.h>
+#endif
+
 #include "support/helpers.h"
 
 #include <sys/types.h>  // MCP Note: Possibly remove this one?
@@ -54,16 +65,7 @@
 #include "common/error.h"
 #include "support/logger.h"
 
-#if _WIN32 || _WIN64
-#	ifndef _UNICODE
-#		define _UNICODE  // Tell compiler we're using Unicode, notice the _
-#	endif
-#	ifndef UNICODE
-#		define UNICODE
-#	endif
-#	include <shlobj.h>
-#	include <windows.h>
-#endif
+
 
 namespace boss {
 
@@ -225,7 +227,7 @@ Version::Version(const std::string ver) : verString(ver) {}
 
 Version::Version(const fs::path file) {
 	LOG_TRACE("extracting version from '%s'", file.string().c_str());
-#if _WIN32 || _WIN64
+#if (_WIN32 || _WIN64)// && BOSS_ARCH_64
 	DWORD dummy = 0;
 	// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.

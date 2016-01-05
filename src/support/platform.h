@@ -36,7 +36,7 @@
 #	define PRIuS "Iu"
 
 // Ignore gnu __attribute__ specifiers
-#	define __attribute__(x)
+//#	define __attribute__(x)
 
 #else
 // Everything other than windows
