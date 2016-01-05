@@ -161,7 +161,7 @@ int bossMain(int argc, char *argv[]) {
 	// Specify location of language dictionaries
 	bloc::generator gen;
 	gen.add_messages_path(l10n_path.string());
-	gen.add_messages_domain("messages");
+	gen.add_messages_domain("boss");
 
 	// Set the locale to get encoding and language conversions working correctly.
 	// TODO(MCP): Replace this with a switch statement?
@@ -175,7 +175,7 @@ int bossMain(int argc, char *argv[]) {
 	else if (gl_language == RUSSIAN)
 		localeId = "ru.UTF-8";
 	else if (gl_language == SIMPCHINESE)
-		localeId = "zh.UTF-8";
+		localeId = "zh_CN.UTF-8";
 
 	try {
 		std::locale::global(gen(localeId));  // MCP Note: Is this std::locale or boost::locale?
