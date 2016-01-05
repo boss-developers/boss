@@ -137,7 +137,7 @@ bool BossGUI::OnInit() {
 	// Specify location of language dictionaries
 	bloc::generator gen;
 	gen.add_messages_path(l10n_path.string());
-	gen.add_messages_domain("messages");
+	gen.add_messages_domain("boss");
 
 	// Set the locale to get encoding and language conversions working correctly.
 	std::string localeId = "";
@@ -156,7 +156,7 @@ bool BossGUI::OnInit() {
 		localeId = "ru.UTF-8";
 		lang = wxLANGUAGE_RUSSIAN;
 	} else if (gl_language == SIMPCHINESE) {
-		localeId = "zh.UTF-8";
+		localeId = "zh_CN.UTF-8";
 		lang = wxLANGUAGE_CHINESE_SIMPLIFIED;
 	}
 
@@ -247,7 +247,7 @@ bool BossGUI::OnInit() {
 
 	//frame->SetIcon(wxIconLocation("BOSS.ico"));
 	frame->SetIcon(wxICON(boss_icon));
-	frame->Show(TRUE);  // MCP Note: Show apparently takes a bool and defaults to true, so replace TRUE with either that or remove it? Not sure with TRUE comes from...
+	frame->Show();  // MCP Note: Show apparently takes a bool and defaults to true, so replace TRUE with either that or remove it? Not sure with TRUE comes from...
 	SetTopWindow(frame);
 
 	return true;
