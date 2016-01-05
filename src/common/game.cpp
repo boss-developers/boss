@@ -25,6 +25,17 @@
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
 */
 
+#if _WIN32 || _WIN64
+#	ifndef UNICODE
+#		define UNICODE
+#	endif
+#	ifndef _UNICODE
+#		define _UNICODE
+#	endif
+#	include <windows.h>
+#	include <shlobj.h>
+#endif
+
 #include "common/game.h"
 
 #include <cstddef>
@@ -33,6 +44,7 @@
 #include <ctime>
 
 #include <functional>
+//#include <iostream>
 #include <iterator>
 #include <locale>
 #include <string>
@@ -57,16 +69,7 @@
 #include "support/logger.h"
 #include "support/platform.h"
 
-#if _WIN32 || _WIN64
-#	ifndef UNICODE
-#		define UNICODE
-#	endif
-#	ifndef _UNICODE
-#		define _UNICODE
-#	endif
-#	include <shlobj.h>
-#	include <windows.h>
-#endif
+
 
 namespace boss {
 
@@ -193,7 +196,7 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
 		registryKey       = "Software\\Bethesda Softworks\\Oblivion";
 		registrySubKey    = "Installed Path";
 
-		bossFolderName    = "Oblivion";
+		bossFolderName    = "oblivion";
 		appdataFolderName = "Oblivion";
 		pluginsFolderName = "Data";
 		pluginsFileName   = "plugins.txt";
@@ -208,7 +211,7 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
 		registryKey       = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
 		registrySubKey    = "InstallLocation";
 
-		bossFolderName    = "Nehrim";
+		bossFolderName    = "nehrim";
 		appdataFolderName = "Oblivion";
 		pluginsFolderName = "Data";
 		pluginsFileName   = "plugins.txt";
@@ -223,7 +226,7 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
 		registryKey       = "Software\\Bethesda Softworks\\Skyrim";
 		registrySubKey    = "Installed Path";
 
-		bossFolderName    = "Skyrim";
+		bossFolderName    = "skyrim";
 		appdataFolderName = "Skyrim";
 		pluginsFolderName = "Data";
 		pluginsFileName   = "plugins.txt";
@@ -238,7 +241,7 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
 		registryKey       = "Software\\Bethesda Softworks\\Fallout3";
 		registrySubKey    = "Installed Path";
 
-		bossFolderName    = "Fallout 3";
+		bossFolderName    = "fallout3";
 		appdataFolderName = "Fallout3";
 		pluginsFolderName = "Data";
 		pluginsFileName   = "plugins.txt";
@@ -253,7 +256,7 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
 		registryKey       = "Software\\Bethesda Softworks\\FalloutNV";
 		registrySubKey    = "Installed Path";
 
-		bossFolderName    = "Fallout New Vegas";
+		bossFolderName    = "falloutnv";
 		appdataFolderName = "FalloutNV";
 		pluginsFolderName = "Data";
 		pluginsFileName   = "plugins.txt";
@@ -473,6 +476,7 @@ void Game::ApplyMasterlist() {
 }
 
 void Game::ApplyUserlist() {
+	// TODO(MCP): Delete temporary debug statements
 	std::vector<Rule> rules = userlist.Rules();
 	if (rules.empty())
 		return;
@@ -486,11 +490,13 @@ void Game::ApplyUserlist() {
 
 	LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.",
 	         rules.size());
+	//std::clog << "Userlist start" << std::endl;
 	std::vector<Rule>::iterator ruleIter = rules.begin();
 	std::size_t modlistPos1, modlistPos2;
 	std::uint32_t ruleNo = 0;
 	for (ruleIter; ruleIter != rules.end(); ++ruleIter) {
 		ruleNo++;
+		//std::clog << "Userlist rule: " << ruleNo << std::endl;
 		LOG_DEBUG(" -- Processing rule #%" PRIuS ".", ruleNo);
 		if (!ruleIter->Enabled()) {
 			bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << bloc::translate("Rule is disabled.");
@@ -503,57 +509,77 @@ void Game::ApplyUserlist() {
 		std::size_t i = 0;
 		std::vector<RuleLine> lines = ruleIter->Lines();
 		std::size_t max = lines.size();
+		//std::clog << "Lines size: " << lines.size() << std::endl;
+		//std::clog << "Userlist size: " << rules.size() << std::endl;
 		Item ruleItem(ruleIter->Object());
 		if (ruleItem.IsPlugin()) {  // Plugin: Can sort or add messages.
+			//std::clog << "Rule is plugin" << std::endl;
 			if (ruleIter->Key() != FOR) {  // First non-rule line is a sort line.
 				if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
+					//std::clog << "Rule is BEFORE or AFTER" << std::endl;
 					Item mod;
 					modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
+					//std::clog << "Found: " << ruleItem.Name() << std::endl;
 					// Do checks.
 					if (ruleIter->Key() == ADD &&
 					    modlistPos1 == modlist.Items().size()) {
 						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not installed or in the masterlist.");
 						LOG_WARN(" * \"%s\" is not in the masterlist or installed.",
 						         ruleIter->Object().c_str());
+						//std::clog << "Is not in masterlist or installed" << std::endl;
 						continue;
 					} else if (ruleIter->Key() == ADD  &&
 					           modlistPos1 <= modlist.LastRecognisedPos()) {  // If it adds a mod already sorted, skip the rule.
 						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is already in the masterlist.");
 						LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
+						//std::clog << "Is in masterlist or installed" << std::endl;
 						continue;
 					} else if (ruleIter->Key() == OVERRIDE &&
 					          (modlistPos1 > modlist.LastRecognisedPos())) {
 						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist, cannot override.");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.",
 						         ruleIter->Object().c_str());
+						//std::clog << "Is not in masterlist, cannot override" << std::endl;
 						continue;
 					} else if (modlistPos1 == modlist.LastRecognisedPos()) {  // The last recognised item is being moved. It can only be moved earlier, so set the previous item as the last recognised item.
 						lastRecognisedItem = modlist.ItemAt(modlistPos1 - 1);
+						//std::clog << "Moving last item" << std::endl;
 					}
+					//std::clog << "Starting modlistPos2" << std::endl;
 					modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  // Find sort mod.
+					//std::clog << "Found: " << lines[i].Object().c_str() << std::endl;
 					// Do checks.
 					if (modlistPos2 == modlist.Items().size()) {  // Handle case of mods that don't exist at all.
 						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << bloc::translate(" is not installed, and is not in the masterlist.");
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.",
 						         lines[i].Object().c_str());
+						//std::clog << lines[i].Object().c_str() << " not installed or in the masterlist" << std::endl;
 						continue;
 					} else if (modlistPos2 > modlist.LastRecognisedPos()) {  // Handle the case of a rule sorting a mod into a position in unsorted mod territory.
 						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist and has not been sorted by a rule.");
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.",
 						         lines[i].Object().c_str());
+						//std::clog << lines[i].Object().c_str() << " not in masterlist and not been sorted" << std::endl;
 						continue;
 					} else if (lines[i].Key() == AFTER &&
 					           modlistPos2 == modlist.LastRecognisedPos()) {
 						lastRecognisedItem = modlist.ItemAt(modlistPos1);
+						//std::clog << "Moving last item" << std::endl;
 					}
+					//std::clog << "Recording rule mod in new variable" << std::endl;
 					mod = modlist.ItemAt(modlistPos1);  // Record the rule mod in a new variable.
+					//std::clog << "Removing mod from old position" << std::endl;
 					modlist.Erase(modlistPos1);  // Now remove the rule mod from its old position. This breaks all modlist iterators active.
 					// Need to find sort mod pos again, to fix iterator.
+					//std::clog << "Finding position again now that iterator has changed" << std::endl;
 					modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  // Find sort mod.
 					// Insert the mod into its new position.
-					if (lines[i].Key() == AFTER)
+					if (lines[i].Key() == AFTER) {
 						++modlistPos2;
+						//std::clog << "Incremented modlistPos2: " << modlistPos2 << std::endl;
+					}
 					modlist.Insert(modlistPos2, mod);
+					//std::clog << "Mod inserted into position 2" << std::endl;
 				} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 					Item mod;
 					modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
@@ -602,11 +628,16 @@ void Game::ApplyUserlist() {
 						                                   ENDGROUP);  // Find the end.
 					modlist.Insert(modlistPos2, mod);  // Now insert the mod into the group. This breaks all modlist iterators active.
 				}
+				//std::clog << "Incrementing i: ";
 				i++;
+				//std::clog << i << std::endl;
 			}
+			//std::clog << "Starting message lines. i is currently " << i << "\n" << "Max: " << max << std::endl;
+			// MCP Note: Failure point: i == max; Fixed
 			for (i; i < max; i++) {  // Message lines.
 				// Find the mod which will have its messages edited.
 				modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
+				//std::clog << "Found: " << ruleItem.Name() << std::endl;
 				if (modlistPos1 == modlist.Items().size()) {  // Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
 					bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not installed or in the masterlist.");
 					LOG_WARN(" * \"%s\" is not installed.",
@@ -618,15 +649,21 @@ void Game::ApplyUserlist() {
 				if (lines[i].Key() == REPLACE)  // If the rule is to replace messages, clear existing messages.
 					items[modlistPos1].ClearMessages();
 				// Append message to message list of mod.
+				//std::clog << "Adding message to message list" << std::endl;
 				items[modlistPos1].InsertMessage(items[modlistPos1].Messages().size(),
 				                                 lines[i].ObjectAsMessage());
 				modlist.Items(items);
+				//std::clog << "Added message to message list" << std::endl;
 			}
 		} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  // Group: Can only sort.
+			//std::clog << "Found group" << std::endl;
 			std::vector<Item> group;
 			// Look for group to sort. Find start and end positions.
+			//std::clog << "Finding start for " << ruleItem.Name() << std::endl;
 			modlistPos1 = modlist.FindItem(ruleItem.Name(), BEGINGROUP);
+			//std::clog << "Finding end for " << ruleItem.Name() << std::endl;
 			modlistPos2 = modlist.FindLastItem(ruleItem.Name(), ENDGROUP);
+			//std::clog << "Found start and end for " << ruleItem.Name() << std::endl;
 			// Check to see group actually exists.
 			if (modlistPos1 == modlist.Items().size() ||
 			    modlistPos2 == modlist.Items().size()) {
@@ -665,13 +702,19 @@ void Game::ApplyUserlist() {
 			// Now insert the group.
 			modlist.Insert(modlistPos2, group, 0, group.size());
 		}
+		//std::clog << "Checking if message line failed..." << std::endl;
 		if (!messageLineFail) {  // Print success message.
 			LOG_DEBUG("Rule #%" PRIuS " applied successfully.", ruleNo);
 			bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
+			//std::clog << "Succeeded at: " << ruleNo << std::endl;
 		}
 
+		//std::clog << "Finding last recognized mod and setting iterator: " << lastRecognisedItem.Name()  << lastRecognisedItem.Type() << std::endl;
 		// Now find that last recognised mod and set the iterator again.
+		// MCP Note: This line fails either FindLastItem or LastRecognisedPos are the culprits
+		// MCP Note: Fixed
 		modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem.Name(), lastRecognisedItem.Type()));
+		//std::clog << "Found last recognized mod and setting iterator: " << lastRecognisedItem.Name() << std::endl;
 	}
 
 	// Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
@@ -700,7 +743,10 @@ void Game::ScanSEPlugins() {
 		LOG_DEBUG("Script Extender not detected.");
 	} else {
 		std::string CRC = IntToHexString(GetCrc32(SEExecutable()));
-		std::string ver = Version(SEExecutable()).AsString();
+		std::string ver;
+//#if BOSS_ARCH_64
+		ver = Version(SEExecutable()).AsString();
+//#endif
 
 		bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << ScriptExtender() << SPAN_CLOSE;
 		if (!ver.empty())
@@ -718,7 +764,10 @@ void Game::ScanSEPlugins() {
 				if (fs::is_regular_file(itr->status()) &&
 				    boost::iequals(ext, ".dll")) {
 					std::string CRC = IntToHexString(GetCrc32(itr->path()));
-					std::string ver = Version(itr->path()).AsString();
+					std::string ver;
+//#if BOSS_ARCH_64
+					ver = Version(itr->path()).AsString();
+//#endif
 
 					bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itr->path().filename().string() << SPAN_CLOSE;
 					if (!ver.empty())
