@@ -33,6 +33,7 @@
 
 #include <algorithm>  // For sort function; not sure if right header as it wasn't included before but none of the included headers seem to define the sort function
 #include <fstream>
+//#include <iostream>
 #include <ostream>
 //#include <regex>
 #include <string>
@@ -526,12 +527,26 @@ std::size_t ItemList::FindItem(const std::string name,
 
 std::size_t ItemList::FindLastItem(const std::string name,
                                    const std::uint32_t type) const {
-	std::size_t max = items.size();
-	for (std::vector<Item>::const_iterator it = items.end(), begin = items.begin();
-	     it != begin; --it) {
-		if (it->Type() == type && boost::iequals(it->Name(), name))
-			return size_t(it - begin);
+	// TODO(MCP): Remove temporary debug statements
+	std::size_t max = items.size() - 1;
+	//std::clog << "FindLastItem: items.size(): " << max + 1 << std::endl;
+	//for (std::vector<Item>::const_iterator it = items.end(), begin = items.begin();
+	//     it != begin; --it) {
+	for (max; max > 0; --max){
+		//std::clog << "Looping..." << std::endl;
+		//std::clog << "Item name: " << items[max].Name() << std::endl;
+		//std::clog << "Item type: " << items[max].Type() << std::endl;
+		//std::clog << "Type passed: " << type << std::endl;
+		//if(it->Type() == type && boost::iequals(it->Name(), name)){ // MCP Note: is (*it)->Type() better? and should it be a reverse_iterator as we're stepping in reverse? need to play around with it...
+		if (items[max].Type() == type && boost::iequals(items[max].Name(), name)) {
+			//std::clog << "Item found at " << size_t(max) << " Returning" << std::endl;
+			//std::clog << "Item name: " << items[max].Name() << std::endl;
+			//return size_t(it - begin)
+			return size_t(max);
+		}
+		//std::clog << "Next increment" << std::endl;
 	}
+	//std::clog << "Max: " << max << std::endl;
 	return max;
 }
 
