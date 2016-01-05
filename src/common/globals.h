@@ -29,9 +29,9 @@
 #define COMMON_GLOBALS_H_
 
 // MCP Note: May be able to remove this, not sure yet.
-#ifndef _UNICODE
-#	define _UNICODE  // Tell compiler we're using Unicode, notice the _
-#endif
+//#ifndef _UNICODE
+//#	define _UNICODE  // Tell compiler we're using Unicode, notice the _
+//#endif
 
 #include <cstdint>
 

@@ -38,7 +38,7 @@ namespace boss {
 // BOSS version number.
 BOSS_COMMON const std::uint32_t BOSS_VERSION_MAJOR = 2;
 BOSS_COMMON const std::uint32_t BOSS_VERSION_MINOR = 3;
-BOSS_COMMON const std::uint32_t BOSS_VERSION_PATCH = 0;
+BOSS_COMMON const std::uint32_t BOSS_VERSION_PATCH = 1;
 
 // Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 BOSS_COMMON const std::uint32_t AUTODETECT         = 0;
