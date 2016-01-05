@@ -452,7 +452,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	}
 
 	// Some variable setup.
-	wxString BeforeAfter[] = {translate("before"), translate("after")};
+	wxString BeforeAfter[] = {translate("after"), translate("before")};
 
 	wxString TopBottom[] = {translate("top"), translate("bottom")};
 
