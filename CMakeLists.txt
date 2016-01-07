@@ -11,8 +11,11 @@ if (MSVC)
 	endif ()
 endif ()
 #option(BUILD_SHARED_LIBS "Build Shared Library (OFF for Static)" OFF)
-
 set (LIBGIT2_ROOT "../libgit2")
+#if (MINGW)
+#	list(APPEND CMAKE_MODULE_PATH "${LIBGIT2_ROOT}/cmake/Modules/")
+#endif ()
+#include(FindHTTP_Parser)
 #set (CMAKE_VERBOSE_MAKEFILE ON)
 
 # Main Header Files
@@ -55,7 +58,8 @@ set(BOSS_SRC    src/common/conditional_data.cpp
                 src/support/helpers.cpp
                 src/support/logger.cpp
                 src/support/mod_format.cpp
-                src/support/version_regex.cpp)
+                src/support/version_regex.cpp
+                src/updating/updater.cpp)
 
 # GUI Header Files
 
@@ -165,7 +169,7 @@ endif ()
 	#message(FATAL_ERROR "Unsupported architecture")
 #endif()
 
-target_link_libraries(boss ${Boost_LIBRARIES} git2)
+target_link_libraries(boss ${Boost_LIBRARIES} git2 ssh2)
 
 # Add Windows specific libraries
 if (WIN32)
@@ -228,7 +232,7 @@ if (BUILD_GUI)
 	endif ()
 
 	target_compile_definitions(boss_gui PUBLIC ${wxWidgets_DEFINITIONS})
-	target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} git2)
+	target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} git2 ssh2)
 	if (WIN32)
 		target_link_libraries(boss_gui version gdi32)
 		#if (USE_64)
@@ -250,9 +254,10 @@ endif ()
 # MinGW needs to link in zlib for libgit2 (v0.20.0)
 if (MINGW)
 	find_package(ZLIB REQUIRED)
-	target_link_libraries(boss ${ZLIB_LIBRARIES})
+#	find_package(HTTP_Parser REQUIRED)
+	target_link_libraries(boss ${ZLIB_LIBRARIES} winhttp crypt32 rpcrt4)
 	if (BUILD_GUI)
-		target_link_libraries(boss_gui ${ZLIB_LIBRARIES})
+		target_link_libraries(boss_gui ${ZLIB_LIBRARIES} winhttp crypt32 rpcrt4)
 	endif ()
 endif ()
 
