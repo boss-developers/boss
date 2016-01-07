@@ -47,7 +47,7 @@
 namespace boss {
 
 struct pointers_struct {
-	pointers_struct()
+	pointers_struct();/*
 	    : repo(NULL),
 	      remote(NULL),
 	      cfg(NULL),
@@ -55,9 +55,9 @@ struct pointers_struct {
 	      commit(NULL),
 	      ref(NULL),
 	      sig(NULL),
-	      blob(NULL) {}
+	      blob(NULL) {}*/
 
-	void free() {
+	void free();/* {
 		git_commit_free(commit);
 		git_object_free(obj);
 		git_config_free(cfg);
@@ -66,7 +66,7 @@ struct pointers_struct {
 		git_reference_free(ref);
 		git_signature_free(sig);
 		git_blob_free(blob);
-	}
+	}*/
 
 	git_repository *repo;
 	git_remote *remote;
@@ -78,7 +78,7 @@ struct pointers_struct {
 	git_blob *blob;
 };
 
-inline void handle_error(int error_code, pointers_struct &pointers) {
+/*inline*/ void handle_error(int error_code, pointers_struct &pointers);/* {
 	if (!error_code)
 		return;
 
@@ -93,9 +93,9 @@ inline void handle_error(int error_code, pointers_struct &pointers) {
 
 	LOG_ERROR("Git operation failed. Error: %s", error_message.c_str());
 	throw boss_error(error_message, BOSS_ERROR_GIT_ERROR);
-}
+}*/
 
-inline std::string RepoURL(const Game &game) {
+/*inline*/ std::string RepoURL(const Game &game);/* {
 	// TODO(MCP): Look at converting this to a switch-statement
 	// MCP Note: The last else-statement should be an else-if with a default of invalid or similar
 	if (game.Id() == OBLIVION)
@@ -108,10 +108,10 @@ inline std::string RepoURL(const Game &game) {
 		return gl_fallout3_repo_url;
 	else
 		return gl_falloutnv_repo_url;
-}
+}*/
 
-inline bool are_files_equal(const void *buf1, std::size_t buf1_size,
-                            const void *buf2, std::size_t buf2_size) {
+/*inline*/ bool are_files_equal(const void *buf1, std::size_t buf1_size,
+                            const void *buf2, std::size_t buf2_size);/* {
 	if (buf1_size != buf2_size)
 		return false;
 
@@ -122,14 +122,14 @@ inline bool are_files_equal(const void *buf1, std::size_t buf1_size,
 		++pos;
 	}
 	return true;
-}
+}*/
 
 // Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
-inline std::string GetMasterlistVersion(Game &game) {
+/*inline*/ std::string GetMasterlistVersion(Game &game);/* {
 	if (!boost::filesystem::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
 		return "Unknown: Git repository missing";
 	}
-	std::string rev;
+	std::string rev;*/
 	// Naive check, ignoring working directory changes.
 
 	/*
@@ -140,7 +140,7 @@ inline std::string GetMasterlistVersion(Game &game) {
 	 * 3. Open the masterlist file in the working dir in a file buffer.
 	 * 4. Compare the file and blob buffers.
 	 */
-	pointers_struct ptrs;
+	/*pointers_struct ptrs;
 	LOG_INFO("Existing repository found, attempting to open it.");
 	handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);
 
@@ -171,7 +171,13 @@ inline std::string GetMasterlistVersion(Game &game) {
 	}
 	ptrs.free();
 	return "Unknown: Masterlist edited";
-}
+}*/
+
+int ValidateCertificate(git_cert *certificate, int is_valid, const char *host_name, void *payload_data); /*{
+	if(!is_valid)
+		return 1;
+	return -1;
+}*/
 
 // Progress has form prog(const char *str, int len, void *data)
 template<class Progress>
@@ -190,7 +196,8 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 		LOG_INFO("Attempting to get info on the repository remote.");
 
 		// Now get remote info.
-		handle_error(git_remote_load(&ptrs.remote, ptrs.repo, "origin"), ptrs);
+		handle_error(git_remote_lookup(&ptrs.remote, ptrs.repo, "origin"), ptrs);
+		//handle_error(git_remote_load(&ptrs.remote, ptrs.repo, "origin"), ptrs);
 
 		LOG_INFO("Getting the remote URL.");
 
@@ -205,10 +212,11 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 		if (url != RepoURL(game)) {
 			LOG_INFO("URLs do not match, setting repository URL to URL in settings.");
 			// The URLs don't match. Change the remote URL to match the one BOSS has.
-			handle_error(git_remote_set_url(ptrs.remote, RepoURL(game).c_str()), ptrs);
+			handle_error(git_remote_set_url(ptrs.repo, "origin", RepoURL(game).c_str()), ptrs);
+			//handle_error(git_remote_set_url(ptrs.remote, RepoURL(game).c_str()), ptrs);
 
 			// Now save change.
-			handle_error(git_remote_save(ptrs.remote), ptrs);
+			//handle_error(git_remote_save(ptrs.remote), ptrs);
 		}
 	} else {
 		LOG_INFO("Repository doesn't exist, initialising a new repository.");
@@ -222,23 +230,35 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 	}
 
 	// WARNING: This is generally a very bad idea, since it makes HTTPS a little bit pointless, but in this case because we're only reading data and not really concerned about its integrity, it's acceptable. A better solution would be to figure out why GitHub's certificate appears to be invalid to OpenSSL.
-#ifndef _MSC_VER
-	git_remote_check_cert(ptrs.remote, 0);
-#endif
+//#ifndef _MSC_VER
+//	git_remote_check_cert(ptrs.remote, 0);
+//#endif
 
 	LOG_INFO("Fetching updates from remote.");
 
 	// Now pull from the remote repository. This involves a fetch followed by a merge. First perform the fetch.
 
 	// Set up callbacks.
-	git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
+	
+	git_fetch_options fetch_options = GIT_FETCH_OPTIONS_INIT;
+	fetch_options.callbacks = GIT_REMOTE_CALLBACKS_INIT;
+	fetch_options.callbacks.transfer_progress = prog;
+	fetch_options.callbacks.payload = out;
+	
+//#ifndef _MSC_VER
+	//int (*validate_cert)(git_cert *, int, const char *, void *) = ValidateCert;
+//	fetch_options.callbacks.certificate_check = ValidateCertificate;
+//#endif
+
+	/*git_remote_callbacks callbacks = GIT_REMOTE_CALLBACKS_INIT;
 	callbacks.transfer_progress = prog;
 	callbacks.payload = out;
-	git_remote_set_callbacks(ptrs.remote, &callbacks);
+	git_remote_set_callbacks(ptrs.remote, &callbacks);*/
 
 	// Fetch from remote.
 	LOG_INFO("Fetching from remote.");
-	handle_error(git_remote_fetch(ptrs.remote), ptrs);
+	handle_error(git_remote_fetch(ptrs.remote, nullptr, &fetch_options, nullptr), ptrs);
+	//handle_error(git_remote_fetch(ptrs.remote), ptrs);
 
 	/*
 	 * Now start the merging. Not entirely sure what's going on here, but it looks like libgit2's merge API is incomplete, you can create some git_merge_head objects, but can't do anything with them...
@@ -250,7 +270,8 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 
 	char *paths[] = {"masterlist.txt"};  // MCP Note: Can this be const?
 
-	git_checkout_opts opts = GIT_CHECKOUT_OPTS_INIT;
+	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
+	//git_checkout_opts opts = GIT_CHECKOUT_OPTS_INIT;
 	opts.checkout_strategy = GIT_CHECKOUT_FORCE;  // Make sure the existing file gets overwritten.
 	opts.paths.strings = paths;  // MCP Note: May need strcpy here
 	opts.paths.count = 1;
@@ -274,7 +295,7 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 	//handle_error(git_signature_default(&ptrs.sig, ptrs.repo), ptrs);
 
 	char revision[10];
-	/* 
+	/*
 	 * MCP Note: Can this be const?
 	 * Actually, it can probably be a const char* instead of a string
 	 * as the only time that it's used, it is converted to a char array.
@@ -290,7 +311,8 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 	git_oid_tostr(revision, 10, oid);
 
 	LOG_INFO("Recreating HEAD as a direct reference (overwriting it) to the desired revision.");
-	handle_error(git_reference_create(&ptrs.ref, ptrs.repo, "HEAD", oid, 1), ptrs);
+	handle_error(git_reference_create(&ptrs.ref, ptrs.repo, "HEAD", oid, 1, nullptr), ptrs);
+	//handle_error(git_reference_create(&ptrs.ref, ptrs.repo, "HEAD", oid, 1), ptrs);
 
 	LOG_INFO("Performing a Git checkout of HEAD.");
 	handle_error(git_checkout_head(ptrs.repo, &opts), ptrs);
