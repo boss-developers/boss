@@ -6,10 +6,43 @@ li {
 	margin-bottom: 10px;
 }
 
-#contents {
+/*#contents {
 	-moz-columns: 1;
 	-webkit-columns: 1;
 	columns: 1;
+}*/
+
+.tagPrefix {
+	color: #cd5555;
+}
+
+.dirty {
+	color: #960;
+}
+
+.warn,
+.error {
+	padding: .3em .5em;
+	border-radius: .5em;
+}
+
+.warn {
+	background: #fd5;
+}
+
+.error {
+	background: #ff9090;
+}
+
+li.warn,
+li.error {
+	display: table;
+	margin-top: 0;
+	margin-bottom: 1em;
+}
+
+.version-contents {
+	list-style-type: none;
 }
 
 li ul,

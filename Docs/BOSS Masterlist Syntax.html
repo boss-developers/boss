@@ -78,7 +78,7 @@
 	<li>Use silent comments when something may need clarification to others reading the masterlist, such as when a plugin looks like it is misspelled, but is correct, or is put in a special position for compatibility reasons.
 	<li>Only make edits/additions you're confident about - otherwise discuss the issue on the official forum threads.
 	<li>If you're unsure on how to write something in the correct syntax, check this document and don't be afraid to ask other team members for help.
-	<li>When you list Bash Tags for a plugin, separate them using <code>,&nbsp;</code> and not just <code>,</code>. Eg. {{BASH:Graphics,NoMerge}} should be written {{BASH: Graphics, NoMerge}}. This improves readability in the BOSS Log and the masterlist itself.
+	<li>When you list Bash Tags for a plugin, separate them using <code>,&nbsp;</code> and not just <code>,</code>. Eg. <code>{{BASH:Graphics,NoMerge}}</code> should be written <code>{{BASH: Graphics, NoMerge}}</code>. This improves readability in the BOSS Log and the masterlist itself.
 	<li>Put variable lines at the top of the masterlist, just under the header.
 	<li>Put global message lines at the top of the masterlist, just under any variable lines.
 </ol>
@@ -170,7 +170,7 @@
 		<tr>
 			<td>Bash Tag Suggestion<a href="#2">&#x00B2;</a>
 			<td><code>TAG:&nbsp;<var>[message]</var></code>
-			<td><span style="color:#CD5555;">Bash Tag suggestion(s):</span>
+			<td><span class="tagPrefix">Bash Tag suggestion(s):</span>
 			<td>A Bash Tag suggestion or suggestions.
 		<tr>
 			<td>Requirement
@@ -185,17 +185,17 @@
 		<tr>
 			<td>Dirty Plugin
 			<td><code>DIRTY:&nbsp;<var>[message]</var></code>
-			<td><span style="color:#996600;">Contains dirty edits:</span>
+			<td><span class="dirty">Contains dirty edits:</span>
 			<td>A message about dirty edits.
 		<tr>
 			<td>Warning
 			<td><code>WARN:&nbsp;<var>[message]</var></code>
-			<td><span style="background:orange; color:white;">Warning:</span>
+			<td><span class="warn">Warning:</span>
 			<td>A warning message.
 		<tr>
 			<td>Error
 			<td><code>ERROR:&nbsp;<var>[message]</var></code>
-			<td><span style="background:red; color:white;">ERROR:</span>
+			<td><span class="error">Error:</span>
 			<td>An error message.
 </table>
 
@@ -532,29 +532,29 @@ IF VAR(FCOM) MOD: Mart's Monster Mod - Fran's Leveled Quests.esp
 <p>Assuming that all version and plugin conditionals evaluate to true apart from the first, the above would have the following output.
 
 <blockquote>
-	<ul style="list-style:none;margin-bottom:0.4em;">
-		<li style="margin-left:0; margin-bottom:2em;">Mart's Monster Mod for OOO.esm</li>
-		<li style="margin-left:0; margin-bottom:2em;">Unofficial Oblivion Patch.esp
-			<ul style="list-style:none;">
+	<ul style="list-style: none;">
+		<li>Mart's Monster Mod for OOO.esm</li>
+		<li>Unofficial Oblivion Patch.esp
+			<ul style="list-style: none;">
 				<li>Note: Upgrade to the latest version of the UOP Supplementals, found here: <a href="http://oblivion.nexusmods.com/mods/27710">http://oblivion.nexusmods.com/mods/27710</a></li>
-				<li><span style="color:#CD5555;">Bash Tag suggestion(s)</span>: {{BASH: Relev}} and [NoMerge]. Wrye Bash will automatically add the Relev tag and remove the NoMerge tag for you.</li>
+				<li><span class="tagPrefix">Bash Tag suggestion(s)</span>: {{BASH: Relev}} and [NoMerge]. Wrye Bash will automatically add the Relev tag and remove the NoMerge tag for you.</li>
 				<li>Note: You have a legitimate copy of Fast Exit 2 installed. Good on you!</li>
 			</ul>
 		</li>
-		<li style="margin-left:0; margin-bottom:2em;">All Natural.esp
-			<ul style="list-style:none;">
-				<li style="background:orange; color:white; display:table; padding:0 4px;">Warning: You have the correct version of OBSE installed.</li>
+		<li>All Natural.esp
+			<ul style="list-style: none;">
+				<li class="warn">Warning: You have the correct version of OBSE installed.</li>
 			</ul>
 		</li>
-		<li style="margin-left:0; margin-bottom:2em;">Unofficial Shivering Isles Patch.esp
-			<ul style="list-style:none;">
+		<li>Unofficial Shivering Isles Patch.esp
+			<ul style="list-style: none;">
 				<li>Note: You are using version 3.3.5 of the UOP.</li>
 				<li>Note: You have Oblivion Stutter Remover v4.1 installed.</li>
 			</ul>
 		</li>
-		<li style="margin-left:0; margin-bottom:2em;">Mart's Monster Mod - Fran's Leveled Quests.esp
-			<ul style="list-style:none;">
-				<li style="background:red; color:white; display:table; padding:0 4px;">ERROR: Delete. Already integrated into FCOM.</li>
+		<li>Mart's Monster Mod - Fran's Leveled Quests.esp
+			<ul style="list-style: none;">
+				<li class="error">Error: Delete. Already integrated into FCOM.</li>
 			</ul>
 		</li>
 	</ul>

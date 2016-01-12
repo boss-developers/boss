@@ -8,6 +8,8 @@ body {
 	-moz-columns: 2;
 	-webkit-columns: 2;
 	columns: 2;
+	width: 50%;
+	list-style-position: inside;
 }
 
 p,
