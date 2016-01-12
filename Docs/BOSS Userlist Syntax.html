@@ -1,89 +1,51 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>BOSS Userlist Syntax</title>
-<style>
-	body {font-family:Helvetica,sans-serif;font-size:10pt;}
-	h1 + p {text-align:center;}
-	li {margin-bottom:10px;}
-	li ul, li ol {margin-top:0.4em;}
-	q {font-style:italic;}
-	code {display:inline-block; padding:2px 5px; background:#eee;}
-	td, th {border:1px solid #ddd; padding: 5px; vertical-align:top;}
-	table {border-collapse:collapse; margin:1em;background:#FafaFf;}
-	thead {font-weight:bold;background:#99CCFF;}
-	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
-	ol li ol {list-style:lower-alpha;}
-	ol li ol li ol {list-style:lower-roman;}
- ol ol li {margin-bottom:0.2em;}
-	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
-	h1 {text-align:center;font-size:24pt;}
-	h2 {margin-top:3em;font-size:20pt;}
-	h3 {margin-top:2em;font-size:16pt;}
-	h4 {margin-top:2em;font-size:12pt;}
-	a:link {text-decoration:none;}
-	a:hover {text-decoration:underline;}
-	a[href^="http"]:after {padding-left:2px; content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);}
-	
-	ul.errorMessages > li {margin-bottom:1.4em;}
-	td.t {background:#90ff90;text-align:center;}
-	td.c {background:#ff9090;text-align:center;}
-	td.t:after {content: '\2713';}
-	td.c:after {content: '\2717';}
-	img {border:0;}
-	.slideshow img {opacity:0; 
-		position:absolute;
-		transition: opacity 1.5s;
-		-moz-transition: opacity 1.5s;
-		-webkit-transition: opacity 1.5s;
-		-o-transition: opacity 1.5s;}
-	.slideshow img:first-child {opacity:1;}
-	figcaption {font-style:italic; margin-bottom:2em;}
-	tr.inactive {color:#888;}
- tr.inactive td.c, tr.inactive td.t {background:#E3E3E3;}
-	code.box {margin-left:0em;}
-	span[title] {border-bottom: 1px dotted; font-family: sans-serif; cursor:help;}
-	dt {margin-bottom:0.5em; margin-top:1em; font-style:italic;}
-	dd {margin-bottom:0.8em;}
-	abbr {cursor:help;}
-</style>
+<link rel="stylesheet" href="styles/readme.css">
+<link rel="stylesheet" href="styles/readme_aux.css">
 
 <h1>BOSS Userlist Syntax</h1>
 
 <h2>Contents</h2>
-<ol>
- <li><a href="#intro">Introduction</a>
- <li><a href="#start">Getting Started</a>
- <li><a href="#basics">Basic Rules</a>
- <ol>
-  <li><a href="#basics-add">Sorting An Unknown Plugin</a>
+
+<ol id="contents">
+	<li><a href="#intro">Introduction</a>
+	<li><a href="#start">Getting Started</a>
+	<li><a href="#basics">Basic Rules</a>
+	<ol>
+		<li><a href="#basics-add">Sorting An Unknown Plugin</a>
 		<li><a href="#basics-override">Changing A Recognised Plugin's Position</a>
 		<li><a href="#basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</a>
- </ol>
- <li><a href="#syntax">Rule Syntax</a>
- <ol>
-  <li><a href="#syntax-rule">The Rule Line</a>
-  <li><a href="#syntax-sort">The Sort Line</a>
-  <li><a href="#syntax-message">The Message Line</a>
-  <li><a href="#syntax-examples">Examples</a>
- </ol>
- <li><a href="#notes">Further Notes</a>
- <li><a href="#messages">The BOSS Message Format</a>
- <li><a href="#license">License</a>
+	</ol>
+	<li><a href="#syntax">Rule Syntax</a>
+	<ol>
+		<li><a href="#syntax-rule">The Rule Line</a>
+		<li><a href="#syntax-sort">The Sort Line</a>
+		<li><a href="#syntax-message">The Message Line</a>
+		<li><a href="#syntax-examples">Examples</a>
+	</ol>
+	<li><a href="#notes">Further Notes</a>
+	<li><a href="#messages">The BOSS Message Format</a>
+	<li><a href="#license">License</a>
 </ol>
 
 <h2 id="intro">Introduction</h2>
+
 <figure>
-<img alt="userlist" src="images/Userlist.png"/>
-<figcaption>An example userlist containing some user rules, as viewed in Notepad.</figcaption>
+	<img alt="userlist" src="images/Userlist.png">
+	<figcaption>An example userlist containing some user rules, as viewed in Notepad.</figcaption>
 </figure>
+
 <p>As mentioned in <a href="BOSS%20Readme.html#gui-urm">The User Rules Manager</a>, user rules can be used to customise BOSS's sorting of plugins and the messages attached to them. To recap, user rules can do the following:
+
 <ol>
 	<li><i>Sort plugins relative to other plugins.</i> You can both override the positions of plugins BOSS recognises and sort plugins that are unrecognised.
-	<li><i>Sort groups of plugins relative to other groups of plugins.</i> BOSS's masterlist generally lists plugins in thematic groups, which you can override the relative positioning of. You can't create new groups though. Groups are marked out by the 
-	<code>\BeginGroup\: <var>Group Name</var></code> and <code>\EndGroup\\</code>, or <code>BEGINGROUP: <var>Group Name</var></code> and <code>ENDGROUP</code>, lines.
+	<li><i>Sort groups of plugins relative to other groups of plugins.</i> BOSS's masterlist generally lists plugins in thematic groups, which you can override the relative positioning of. You can't create new groups though. Groups are marked out by the
+		<code>\BeginGroup\: <var>Group Name</var></code> and <code>\EndGroup\\</code>, or <code>BEGINGROUP: <var>Group Name</var></code> and <code>ENDGROUP</code>, lines.
 	<li><i>Insert plugins into the top or bottom of groups of plugins.</i>
 	<li><i>Edit the messages BOSS attaches to plugins.</i> You can add to or replace messages with your own. See <a href="#messages">The BOSS Message Format</a> below for more details on the message types and syntax.
 </ol>
+
 <p><strong>Note:</strong> This section contains some examples of user rules written for Oblivion mod plugins, but user rules will work for any of the games BOSS supports, not just Oblivion. In addition, when <q>your game's master file</q> is mentioned, this refers to Morrowind.esm, Oblivion.esm, Nehrim.esm, Skyrim.esm, Fallout3.esm or FalloutNV.esm for Morrowind, Oblivion, Nehrim, Skyrim, Fallout 3 or Fallout: New Vegas respectively.
 
 <h2 id="start">Getting Started</h2>
@@ -100,12 +62,14 @@
 <p>To sort a plugin that is not in the masterlist after another plugin:
 
 <code class="box">ADD: <var>[RULE PLUGIN]</var>
-AFTER: <var>[SORT PLUGIN]</var></code>
+AFTER: <var>[SORT PLUGIN]</var>
+</code>
 
 <p>To sort it before another plugin:
 
 <code class="box">ADD: <var>[RULE PLUGIN]</var>
-BEFORE: <var>[SORT PLUGIN]</var></code>
+BEFORE: <var>[SORT PLUGIN]</var>
+</code>
 
 <p>The <em>rule plugin</em> is the plugin you want to add, and the <em>sort plugin</em> is the plugin you want to sort it relative to.
 <p>Examples:
@@ -113,61 +77,75 @@ BEFORE: <var>[SORT PLUGIN]</var></code>
 AFTER: AFK_Weye.esp
 
 ADD: Plugin2.esp
-BEFORE: AFK_Weye.esp</code>
+BEFORE: AFK_Weye.esp
+</code>
 <p>This gives a load order of:
+
 <blockquote>
-...<br />
-Plugin2.esp<br />
-AFK_Weye.esp<br />
-Plugin1.esp<br />
+...<br>
+Plugin2.esp<br>
+AFK_Weye.esp<br>
+Plugin1.esp<br>
 ...
 </blockquote>
 
 <h3 id="basics-override">Changing A Recognised Plugin's Position</h3>
 <p>To sort a plugin that is already in the masterlist after another plugin:
 <code class="box">OVERRIDE: <var>[RULE PLUGIN]</var>
-AFTER: <var>[SORT PLUGIN]</var></code>
+AFTER: <var>[SORT PLUGIN]</var>
+</code>
 <p>To sort it before another plugin:
 <code class="box">OVERRIDE: <var>[RULE PLUGIN]</var>
-BEFORE: <var>[SORT PLUGIN]</var></code>
+BEFORE: <var>[SORT PLUGIN]</var>
+</code>
 <p>The <em>rule plugin</em> is the plugin you want to sort, and the <em>sort plugin</em> is the plugin you want to sort it relative to.
 <p>Example:
 <code class="box">OVERRIDE: bgBalancingEVCore.esp
-AFTER: Unofficial Oblivion Patch.esp</code>
+AFTER: Unofficial Oblivion Patch.esp
+</code>
 <p>This gives a load order of:
+
 <blockquote>
-...<br />
-Unofficial Oblivion Patch.esp<br />
-bgBalancingEVCore.esp<br />
+...<br>
+Unofficial Oblivion Patch.esp<br>
+bgBalancingEVCore.esp<br>
 ...
 </blockquote>
 
 <h3 id="basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</h3>
 <p>To add a message to a plugin for display in the BOSS Log:
 <code class="box">FOR: <var>[RULE PLUGIN]</var>
-APPEND: <var>[MESSAGE OBJECT]</var></code>
+APPEND: <var>[MESSAGE OBJECT]</var>
+</code>
 <p>To replace the messages attached to a plugin for display in the BOSS Log:
 <code class="box">FOR: <var>[RULE PLUGIN]</var>
-REPLACE: <var>[MESSAGE OBJECT]</var></code>
+REPLACE: <var>[MESSAGE OBJECT]</var>
+</code>
 <p>The <em>rule plugin</em> is the plugin you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <a href="#messages">The BOSS Message Format</a> section later on in this readme if you are unfamiliar with BOSS message formatting.
 <p>An example:
 <code class="box">FOR: Unofficial Oblivion Patch.esp
 REPLACE: SAY: Replaced!
 
 FOR: bgMagicEV.esp
-APPEND: TAG: {{BASH: Names, Delev, Relev}}</code>
+APPEND: TAG: {{BASH: Names, Delev, Relev}}
+</code>
 <p>This will print in the BOSS Log:
+
 <blockquote>
-...<br /><br />
+...<br><br>
 Unofficial Oblivion Patch.esp
+
 <ul>
 	<li>Note:  Replaced!
 </ul>
-...<br /><br />
+
+...<br><br>
 bgMagicEV.esp
+
 <ul>
 	<li>Bashed Patch tag suggestion: {{BASH: Names, Delev, Relev}}
 </ul>
+
 ...
 </blockquote>
 
@@ -178,15 +156,17 @@ bgMagicEV.esp
 <p>Every rule begins with a <em>rule line</em>, which defines what basic type of rule it is and what plugin it is applied to. It has the structure:
 <code class="box"><var>[RULE KEYWORD]</var>: <var>[RULE OBJECT]</var></code>
 <p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:
+
 <ul>
-	<li><dfn>ADD</dfn>: This tells BOSS that the rule sorts a plugin that is not in the 
+	<li><dfn>ADD</dfn>: This tells BOSS that the rule sorts a plugin that is not in the
 	masterlist. The rule may also add and/or edit messages attached to that plugin.
-	<li><dfn>OVERRIDE</dfn>: This tells BOSS that the rule overrides the current position of a plugin or group in the masterlist with a new position. 
+	<li><dfn>OVERRIDE</dfn>: This tells BOSS that the rule overrides the current position of a plugin or group in the masterlist with a new position.
 	The rule may also add and/or edit messages attached to that plugin.
 	<li><dfn>FOR</dfn>: This tells BOSS that the rule adds and/or edits the messages attached to a plugin, but does not sort it.
 </ul>
+
 <p>The <em>rule object</em> is the plugin or group that the rule is applied to. If the rule keyword is ADD or FOR, the rule object must be a plugin.
-<p>When you define groups, the names of those groups are used as they appear in the masterlist. For example, 
+<p>When you define groups, the names of those groups are used as they appear in the masterlist. For example,
 if you wanted to reference the group of plugins that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as <code>Supreme Magicka</code>.
 <p>There is one more keyword that can be used on the rule line. <code>DISABLE</code> can be put before the rule keyword to prevent the rule from being applied. For example:
 <code class="box">DISABLE ADD: MyMod.esp
@@ -198,13 +178,15 @@ AFTER: Unofficial Oblivion Patch.esp
 <p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em> directly below the rule line. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. A rule may only contain one sort line. The sort line has the structure:
 <code class="box"><var>[SORT KEYWORD]</var>: <var>[SORT OBJECT]</var></code>
 <p>The <em>sort keyword</em> can be one of:
+
 <ul>
 	<li><dfn>BEFORE</dfn>: This states that the rule object is to load immediately before the sort object.
 	<li><dfn>AFTER</dfn>: This states that the rule object is to load immediately after the sort object.
 	<li><dfn>TOP</dfn>: This states that the rule plugin is to be inserted into the top of the sort group. The rule plugin will then load before everything else in the sort group.
 	<li><dfn>BOTTOM</dfn>: This states that the rule plugin is to be inserted into the bottom of the sort group. The rule plugin will then load after everything else in the sort group.
 </ul>
-<p>When using the BEFORE or AFTER sort keywords, the <em>sort object</em> is the plugin or group that you wish the rule object 
+
+<p>When using the BEFORE or AFTER sort keywords, the <em>sort object</em> is the plugin or group that you wish the rule object
 to be positioned relative to. Plugins must be sorted relative to other plugins, and groups must be sorted relative to groups. You cannot sort plugins relative to groups, or vice versa. You also cannot sort your game's master file, sort other plugins before it, or sort groups before the "ESMs" group.
 <p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the <q>ESMs</q> group.
 
@@ -212,10 +194,12 @@ to be positioned relative to. Plugins must be sorted relative to other plugins, 
 <p>If a rule's rule keyword is FOR, it should include at least one <em>message line</em>. A rule with a rule keyword of ADD or OVERRIDE can also include message lines, if they sort a plugin. Message lines have the structure:
 <code class="box"><var>[MESSAGE KEYWORD]</var>: <var>[MESSAGE OBJECT]</var></code>
 <p>The <em>message keyword</em> can be one of:
+
 <ul>
 	<li><dfn>APPEND</dfn>: This states that the message is to be appended to the list of messages attached to the rule plugin.
 	<li><dfn>REPLACE</dfn>: This states that the message is to replace any existing message or messages attached to the rule plugin. You may only have up to one <code>REPLACE</code> message line per rule, and if used it must be the first message line.
 </ul>
+
 <p>The <em>message object</em> is the message, complete with keyword, that you wish to attach to the plugin defined by the rule object. You cannot attach messages to groups.
 <p>You may have multiple message lines in a rule (but only the first may use the <code>REPLACE</code> message keyword), to add multiple messages to a plugin, or to override an existing set of messages with a new set.
 
@@ -234,48 +218,58 @@ BEFORE: Supreme Magicka
 
 FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 REPLACE: SAY: This is a replacement message.
-APPEND: TAG: {{BASH:NpcFaces,NoMerge}}</code>
+APPEND: TAG: {{BASH:NpcFaces,NoMerge}}
+</code>
 <p>This is the equivalent of the masterlist having:
+
 <blockquote>
-...<br />
-LoadAfterThis.esm<br />
-MyPluginToAdd.esp<br />
-SAY: Adding a general message.<br />
-REQ: OOO<br />
-...<br />
-MyPluginToOverride.esp<br />
-LoadBeforeThis.esp<br />
-...<br />
-bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
-SAY: This is a replacement message.<br />
-TAG: {{BASH:NpcFaces,NoMerge}}<br />
+...<br>
+LoadAfterThis.esm<br>
+MyPluginToAdd.esp<br>
+SAY: Adding a general message.<br>
+REQ: OOO<br>
+...<br>
+MyPluginToOverride.esp<br>
+LoadBeforeThis.esp<br>
+...<br>
+bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br>
+SAY: This is a replacement message.<br>
+TAG: {{BASH:NpcFaces,NoMerge}}<br>
 ...
 </blockquote>
+
 <p>Which would give in the BOSS Log:
+
 <blockquote>
-...<br />
-LoadAfterThis.esm<br />
+...<br>
+LoadAfterThis.esm<br>
 MyPluginToAdd.esp
+
 <ul>
 	<li>Note: Adding a general message.
 	<li>Requires: OOO
 </ul>
-...<br />
-MyPluginToOverride.esp<br />
-LoadBeforeThis.esp<br />
-...<br />
+
+...<br >
+MyPluginToOverride.esp<br>
+LoadBeforeThis.esp<br>
+...<br>
 bgBalancingEVOptionalNPCDiversity, Vanilla.esp
+
 <ul>
-<li> Note: This is a replacement message.
-<li> Bash Tag Suggestion(s): {{BASH:NpcFaces,NoMerge}}
+	<li> Note: This is a replacement message.
+	<li> Bash Tag Suggestion(s): {{BASH:NpcFaces,NoMerge}}
 </ul>
+
 ...
 </blockquote>
+
 <p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.
 
 
 <h2 id="notes">Further Notes</h2>
 <p>While the <a href="#syntax">Rule Definition Syntax</a> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may not be evident:
+
 <ol>
 	<li>Blank lines or lines beginning with <code>//</code> in your userlist will be ignored by BOSS. You can use blank lines to improve the formatting of your userlist, and use the <code>//</code> line start to provide comments. <strong>Using the GUI's User Rules Manager strips all comments from your userlist.</strong>
 		<ul>
@@ -304,30 +298,50 @@ OVERRIDE: xulAspenWood.esp
 AFTER: Plugin1.esp
 
 ADD: Plugin2.esp
-BEFORE: RTT.esp</code>
+BEFORE: RTT.esp
+		</code>
 		<p>which will order the plugins as:
-		<blockquote>Plugin2.esp<br />
-		RTT.esp<br />
-		Plugin1.esp<br />
-		xulAspenWood.esp<br />
-		LoadBeforeThis.esp</blockquote>
+
+		<blockquote>Plugin2.esp<br>
+		RTT.esp<br>
+		Plugin1.esp<br>
+		xulAspenWood.esp<br>
+		LoadBeforeThis.esp
+		</blockquote>
 		<p>Take care when writing such rules though, as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
 </ol>
 
 <h2 id="messages">The BOSS Message Format</h2>
 <p>Each of the four message types that can be added via the userlist begins with a <em>message keyword</em>. The keyword is then followed by the message itself. The message is just a standard line of text. In addition, Bash Tag suggestion messages must include the suggested Bash Tags in a comma-separated list beginning with <code>{{BASH:</code> and ending with <code>}}</code>.
 <p>The message types and keywords are listed in the table below:
+
 <table>
-	<thead><tr><th><b>Message Type</b><th><b>Keyword</b><th>Example
+	<thead>
+		<tr>
+			<th><b>Message Type</b>
+			<th><b>Keyword</b>
+			<th>Example
 	<tbody>
-		<tr><td>Bash Tag Suggestion<td>TAG:<td><code>TAG: {{BASH: Names, Graphics}} to prevent changes being lost when using overhauls.</code>
-		<tr><td>General Message<td>SAY:<td><code>SAY: This message was added in a user rule.</code>
-		<tr><td>Installation Requirement<td>REQ:<td><code>REQ: This mod requires another.</code>
-		<tr><td>Specific Incompatibility<td>INC:<td><code>INC: This mod is incompatible with other mods that do the same thing.</code>
+		<tr>
+			<td>Bash Tag Suggestion
+			<td>TAG:
+			<td><code>TAG: {{BASH: Names, Graphics}} to prevent changes being lost when using overhauls.</code>
+		<tr>
+			<td>General Message
+			<td>SAY:
+			<td><code>SAY: This message was added in a user rule.</code>
+		<tr>
+			<td>Installation Requirement
+			<td>REQ:
+			<td><code>REQ: This mod requires another.</code>
+		<tr>
+			<td>Specific Incompatibility
+			<td>INC:
+			<td><code>INC: This mod is incompatible with other mods that do the same thing.</code>
 </table>
 
 
 <h2 id="license">License</h2>
-<p>This document is part of the BOSS documentation.<br />
-Copyright (C) 2009-2012 BOSS Development Team.<br />
+<p>This document is part of the BOSS documentation.<br>
+Copyright (C) 2009-2012 BOSS Development Team.<br>
 See the file <q>BOSS ReadMe.html</q> for copying conditions.
