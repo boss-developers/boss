@@ -90,15 +90,10 @@ table {
 	border-collapse: collapse;
 	margin: 1.5em;
 	background: #fafafa;
+	/*box-shadow: 0 0 3px 1px rgba(0, 0, 0, .5);*/
 }
 
-/*table > tbody > tr:nth-child(2) > td:nth-child(1),
-table > thead > tr > th:nth-child(1) {
-	width: 10%;
-}*/
-
 thead {
-	/*background: #6badf6;*/
 	background: #9cf;
 }
 
@@ -113,14 +108,14 @@ code.box {
 	white-space: pre;
 	overflow-x: auto;
 	display: table;
-	margin: 1.5em;
+	margin: 1em 0 0 0;
 }
 
 blockquote {
 	border: 1px solid #ccc;
 	border-radius: 3px;
-	padding: 10px;
-	background: #eee;
+	padding: 5px 10px;
+	background: #e6e6fa;
 	display: table;
 	margin: 1.5em;
 }
