@@ -267,6 +267,10 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		File "Docs\BOSS Version History.html"
 		File "Docs\Licenses.txt"
 
+		SetOutPath "$INSTDIR\Docs\css"
+		File "Docs\css\readme.css"
+		File "Docs\css\readme_aux.css"
+
 		;Now install readme images.
 		SetOutPath "$INSTDIR\Docs\images"
 		File "Docs\images\GUI-Main.png"
@@ -437,6 +441,9 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		Delete "$INSTDIR\Docs\BOSS Userlist Syntax.html"
 		Delete "$INSTDIR\Docs\BOSS Version History.html"
 		Delete "$INSTDIR\Docs\Licenses.txt"
+
+		Delete "Docs\css\readme.css"
+		Delete "Docs\css\readme_aux.css"
 
 		;Remove readme images.
 		Delete "$INSTDIR\Docs\images\GUI-Main.png"
