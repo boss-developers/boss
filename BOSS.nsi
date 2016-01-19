@@ -12,9 +12,9 @@ Unicode true
 ;General
 
 	;Name, file and version info for installer.
-	Name "BOSS v2.3.1"
+	Name "BOSS v2.3.2"
 	OutFile "BOSS Installer.exe"
-	VIProductVersion 2.3.1.0
+	VIProductVersion 2.3.2.0
 
 	;Request application privileges for Windows Vista/7
 	RequestExecutionLevel admin
@@ -73,9 +73,9 @@ Unicode true
 
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2015 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.3.1"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.3.1"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2016 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.3.2"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.3.2"
 
 	LangString TEXT_MESSAGEBOX ${LANG_ENGLISH} "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 	LangString TEXT_RUN ${LANG_ENGLISH} "Run BOSS"
@@ -88,9 +88,9 @@ Unicode true
 
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "LegalCopyright" "© 2009-2015 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.3.1"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.3.1"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "LegalCopyright" "© 2009-2016 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.3.2"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.3.2"
 
 	LangString TEXT_MESSAGEBOX ${LANG_RUSSIAN} "BOSS уже установлен и должен быть удален перед продолжением. $\n$\nНажмите `OK` для удаления предыдущей версии или `Отмена` для отмены обновления."
 	LangString TEXT_RUN ${LANG_RUSSIAN} "Запустить BOSS"
@@ -103,9 +103,9 @@ Unicode true
 
 	VIAddVersionKey /LANG=${LANG_GERMAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_GERMAN} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "LegalCopyright" "© 2009-2015 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.3.1"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.3.1"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "LegalCopyright" "© 2009-2016 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.3.2"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.3.2"
 
 	LangString TEXT_MESSAGEBOX ${LANG_GERMAN} "BOSS ist bereits installiert und muss deinstalliert werden, bevor fortgefahren wird. $\n$\nKlicke auf `Ok` um die vorherige Version zu entfernen oder auf `Abbrechen` um das Upgrade abzubrechen."
 	LangString TEXT_RUN ${LANG_GERMAN} "BOSS starten"
@@ -118,9 +118,9 @@ Unicode true
 
 	VIAddVersionKey /LANG=${LANG_SPANISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_SPANISH} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "LegalCopyright" "© 2009-2015 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.3.1"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.3.1"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "LegalCopyright" "© 2009-2016 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.3.2"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.3.2"
 
 	LangString TEXT_MESSAGEBOX ${LANG_SPANISH} "BOSS está instalado, y debe ser desinstalado antes de continuar. $\n$\nPresione `OK` para eliminar la versión anterior o `Cancel` para cancelar la actualización."
 	LangString TEXT_RUN ${LANG_SPANISH} "Ejecutar BOSS"
@@ -133,9 +133,9 @@ Unicode true
 
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "ProductName" "BOSS"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "CompanyName" "BOSS Development Team"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "LegalCopyright" "© 2009-2015 BOSS Development Team"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileDescription" "BOSS 2.3.1安装包"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileVersion" "2.3.1"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "LegalCopyright" "© 2009-2016 BOSS Development Team"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileDescription" "BOSS 2.3.2安装包"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileVersion" "2.3.2"
 
 LangString TEXT_MESSAGEBOX ${LANG_SIMPCHINESE} "检测到旧版BOSS，您需要先卸载旧版才能安装新版。$\n$\n单击“确定”卸载旧版本或者“取消”取消更新。"
 LangString TEXT_RUN ${LANG_SIMPCHINESE} "运行BOSS"
@@ -412,7 +412,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://boss-developers.github.io/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://boss-developers.github.io/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.3.1'
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.3.2'
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
 

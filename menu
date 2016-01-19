@@ -95,7 +95,7 @@ function extract_strings() {
 	                   --c++ \
 	                   --package-name=BOSS \
 	                   --copyright-holder="BOSS Development Team" \
-	                   --package-version=2.3.0 \
+	                   --package-version=2.3.2 \
 	                   --output="${template_file}" \
 	                   --output-dir="${template_directory}"
 	echo "Strings extracted to ${template_directory}${template_file}"
