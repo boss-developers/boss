@@ -12,6 +12,11 @@ body {
 	list-style-position: inside;
 }
 
+/*#contents.h2 {
+	-webkit-column-span: all;
+	column-span: all;
+}*/
+
 p,
 ul,
 li {
