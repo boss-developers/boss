@@ -347,6 +347,10 @@ void RuleList::CheckSyntax(const Game &parentGame) {
 	std::vector<Rule>::iterator it = rules.begin();
 	while(it != rules.end()) {
 		std::string ruleKeyString = it->KeyToString();
+		if(!fs::exists(parentGame.DataFolder() / it->Object()) && !fs::exists(parentGame.DataFolder() / it->Object() / fs::path(it->Object() + ".ghost"))) {
+			++it;
+			continue;
+		}
 		Item ruleObject = Item(it->Object());
 		try {
 			if (ruleObject.IsPlugin()) {
