@@ -28,15 +28,20 @@
 #ifndef BASE_FSTREAM_H_
 #define BASE_FSTREAM_H_
 
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
+#include <boost/filesystem/fstream.hpp>
+//#include <boost/iostreams/device/file_descriptor.hpp>
+//#include <boost/iostreams/stream.hpp>
 
 namespace boss {
 namespace boss_fstream {
 
-typedef boost::iostreams::stream<boost::iostreams::file_descriptor_sink> ofstream;
-typedef boost::iostreams::stream<boost::iostreams::file_descriptor_source> ifstream;
-typedef boost::iostreams::stream<boost::iostreams::file_descriptor> fstream;
+//typedef boost::iostreams::stream<boost::iostreams::file_descriptor_sink> ofstream;
+//typedef boost::iostreams::stream<boost::iostreams::file_descriptor_source> ifstream;
+//typedef boost::iostreams::stream<boost::iostreams::file_descriptor> fstream;
+
+typedef boost::filesystem::ofstream ofstream;
+typedef boost::filesystem::ifstream ifstream;
+typedef boost::filesystem::fstream fstream;
 
 }  // namespace boss_fstream
 }  // namespace boss
