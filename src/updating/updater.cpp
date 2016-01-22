@@ -66,6 +66,7 @@ void pointers_struct::free() {
 	git_reference_free(ref);
 	git_signature_free(sig);
 	git_blob_free(blob);
+	//git_libgit2_shutdown();
 }
 
 void handle_error(int error_code, pointers_struct &pointers) {

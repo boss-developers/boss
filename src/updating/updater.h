@@ -47,26 +47,9 @@
 namespace boss {
 
 struct pointers_struct {
-	pointers_struct();/*
-	    : repo(NULL),
-	      remote(NULL),
-	      cfg(NULL),
-	      obj(NULL),
-	      commit(NULL),
-	      ref(NULL),
-	      sig(NULL),
-	      blob(NULL) {}*/
+	pointers_struct();
 
-	void free();/* {
-		git_commit_free(commit);
-		git_object_free(obj);
-		git_config_free(cfg);
-		git_remote_free(remote);
-		git_repository_free(repo);
-		git_reference_free(ref);
-		git_signature_free(sig);
-		git_blob_free(blob);
-	}*/
+	void free();
 
 	git_repository *repo;
 	git_remote *remote;
@@ -78,106 +61,17 @@ struct pointers_struct {
 	git_blob *blob;
 };
 
-/*inline*/ void handle_error(int error_code, pointers_struct &pointers);/* {
-	if (!error_code)
-		return;
+void handle_error(int error_code, pointers_struct &pointers);
 
-	const git_error *error = giterr_last();
-	std::string error_message;
-	if (error == NULL)
-		error_message = IntToString(error_code) + ".";
-	else
-		error_message = IntToString(error_code) + "; " + error->message;
-	pointers.free();
-	giterr_clear();
+std::string RepoURL(const Game &game);
 
-	LOG_ERROR("Git operation failed. Error: %s", error_message.c_str());
-	throw boss_error(error_message, BOSS_ERROR_GIT_ERROR);
-}*/
-
-/*inline*/ std::string RepoURL(const Game &game);/* {
-	// TODO(MCP): Look at converting this to a switch-statement
-	// MCP Note: The last else-statement should be an else-if with a default of invalid or similar
-	if (game.Id() == OBLIVION)
-		return gl_oblivion_repo_url;
-	else if (game.Id() == NEHRIM)
-		return gl_nehrim_repo_url;
-	else if (game.Id() == SKYRIM)
-		return gl_skyrim_repo_url;
-	else if (game.Id() == FALLOUT3)
-		return gl_fallout3_repo_url;
-	else
-		return gl_falloutnv_repo_url;
-}*/
-
-/*inline*/ bool are_files_equal(const void *buf1, std::size_t buf1_size,
-                            const void *buf2, std::size_t buf2_size);/* {
-	if (buf1_size != buf2_size)
-		return false;
-
-	std::size_t pos = 0;
-	while (pos < buf1_size) {
-		if (*((char*)buf1 + pos) != *((char*)buf2 + pos))
-			return false;
-		++pos;
-	}
-	return true;
-}*/
+bool are_files_equal(const void *buf1, std::size_t buf1_size,
+                     const void *buf2, std::size_t buf2_size);
 
 // Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
-/*inline*/ std::string GetMasterlistVersion(Game &game);/* {
-	if (!boost::filesystem::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
-		return "Unknown: Git repository missing";
-	}
-	std::string rev;*/
-	// Naive check, ignoring working directory changes.
+std::string GetMasterlistVersion(Game &game);
 
-	/*
-	 * Better check, which compares HEAD to the working dir.
-	 *
-	 * 1. Get an object for the masterlist in HEAD.
-	 * 2. Get the blob for that object.
-	 * 3. Open the masterlist file in the working dir in a file buffer.
-	 * 4. Compare the file and blob buffers.
-	 */
-	/*pointers_struct ptrs;
-	LOG_INFO("Existing repository found, attempting to open it.");
-	handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);
-
-	LOG_INFO("Getting HEAD masterlist object.");
-	handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, "HEAD:masterlist.txt"), ptrs);
-
-	LOG_INFO("Getting blob for masterlist object.");
-	handle_error(git_blob_lookup(&ptrs.blob, ptrs.repo, git_object_id(ptrs.obj)), ptrs);
-
-	LOG_INFO("Opening masterlist in working directory.");
-	std::string mlist;
-	fileToBuffer(game.Masterlist(), mlist);
-
-	LOG_INFO("Comparing files.");
-	if (are_files_equal(git_blob_rawcontent(ptrs.blob),
-	                    git_blob_rawsize(ptrs.blob),
-	                    mlist.data(),
-	                    mlist.length())) {
-		ptrs.free();
-		// For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
-		std::string revision;
-		//std::ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
-		boss_fstream::ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD"));
-		head >> revision;
-		head.close();
-		revision.resize(9);
-		return revision;
-	}
-	ptrs.free();
-	return "Unknown: Masterlist edited";
-}*/
-
-int ValidateCertificate(git_cert *certificate, int is_valid, const char *host_name, void *payload_data); /*{
-	if(!is_valid)
-		return 1;
-	return -1;
-}*/
+int ValidateCertificate(git_cert *certificate, int is_valid, const char *host_name, void *payload_data);
 
 // Progress has form prog(const char *str, int len, void *data)
 template<class Progress>
