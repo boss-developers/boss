@@ -112,7 +112,9 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGINS_FULL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER;
+BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_SYNTAX;
 BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;
+BOSS_API extern const uint32_t BOSS_API_ERROR_GIT_ERROR;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API extern const uint32_t BOSS_API_CLEAN_NO;
