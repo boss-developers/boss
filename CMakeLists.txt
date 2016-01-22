@@ -61,6 +61,16 @@ set(BOSS_SRC    src/common/conditional_data.cpp
                 src/support/version_regex.cpp
                 src/updating/updater.cpp)
 
+# API Header Files
+
+set(BOSS_API_H  ${BOSS_H}
+                src/api/boss.h)
+
+# API Source Files
+
+set(BOSS_API_SRC ${BOSS_SRC}
+                 src/api/boss.cpp)
+
 # GUI Header Files
 
 set(GUI_H       ${BOSS_H}
@@ -286,4 +296,35 @@ if (WIN32)
 	if (BUILD_GUI)
 		target_link_libraries(boss_gui ws2_32)
 	endif ()
+endif ()
+
+add_library(bapi${ARCH} ${BOSS_API_SRC} ${BOSS_API_H})
+
+target_include_directories(bapi${ARCH} PUBLIC src)
+target_include_directories(bapi${ARCH} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include)
+
+# For MinGW and GCC
+if (CMAKE_COMPILER_IS_GNUCXX)
+	target_compile_options(bapi${ARCH} PUBLIC "-O3" "-std=c++11")
+	if (ENABLE_ALL_WARNINGS)
+		target_compile_options(bapi${ARCH} PUBLIC "-Weffc++" "-Wall" "-Wpedantic" "-Wextra")
+	endif ()
+endif ()
+
+target_link_libraries(bapi${ARCH} ${Boost_LIBRARIES} git2 ssh2)
+
+if (WIN32)
+	target_link_libraries(bapi${ARCH} version gdi32)
+	if (MINGW)
+		target_link_libraries(bapi${ARCH} ${ZLIB_LIBRARIES} winhttp crypt32 rpcrt4)
+	endif ()
+endif ()
+
+# MinGW and *nix platforms need to link in the OpenSSL libraries for libgit2 (v0.20.0)
+if (MINGW OR NOT WIN32)
+	target_link_libraries(bapi${ARCH} ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+endif ()
+
+if (WIN32)
+	target_link_libraries(bapi${ARCH} ws2_32)
 endif ()

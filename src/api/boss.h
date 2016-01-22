@@ -215,28 +215,11 @@ BOSS_API uint32_t EvalConditionals(boss_db db);
 // Network Functions
 //////////////////////////////////
 
-// Sets the proxy settings for BAPI globally, so that all subsequent BAPI network
-// function calls are affected until SetProxy is called again or BAPI is unloaded.
-uint32_t SetProxy(const uint8_t *hostname, const uint32_t port,
-                  const uint8_t *username, const uint8_t *password);
-
 // Checks if there is a masterlist at masterlistPath. If not,
 // it downloads the latest masterlist for the DB's game to masterlistPath.
 // If there is, it first compares online and local versions to see if an
 // update is necessary.
 BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t *masterlistPath);
-
-// Submits the given plugin as unrecognised to BOSS's unrecognised plugin tracker,
-// using the same method as the BOSS Log plugin submitter. Whether or not the plugin
-// is actually unrecognised is not checked, but recognised plugin submissions will be
-// ignored and slow down the addition of unrecognised plugin that are submitted, so
-// recognised plugins should not be submitted. Either link or info can be NULL, but
-// not both. If link is NULL, load order suggestions and detail on what the plugin does
-// is crucial for addition to the masterlist.
-BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db,
-                                           const uint8_t *plugin,
-                                           const uint8_t *link,
-                                           const uint8_t *info);
 
 
 ////////////////////////////////

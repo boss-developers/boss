@@ -33,6 +33,7 @@
 #include <iostream>
 #include <locale>
 #include <map>
+#include <new>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -41,6 +42,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+
+#include <git2.h>
 
 #include "base/fstream.h"
 #include "common/conditional_data.h"
@@ -144,8 +147,7 @@ struct _boss_db_int {
 		std::map<uint32_t, std::string>::iterator mapPos = bashTagMap.find(uid);
 		if (mapPos != bashTagMap.end())
 			return mapPos->second;
-		else
-			return "";
+		return "";
 	}
 
 	// Get a Bash Tag's position in the bashTagMap from its string name.
@@ -184,7 +186,7 @@ BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP             = boss::BOSS_ERROR
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGINS_FULL           = boss::BOSS_ERROR_PLUGINS_FULL;
 BOSS_API const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND         = boss::BOSS_ERROR_NO_GAME_DETECTED;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER   = boss::BOSS_ERROR_PLUGIN_BEFORE_MASTER;
-BOSS_API const uint32_t BOSS_API_ERROR_INVALID_SYNTAX         = boss::BOSS_ERROR_INVALID_SYNTAX
+BOSS_API const uint32_t BOSS_API_ERROR_INVALID_SYNTAX         = boss::BOSS_ERROR_INVALID_SYNTAX;
 BOSS_API const uint32_t BOSS_API_RETURN_MAX                   = boss::BOSS_ERROR_MAX;
 BOSS_API const uint32_t BOSS_API_ERROR_GIT_ERROR              = boss::BOSS_ERROR_GIT_ERROR;
 
@@ -244,7 +246,7 @@ void GetBashTagsFromString(const std::string message,
 			pos1 = pos2 + 1;
 			pos2 = addedList.find(",", pos1);
 		}
-		name = trim_copy(addedList.substr(pos1));
+		name = boost::trim_copy(addedList.substr(pos1));
 		if (tagsAdded.find(name) == tagsAdded.end())
 			tagsAdded.insert(name);
 	}
@@ -301,12 +303,16 @@ uint32_t ReturnCode(boss::boss_error e) {
 }
 
 // MCP Note: The updater class was part of the old cURL stuff that was removed in commit 273d4edc. Need to look into sorting this out to work with the new Git updater.
-class APIMlistUpdater : public boss::MasterlistUpdater {
- protected:
-	int progress(Updater *updater, double dlFraction, double dlTotal) {
-		return 0;
-	}
-};
+//class APIMlistUpdater : public boss::MasterlistUpdater {
+// protected:
+namespace {
+
+int progress(const git_transfer_progress *stats, void *payload) {
+	return 0;
+}
+
+}  // namespace
+//};
 
 std::time_t GetLoadOrderMTime(const boss::Game& game) {
 	try {
@@ -316,11 +322,9 @@ std::time_t GetLoadOrderMTime(const boss::Game& game) {
 			std::time_t t2 = boost::filesystem::last_write_time(game.DataFolder());
 			if (t1 > t2)  // Return later time.
 				return t1;
-			else
-				return t2;
-		} else {
-			return boost::filesystem::last_write_time(game.DataFolder());
+			return t2;
 		}
+		return boost::filesystem::last_write_time(game.DataFolder());
 	} catch(boost::filesystem::filesystem_error e) {
 		throw boss::boss_error(boss::BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, game.DataFolder().string(), e.what());
 	}
@@ -331,8 +335,7 @@ std::time_t GetActivePluginsMTime(const boss::Game& game) {
 	try {
 		if (boost::filesystem::exists(game.ActivePluginsFile()))
 			return boost::filesystem::last_write_time(game.ActivePluginsFile());
-		else
-			return 0;
+		return 0;
 	} catch(boost::filesystem::filesystem_error e) {
 		throw boss::boss_error(boss::BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, game.ActivePluginsFile().string(), e.what());
 	}
@@ -377,8 +380,7 @@ BOSS_API bool IsCompatibleVersion(const uint32_t bossVersionMajor,
 		return false;
 	if (bossVersionMajor <= boss::BOSS_VERSION_MAJOR && bossVersionMinor <= boss::BOSS_VERSION_MINOR)
 		return true;
-	else
-		return false;
+	return false;
 }
 
 // Returns the version string for this version of BOSS.
@@ -475,8 +477,7 @@ BOSS_API uint32_t CreateBossDb(boss_db *db, const uint32_t clientGame,
 	// by something other than the API (eg. the launcher), then the CRCs will match. Otherwise they will differ.
 	if (crc1 != crc2)
 		return ReturnCode(BOSS_API_WARN_LO_MISMATCH);
-	else
-		return ReturnCode(BOSS_API_OK);
+	return ReturnCode(BOSS_API_OK);
 }
 
 BOSS_API void DestroyBossDb(boss_db db) {
@@ -503,8 +504,8 @@ BOSS_API void CleanUpAPI() {
 // same function for ease-of-use by clients.
 BOSS_API uint32_t Load(boss_db db, const uint8_t *masterlistPath,
                                    const uint8_t *userlistPath) {
-	std::ItemList masterlist;
-	std::RuleList userlist;
+	boss::ItemList masterlist;
+	boss::RuleList userlist;
 
 	// Check for valid args.
 	if (db == NULL || masterlistPath == NULL)
@@ -605,29 +606,6 @@ BOSS_API uint32_t EvalConditionals(boss_db db) {
 // Network Functions
 //////////////////////////////////
 
-// MCP Note: These are probably no longer valid now that cURL is no longer in use so we'll probably need to sift through this and see what we can keep and what can be discarded
-
-// Sets the proxy settings for BAPI globally, so that all subsequent BAPI network
-// function calls are affected until SetProxy is called again or BAPI is unloaded.
-uint32_t SetProxy(const uint8_t *hostname, const uint32_t port,
-                  const uint8_t *username, const uint8_t *password) {
-	if (hostname == NULL && (port != 0 || username != NULL || password != NULL))
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Hostname cannot be null if port is non-zero or username or password are non-null.");
-	else if (username == NULL && (port != 0 || hostname != NULL || password != NULL))
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Username cannot be null if port is non-zero or hostname or password are non-null.");
-	else if (password == NULL && (port != 0 || username != NULL || hostname != NULL))
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Password cannot be null if port is non-zero or username or hostname are non-null.");
-	else if (port == 0 && (hostname != NULL || username != NULL || password != NULL))
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Port cannot be non-zero if hostname or username or password are non-null.");
-
-	boss::gl_proxy_host = std::string(reinterpret_cast<const char *>(hostname));
-	boss::gl_proxy_user = std::string(reinterpret_cast<const char *>(username));
-	boss::gl_proxy_passwd = std::string(reinterpret_cast<const char *>(password));
-	boss::gl_proxy_port = port;
-
-	return ReturnCode(BOSS_API_OK);
-}
-
 // MCP Note: This should be changed to use the new updater.
 
 // Checks if there is a masterlist at masterlistPath. If not,
@@ -635,208 +613,26 @@ uint32_t SetProxy(const uint8_t *hostname, const uint32_t port,
 // If there is, it first compares online and local versions to see if an
 // update is necessary.
 BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t *masterlistPath) {
-	if (db == NULL || masterlistPath == NULL)
+	if (db == NULL /*|| masterlistPath == NULL*/)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
 	// PATH SETTING
-	boost::filesystem::path masterlist_path = boost::filesystem::path(reinterpret_cast<const char *>(masterlistPath));
+	//boost::filesystem::path masterlist_path = boost::filesystem::path(reinterpret_cast<const char *>(masterlistPath));
 
-	if (masterlist_path.empty())
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masterlist path is empty.");
-
-	APIMlistUpdater mUpdater;
-	try {
-		if (!mUpdater.IsInternetReachable()) {
-			return ReturnCode(boss::boss_error(BOSS_API_ERROR_NO_INTERNET_CONNECTION));
-		} else {
-			try {
-				std::string localDate, remoteDate;
-				uint32_t localRevision, remoteRevision;
-				mUpdater.Update(db->game, masterlist_path, localRevision, localDate, remoteRevision, remoteDate);
-				if (localRevision == remoteRevision)
-					return ReturnCode(BOSS_API_OK_NO_UPDATE_NECESSARY);
-				else
-					return ReturnCode(BOSS_API_OK);
-			} catch (boss::boss_error &e) {
-				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
-			}
-		}
-	} catch (boss::boss_error &e) {
-		return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
-	}
-}
-
-// MCP Note: This should be changed to use the plugin submitter code or removed, as the submitter is part of the BOSS log (right?).
-
-// Submits the given plugin as unrecognised to BOSS's unrecognised plugin tracker,
-// using the same method as the BOSS Log plugin submitter. Whether or not the plugin
-// is actually unrecognised is not checked, but recognised plugin submissions will be
-// ignored and slow down the addition of unrecognised plugin that are submitted, so
-// recognised plugins should not be submitted. Either link or info can be NULL, but
-// not both. If link is NULL, load order suggestions and detail on what the plugin does
-// is crucial for addition to the masterlist.
-BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db,
-                                           const uint8_t *plugin,
-                                           const uint8_t *link,
-                                           const uint8_t *info) {
-	if (db == NULL || plugin == NULL)
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed for db or plugin.");
-	else if (link == NULL && info == NULL)
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "link and info cannot both be null.");
-
-	std::string pluginStr = std::string(reinterpret_cast<const char *>(plugin));
-
-	std::string linkStr, infoStr;
-	if (link != NULL)
-		linkStr = std::string(reinterpret_cast<const char *>(link));
-	if (info != NULL)
-		infoStr = std::string(reinterpret_cast<const char *>(info));
-
-	if (linkStr.empty() && infoStr.empty())
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "link and info cannot both be empty strings.");
-
-	std::string description;
-	if (linkStr.empty())
-		description = infoStr;
-	else
-		description = linkStr + "\\n\\n" + infoStr;
-	std::string id;
-	char *url = "http://bugzilla.darkcreations.org/jsonrpc.cgi";  // URL to send data to.
-
-	// Now start curling.
-	char errbuff[CURL_ERROR_SIZE];
-	CURL *curl;  // cURL handle
-	CURLcode ret;
-	std::string buffer, JSON;
+	//if (masterlist_path.empty())
+	//	return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masterlist path is empty.");
 
 	try {
-		curl = InitCurl(errbuff);  // Init curl.
-
-		// Now set up the common curl options.
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		ret = curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-		if (ret != CURLE_OK) {
-			std::string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss::boss_error(err, boss::BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		// Need a structure containing the HTTP headers for curl to use.
-		struct curl_slist *slist = NULL;
-		slist = curl_slist_append(slist, "origin:null");
-		if (slist == NULL) {
-			curl_easy_cleanup(curl);
-			throw boss::boss_error("Could not set HTTP headers.", boss::BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		slist = curl_slist_append(slist, "content-type:application/json");
-		if (slist == NULL) {
-			curl_slist_free_all(slist);
-			curl_easy_cleanup(curl);
-			throw boss::boss_error("Could not set HTTP headers.", boss::BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist);
-		if (ret != CURLE_OK) {
-			std::string err = errbuff;
-			curl_slist_free_all(slist);
-			curl_easy_cleanup(curl);
-			throw boss::boss_error(err, boss::BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-
-		// There are two stages to submission, with three possible requests.
-		// The first is a bug search, so do that now.
-		// Create JSON search data object.
-		JSON = "{\"method\":\"Bug.search\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"" + db->game.Name() + "\",\"summary\":\"";
-		JSON += pluginStr + "\"}],\"id\":1}";
-
-		for (uint32_t i = 0; i < 2; i++) {
-			// Set POST data.
-			ret = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, JSON.c_str());
-			if (ret != CURLE_OK) {
-				std::string err = errbuff;
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				throw boss::boss_error(err, boss::BOSS_ERROR_CURL_SET_OPTION_FAIL);
-			}
-			// Perform POST request.
-			ret = curl_easy_perform(curl);
-			if (ret != CURLE_OK) {
-				std::string err = errbuff;
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				throw boss::boss_error(err, boss::BOSS_ERROR_CURL_PERFORM_FAIL);
-			}
-			// Check result.
-			long int code;
-			ret = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
-			if (ret != CURLE_OK) {
-				std::string err = errbuff;
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				throw boss::boss_error(err, std::BOSS_ERROR_CURL_PERFORM_FAIL);
-			}
-			if (code != 200) {
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				throw boss::boss_error("Server responded with code " + boss::IntToString(code) + ".", boss::BOSS_ERROR_CURL_PERFORM_FAIL);
-			}
-
-			// Now check returned data for errors and a returned bug ID.
-			size_t pos1, pos2;
-			pos1 = buffer.find("\"error\":");
-			if (pos1 == std::string::npos) {
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
-			}
-			pos2 = buffer.find(',', pos1);
-			if (pos2 == std::string::npos) {
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
-			}
-			if (buffer.substr(pos1 + 8, pos2 - pos1 - 8) != "null") {
-				curl_slist_free_all(slist);
-				curl_easy_cleanup(curl);
-				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Bugzilla API call failed.");
-			}
-
-			if (i == 0) {  // First loop is a bug search, so try extracting an ID (if there is one).
-				pos1 = buffer.find("\"groups\"");  // There are 4 "id" strings in the returned JSON. The one we want comes after "groups".
-				if (pos1 != std::string::npos) {  // Bug found. Extract id.
-					pos1 = buffer.find("\"id\":", pos1);
-					if (pos1 == std::string::npos) {
-						curl_slist_free_all(slist);
-						curl_easy_cleanup(curl);
-						return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
-					}
-					pos2 = buffer.find(',', pos1);
-					if (pos2 == std::string::npos) {
-						curl_slist_free_all(slist);
-						curl_easy_cleanup(curl);
-						return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
-					}
-					id = buffer.substr(pos1+5, pos2-pos1-5);
-				}
-				// Now set up request for the second loop.
-				if (id.empty()) {  // Create a new bug.
-					// Create JSON bug creation data object.
-					JSON = "{\"method\":\"Bug.create\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"" + db->game.Name() + "\",\"summary\":\"";
-					JSON += pluginStr + "\",\"version\":\"2.1\",\"description\":\"" + description + "\",\"op_sys\":\"Windows\",\"platform\":\"PC\",\"priority\":\"---\",\"severity\":\"enhancement\"}],\"id\":3}";
-				} else {  // Adda a comment to the existing bug.
-					JSON = "{\"method\":\"Bug.add_comment\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"id\":";
-					JSON += id + ",\"comment\":" + description + "}],\"id\":2}";
-				}
-			}
-		}
-
-		curl_slist_free_all(slist);
-		curl_easy_cleanup(curl);
+		//std::string localDate, remoteDate;
+		//uint32_t localRevision, remoteRevision;
+		boss::UpdateMasterlist(db->game, progress, NULL);
+		//mUpdater.Update(db->game, masterlist_path, localRevision, localDate, remoteRevision, remoteDate);
+		//if (localRevision == remoteRevision)
+		//	return ReturnCode(BOSS_API_OK_NO_UPDATE_NECESSARY);
+		return ReturnCode(BOSS_API_OK);
 	} catch (boss::boss_error &e) {
-		return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
+		return ReturnCode(BOSS_API_ERROR_GIT_ERROR, e.getString());
 	}
-
-	return ReturnCode(BOSS_API_OK);
 }
 
 ////////////////////////////////
@@ -1463,14 +1259,12 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t *plugin,
 		if (boost::iequals(pluginStr, "Skyrim.esm")) {
 			if (active)
 				return ReturnCode(BOSS_API_OK);
-			else
-				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Skyrim.esm cannot be deactivated.");
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Skyrim.esm cannot be deactivated.");
 		} else if (boost::filesystem::exists(db->game.DataFolder() / "Update.esm") &&
 		           boost::iequals(pluginStr, "Update.esm")) {
 			if (active)
 				return ReturnCode(BOSS_API_OK);
-			else
-				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Update.esm cannot be deactivated.");
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Update.esm cannot be deactivated.");
 		}
 	}
 
@@ -1506,7 +1300,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t *plugin,
 	if (db->activePlugins.FindItem(pluginStr, boss::MOD) != db->activePlugins.Items().size() && !active)  // Exists, but shouldn't.
 		db->activePlugins.Erase(db->activePlugins.FindItem(pluginStr, boss::MOD));
 	else if (db->activePlugins.FindItem(pluginStr, boss::MOD) == db->activePlugins.Items().size() && active)  // Doesn't exist, but should.
-		db->activePlugins.Insert(db->activePlugins.Items().size(), pluginStr);
+		db->activePlugins.Insert(db->activePlugins.Items().size(), boss::Item(pluginStr));
 
 	// Check that there aren't too many plugins in plugins.txt.
 	if (db->activePlugins.Items().size() > 255)
@@ -1756,7 +1550,7 @@ BOSS_API uint32_t GetModBashTags(boss_db db,
 
 	// Now we convert strings to UIDs.
 	std::vector<uint32_t> tagsAddedUIDs, tagsRemovedUIDs;
-	std::unordered_set<string>::iterator tagStringIter;
+	std::unordered_set<std::string>::iterator tagStringIter;
 	for (tagStringIter = tagsAdded.begin(); tagStringIter != tagsAdded.end(); ++tagStringIter) {
 		std::map<uint32_t, std::string>::iterator mapPos = db->FindBashTag(*tagStringIter);
 		if (mapPos != db->bashTagMap.end())  // Tag found in bashTagMap. Get the UID.
@@ -1937,7 +1731,7 @@ BOSS_API uint32_t DumpMinimal(boss_db db, const uint8_t *outputFile,
 
 	std::string path(reinterpret_cast<const char *>(outputFile));
 	if (!boost::filesystem::exists(path) || overwrite) {
-		boss::fstream::ofstream mlist(path.c_str());
+		boss::boss_fstream::ofstream mlist(path.c_str());
 		if (mlist.fail()) {
 			return ReturnCode(boss::boss_error(boss::BOSS_ERROR_FILE_WRITE_FAIL, path));
 		} else {
