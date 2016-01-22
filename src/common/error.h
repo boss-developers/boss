@@ -44,6 +44,7 @@ namespace boss {
 // Return codes, mostly error codes.
 BOSS_COMMON extern const std::uint32_t BOSS_OK;
 
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_NO_MASTER_FILE;  // Deprecated.
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FILE_READ_FAIL;
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FILE_WRITE_FAIL;
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FILE_NOT_UTF8;
@@ -56,6 +57,11 @@ BOSS_COMMON extern const std::uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL;
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER;
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_INVALID_SYNTAX;
 
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FILE_CRC_MISMATCH;
+
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_GIT_ERROR;
 
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
@@ -66,6 +72,17 @@ BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL;
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL;
 
 BOSS_COMMON extern const std::uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL;
+
+BOSS_COMMON extern const std::uint32_t BOSS_OK_NO_UPDATE_NECESSARY;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_LO_MISMATCH;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_NO_MEM;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_INVALID_ARGS;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_NETWORK_FAIL;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_NO_INTERNET_CONNECTION;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_NO_TAG_MAP;
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_PLUGINS_FULL;
+
+BOSS_COMMON extern const std::uint32_t BOSS_ERROR_MAX;
 
 class BOSS_COMMON boss_error {
  public:

@@ -201,7 +201,7 @@ BOSS_API const uint32_t BOSS_API_GAME_FALLOUT3  = boss::FALLOUT3;
 BOSS_API const uint32_t BOSS_API_GAME_FALLOUTNV = boss::FALLOUTNV;
 BOSS_API const uint32_t BOSS_API_GAME_NEHRIM    = boss::NEHRIM;
 BOSS_API const uint32_t BOSS_API_GAME_SKYRIM    = boss::SKYRIM;
-BOSS_API const uint32_t BOSS_API_GAME_MORROWIND = boss::MORROWIND;
+//BOSS_API const uint32_t BOSS_API_GAME_MORROWIND = boss::MORROWIND;
 
 // BOSS message types.
 BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY             = boss::SAY;
@@ -412,7 +412,7 @@ BOSS_API uint32_t CreateBossDb(boss_db *db, const uint32_t clientGame,
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	else if (clientGame != boss::OBLIVION && clientGame != boss::FALLOUT3 &&
 	         clientGame != boss::FALLOUTNV && clientGame != boss::NEHRIM &&
-	         clientGame != boss::SKYRIM && clientGame != boss::MORROWIND)
+	         clientGame != boss::SKYRIM /*&& clientGame != boss::MORROWIND*/)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
 
 	// Set the locale to get encoding conversions working correctly.
