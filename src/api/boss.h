@@ -25,22 +25,22 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef BOSSAPI_H
-#define BOSSAPI_H
+#ifndef API_BOSS_H_
+#define API_BOSS_H_
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #if defined(_MSC_VER)
-//MSVC doesn't support C99, so do the stdbool.h definitions ourselves.
-//START OF stdbool.h DEFINITIONS.
+// MSVC doesn't support C99, so do the stdbool.h definitions ourselves.
+// START OF stdbool.h DEFINITIONS.
 #	ifndef __cplusplus
-#		define bool	_Bool
-#		define true	1
-#		define false   0
+#		define bool _Bool
+#		define true 1
+#		define false 0
 #	endif
 #	define __bool_true_false_are_defined   1
-//END OF stdbool.h DEFINITIONS.
+// END OF stdbool.h DEFINITIONS.
 #else
 #	include <stdbool.h>
 #endif
@@ -50,18 +50,17 @@
 // that use this header do not need to define anything to import the symbols
 // properly.
 #if defined(_WIN32) || defined(_WIN64)
-#   ifdef BOSS_EXPORT
-#       define BOSS_API __declspec(dllexport)
-#   else
-#       define BOSS_API __declspec(dllimport)
-#   endif
+#	ifdef BOSS_EXPORT
+#		define BOSS_API __declspec(dllexport)
+#	else
+#		define BOSS_API __declspec(dllimport)
+#	endif
 #else
-#   define BOSS_API
+#	define BOSS_API
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 ////////////////////////
@@ -75,19 +74,19 @@ extern "C"
 
 // Abstracts the definition of BOSS's internal state while still providing
 // type safety across the API.
-typedef struct _boss_db_int * boss_db;
+typedef struct _boss_db_int *boss_db;
 
 // BashTag structure gives the Unique ID number (UID) for each Bash Tag and
 // the corresponding Tag name string.
 typedef struct {
 	uint32_t id;
-	const uint8_t * name;  // don't use char for utf-8 since char can be signed
+	const uint8_t *name;  // don't use char for utf-8 since char can be signed
 } BashTag;
 
 // BossMessage structure gives the type of message and it contents.
 typedef struct {
 	uint32_t type;
-	const uint8_t * message;
+	const uint8_t *message;
 } BossMessage;
 
 // The following are the possible codes that the API can return.
@@ -150,7 +149,7 @@ BOSS_API extern const uint32_t BOSS_API_MESSAGE_ERROR;
 // Outputs a string giving the details of the last time an error or
 // warning return code was returned by a function. The string exists
 // until this function is called again or until CleanUpAPI is called.
-BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details);
+BOSS_API uint32_t GetLastErrorDetails(uint8_t **details);
 
 
 //////////////////////////////
@@ -159,12 +158,14 @@ BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details);
 
 // Returns whether this version of BOSS supports the API from the given
 // BOSS version. Abstracts BOSS API stability policy away from clients.
-BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);
+BOSS_API bool IsCompatibleVersion(const uint32_t bossVersionMajor,
+                                  const uint32_t bossVersionMinor,
+                                  const uint32_t bossVersionPatch);
 
 // Returns the version string for this version of BOSS.
 // The string exists until this function is called again or until
 // CleanUpAPI is called.
-BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr);
+BOSS_API uint32_t GetVersionString(uint8_t **bossVersionStr);
 
 
 ////////////////////////////////////
@@ -178,13 +179,14 @@ BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr);
 // plugins.txt and loadorder.txt (if they both exist) are in sync. If
 // dataPath == NULL then the API will attempt to detect the data path of
 // the specified game.
-BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame, const uint8_t * gamePath);
+BOSS_API uint32_t CreateBossDb(boss_db *db, const uint32_t clientGame,
+                                            const uint8_t *gamePath);
 
 // Destroys the given DB, freeing any memory allocated as part of its use.
-BOSS_API void DestroyBossDb (boss_db db);
+BOSS_API void DestroyBossDb(boss_db db);
 
 // Frees memory allocated to version and error strings.
-BOSS_API void	  CleanUpAPI();
+BOSS_API void CleanUpAPI();
 
 
 ///////////////////////////////////
@@ -195,8 +197,8 @@ BOSS_API void	  CleanUpAPI();
 // Can be called multiple times. On error, the database is unchanged.
 // Paths are case-sensitive if the underlying filesystem is case-sensitive.
 // masterlistPath and userlistPath are files.
-BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
-									const uint8_t * userlistPath);
+BOSS_API uint32_t Load(boss_db db, const uint8_t *masterlistPath,
+                                   const uint8_t *userlistPath);
 
 // Evaluates all conditional lines and regex mods the loaded masterlist.
 // This exists so that Load() doesn't need to be called whenever the mods
@@ -213,15 +215,14 @@ BOSS_API uint32_t EvalConditionals(boss_db db);
 
 // Sets the proxy settings for BAPI globally, so that all subsequent BAPI network
 // function calls are affected until SetProxy is called again or BAPI is unloaded.
-uint32_t SetProxy (const uint8_t * hostname, const uint32_t port,
-											const uint8_t * username,
-											const uint8_t * password);
+uint32_t SetProxy(const uint8_t *hostname, const uint32_t port,
+                  const uint8_t *username, const uint8_t *password);
 
 // Checks if there is a masterlist at masterlistPath. If not,
 // it downloads the latest masterlist for the DB's game to masterlistPath.
 // If there is, it first compares online and local versions to see if an
 // update is necessary.
-BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
+BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t *masterlistPath);
 
 // Submits the given plugin as unrecognised to BOSS's unrecognised plugin tracker,
 // using the same method as the BOSS Log plugin submitter. Whether or not the plugin
@@ -230,70 +231,85 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
 // recognised plugins should not be submitted. Either link or info can be NULL, but
 // not both. If link is NULL, load order suggestions and detail on what the plugin does
 // is crucial for addition to the masterlist.
-BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db, const uint8_t * plugin,
-														const uint8_t * link,
-														const uint8_t * info);
+BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db,
+                                           const uint8_t *plugin,
+                                           const uint8_t *link,
+                                           const uint8_t *info);
 
 
 ////////////////////////////////
 // Plugin Sorting Functions
 ////////////////////////////////
 
-//Returns which method the API is using for the load order. Output values are:
-//	BOSS_API_LOMETHOD_TIMESTAMP
-//	BOSS_API_LOMETHOD_TEXTFILE
-BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t * method);
+// Returns which method the API is using for the load order. Output values are:
+// BOSS_API_LOMETHOD_TIMESTAMP
+// BOSS_API_LOMETHOD_TEXTFILE
+BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method);
 
-/* Sorts the mods in the data path, using the masterlist loaded using Load.
- Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to
- by listLength. lastRecPos points to the position in the sortedPlugins list of
- the last plugin recognised by BOSS.
- If the trialOnly parameter is true, no plugins are actually redated.
- If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null
- pointers, in case you do not require the information. */
-BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedPlugins,
-								size_t * sortedListLength,
-								uint8_t *** unrecognisedPlugins,
-								size_t * unrecListLength);
+/*
+ * Sorts the mods in the data path, using the masterlist loaded using Load.
+ * Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to
+ * by listLength. lastRecPos points to the position in the sortedPlugins list of
+ * the last plugin recognised by BOSS.
+ * If the trialOnly parameter is true, no plugins are actually redated.
+ * If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null
+ * pointers, in case you do not require the information.
+ */
+BOSS_API uint32_t SortMods(boss_db db,
+                           const bool trialOnly,
+                           uint8_t ***sortedPlugins,
+                           size_t *sortedListLength,
+                           uint8_t ***unrecognisedPlugins,
+                           size_t *unrecListLength);
 
 // Outputs a list of the plugins installed in the data path specified when the DB was
 // created in load order, with the number of plugins given by numPlugins.
-BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlugins);
+BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t ***plugins,
+                               size_t *numPlugins);
 
 // Sets the load order to the given plugins list of length numPlugins.
 // Then scans the Data directory and appends any other plugins not included in the
 // array passed to the function.
-BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numPlugins);
+BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t **plugins,
+                               const size_t numPlugins);
 
 // Returns the contents of plugins.txt.
-BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * numPlugins);
+BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t ***plugins,
+                                   size_t *numPlugins);
 
 // Replaces plugins.txt so that it lists the given plugins, in load order.
-BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t numPlugins);
+BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t **plugins,
+                                   const size_t numPlugins);
 
 // Gets the load order of the specified plugin, giving it as index. The first position
 // in the load order is 0.
-BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t * index);
+BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t *plugin,
+                                     size_t *index);
 
 // Sets the load order of the specified plugin, removing it from its current position
 // if it has one. The first position in the load order is 0. If the index specified is
-//greater than the number of plugins in the load order, the plugin will be inserted at
-//the end of the load order.
-BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t index);
+// greater than the number of plugins in the load order, the plugin will be inserted at
+// the end of the load order.
+BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t *plugin,
+                                     size_t index);
 
 // Gets the plugin filename is at the specified load order position. The first position
 // in the load order is 0.
-BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** plugin);
+BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index,
+                                   uint8_t **plugin);
 
 // If (active), adds the plugin to plugins.txt in its load order if it is not already present.
 // If (!active), removes the plugin from plugins.txt if it is present.
-BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool active);
+BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t *plugin,
+                                  const bool active);
 
 // Checks to see if the given plugin is listed in plugins.txt.
-BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isActive);
+BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t *plugin,
+                                 bool *isActive);
 
 // Checks to see if the given plugin is a master (using master bit flag value).
-BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t * plugin, bool * isMaster);
+BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t *plugin,
+                                 bool *isMaster);
 
 
 //////////////////////////
@@ -303,7 +319,7 @@ BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t * plugin, bool * isMa
 // Returns an array of the Bash Tags encounterred when loading the masterlist
 // and userlist, and the number of tags in the returned array. The array and
 // its contents are static and should not be freed by the client.
-BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags);
+BOSS_API uint32_t GetBashTagMap(boss_db db, BashTag **tagMap, size_t *numTags);
 
 // Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal
 // by BOSS's masterlist and userlist, and the number of tags in each array.
@@ -312,12 +328,13 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 // case-insensitive. If no Tags are found for an array, the array pointer (*tagIds)
 // will be NULL. The userlistModified bool is true if the userlist contains Bash Tag
 // suggestion message additions.
-BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
-									uint32_t ** tagIds_added,
-									size_t * numTags_added,
-									uint32_t **tagIds_removed,
-									size_t *numTags_removed,
-									bool * userlistModified);
+BOSS_API uint32_t GetModBashTags(boss_db db,
+                                 const uint8_t *plugin,
+                                 uint32_t **tagIds_added,
+                                 size_t *numTags_added,
+                                 uint32_t **tagIds_removed,
+                                 size_t *numTags_removed,
+                                 bool *userlistModified);
 
 // Returns the message associated with a dirty mod and whether the mod needs
 // cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is
@@ -327,26 +344,29 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 //   BOSS_API_CLEAN_UNKNOWN
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
-BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
-									uint8_t ** message, uint32_t * needsCleaning);
+BOSS_API uint32_t GetDirtyMessage(boss_db db, const uint8_t *plugin,
+                                  uint8_t **message, uint32_t *needsCleaning);
 
 // Returns the messages attached to the given plugin. Messages are valid until Load,
 // DestroyBossDb or GetPluginMessages are next called. plugin is case-insensitive.
 // If no messages are attached, *messages will be NULL and numMessages will equal 0.
-BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMessage ** messages, size_t * numMessages);
+BOSS_API uint32_t GetPluginMessages(boss_db db, const uint8_t *plugin,
+                                    BossMessage **messages, size_t *numMessages);
 
 // Checks if the given mod is present in BOSS's masterlist for the DB's game.
-BOSS_API uint32_t IsRecognised (boss_db db, const uint8_t * plugin, bool * recognised);
+BOSS_API uint32_t IsRecognised(boss_db db, const uint8_t *plugin,
+                               bool *recognised);
 
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions,
 // and/or dirty messages, plus the Tag suggestions and/or messages themselves and their
 // conditions, in order to create the Wrye Bash taglist. outputFile is the path to use
 // for output. If outputFile already exists, it will only be overwritten if overwrite is true.
-BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite);
+BOSS_API uint32_t DumpMinimal(boss_db db, const uint8_t *outputFile,
+                              const bool overwrite);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // BOSSAPI_H
+#endif  // API_BOSS_H_
