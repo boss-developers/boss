@@ -133,12 +133,12 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 	// Now pull from the remote repository. This involves a fetch followed by a merge. First perform the fetch.
 
 	// Set up callbacks.
-	
+
 	git_fetch_options fetch_options = GIT_FETCH_OPTIONS_INIT;
 	fetch_options.callbacks = GIT_REMOTE_CALLBACKS_INIT;
 	fetch_options.callbacks.transfer_progress = prog;
 	fetch_options.callbacks.payload = out;
-	
+
 //#ifndef _MSC_VER
 	//int (*validate_cert)(git_cert *, int, const char *, void *) = ValidateCert;
 //	fetch_options.callbacks.certificate_check = ValidateCertificate;
