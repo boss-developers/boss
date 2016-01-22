@@ -30,6 +30,8 @@
 #include <clocale>
 #include <ctime>
 
+#include <iostream>
+#include <locale>
 #include <map>
 #include <string>
 #include <unordered_set>
