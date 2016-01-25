@@ -33,6 +33,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <locale>
 #include <string>
@@ -42,6 +43,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 
+#include "api/boss.h"
+#include "base/fstream.h"
 #include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/game.h"
@@ -54,41 +57,37 @@
 namespace boss {
 
 // Save the formatted output list of dirty mods.
-void SaveDirtyList(std::vector<Item> list, std::ofstream &out) {
-	char x = ' ';
-
+void SaveDirtyList(std::vector<Item> &list, boss::boss_fstream::ofstream &out, const uint64_t max_name_length) {
+	std::string output;
 	for (std::size_t i = 0; i < list.size(); i++) {
-		if (list[i].Name() == list[i - 1].Name())
-			continue;
-		if (boost::to_lower_copy(list[i].Name())[0] != x) {
-			out << std::endl;
-			x = boost::to_lower_copy(list[i].Name())[0];
-		}
-		out << list[i].Name() << "   ";
+		std::string data;
+		data += list[i].Name();
+		if (list[i].Messages().size() == 0)
+			data += '\n';
 		std::vector<Message> messages = list[i].Messages();
 		// TODO(MCP): Convert this to a for-each loop?
 		for (std::vector<Message>::iterator messageIter = messages.begin();
-		     messageIter != messages.end(); ++messageIter)
-			out << messageIter->Data();  // Print the mod name and message.
-
-		out << std::endl;
+		     messageIter != messages.end(); ++messageIter) {
+			if (list[i].Name().size() < (max_name_length + 3))
+				data.insert(data.size(), max_name_length - list[i].Name().size() + 3, ' ');
+			if (messageIter != messages.begin())
+				data.insert(data.size(), list[i].Name().size(), ' ');
+			data += messageIter->Data();  // Print the mod name and message.
+			if (messageIter != messages.end() || messageIter->Data().empty()) {
+				data += '\n';
+			}
+		}
+		output += data;
 	}
-}
-
-bool SortModsByName(Item mod1, Item mod2) {
-		std::string n1, n2;
-		n1 = boost::to_lower_copy(mod1.Name());
-		n2 = boost::to_lower_copy(mod2.Name());
-		return n1 < n2;
+	out << output;
 }
 
 int DirtyListGeneratorMain() {
 	namespace fs = boost::filesystem;
 	Game game;
-	std::vector<Item> masterlist, cleanlist;
-	std::ofstream dirtylist;
+	std::vector<Item> masterlist;
+	boss::boss_fstream::ofstream dirtylist;
 	const fs::path dirtylist_path = "dirtylist.txt";
-	const fs::path cleanlist_path = "cleanlist.txt";
 
 	// Set the locale to get encoding conversions working correctly.
 	// Not sure if this is still needed, but better safe than sorry.
@@ -141,11 +140,7 @@ int DirtyListGeneratorMain() {
 	// Check if it actually exists, because the parser doesn't fail if there is no file...
 	if (!fs::exists(game.Masterlist())) {
 		// Print error message to console and exit.
-		dirtylist << "Critical Error: \"" + game.Masterlist().string() + "\" cannot be read! Exiting." << std::endl;
-		std::exit(1);  // Fail in screaming heap.
-	} else if (!fs::exists(cleanlist_path)) {
-		// Print error message to console and exit.
-		dirtylist << "Critical Error: \"" + cleanlist_path.string() + "\" cannot be read! Exiting." << std::endl;
+		std::cout << "Critical Error: \"" + game.Masterlist().string() + "\" cannot be read! Exiting." << std::endl;
 		std::exit(1);  // Fail in screaming heap.
 	}
 
@@ -153,10 +148,8 @@ int DirtyListGeneratorMain() {
 	try {
 		ItemList Masterlist, Cleanlist;
 		Masterlist.Load(game, game.Masterlist());
-		Cleanlist.Load(game, cleanlist_path);
 
 		masterlist = Masterlist.Items();
-		cleanlist = Cleanlist.Items();
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString());
 		std::exit(1);  // Fail in screaming heap.
@@ -164,71 +157,57 @@ int DirtyListGeneratorMain() {
 
 	// Now we need to remove all the mods that are in cleanlist from masterlist. This would be faster using a hashset for cleanlist instead of an ItemList,
 	// but speed is not of the essence.
-	std::size_t pos;
-	ItemList tempItemList;
-	tempItemList.Items(masterlist);
-	// TODO(MCP): Convert this to a for-each loop?
-	for (std::vector<Item>::iterator itemIter = cleanlist.begin();
-	     itemIter != cleanlist.end(); ++itemIter) {
-		pos = tempItemList.FindItem(itemIter->Name(), MOD);
-		if (pos != tempItemList.Items().size())
-			tempItemList.Erase(pos);
-	}
-	masterlist = tempItemList.Items();
-
-	// Now we need to iterate through the masterlist and retain only those mods with dirty mod messages that aren't "Do not clean".
-	// This should include SAY dirty mod messages too. If a message is conditional on certain CRCs, these should be listed in a
-	// message that gets attached to the mod, with each CRC listed as "CRC hex". Otherwise, all messages should be removed.
-	std::vector<Item> holdingVec;
-	// TODO(MCP): Convert this to a for-each loop?
-	for (std::vector<Item>::iterator itemIter = masterlist.begin();
-	     itemIter != masterlist.end(); ++itemIter) {
+	std::vector<Item> dirty_mods;
+	uint64_t max_name_length = 0;
+	for (std::vector<Item>::iterator itemIter = masterlist.begin(); itemIter != masterlist.end(); ++itemIter) {
 		if ((itemIter->Type() == MOD) && !itemIter->Messages().empty()) {
 			bool keep = false;
 			Message message;
-
 			std::vector<Message> messages = itemIter->Messages();
-			// TODO(MCP): Convert this to a for-each loop?
+			std::vector<Message> dirty_messages;
 			for (std::vector<Message>::iterator messageIter = messages.begin();
 			     messageIter != messages.end(); ++messageIter) {
 				if ((messageIter->Key() == DIRTY) ||
 				    (messageIter->Key() == SAY &&
 				     messageIter->Data().find("Needs TES4Edit") != std::string::npos)) {
+					if (messageIter->Data().find("Do not clean. \"Dirty\" edits are intentional and required for the mod to function.") != std::string::npos) {
+						keep = false;
+						break;
+					}
 					keep = true;
 					std::string data;
 
 					std::size_t pos1 = messageIter->Data().find(" records");  // Extract ITM/UDR counts from message.
-					if (pos1 != std::string::npos)
+					if (pos1 != std::string::npos) {
 						data += messageIter->Data().substr(0, pos1);
+					}
 
 					if (!messageIter->Conditions().empty()) {  // Extract CRCs from conditional.
 						std::size_t pos2;
-						pos1 = messageIter->Data().find('(');
-						while (pos1 != std::string::npos) {
-							pos2 = messageIter->Data().find('|');
-							if (!data.empty())
-								data += ", ";
-							data += "CRC " + messageIter->Data().substr(pos1 + 1, pos2 - pos1 - 1);
-							pos1 = messageIter->Data().find('(', pos2);
-						}
+						pos1 = messageIter->Conditions().find_last_of(',') + 1;
+						pos2 = messageIter->Conditions().find_last_of(')');
+						if (!data.empty())
+							data += ", ";
+						data += "CRC " + messageIter->Conditions().substr(pos1, pos2 - pos1);
 					}
 
 					if (!data.empty()) {
-						message.Data(message.Data() + "[" + data + "] ");
+						message.Data("[" + data + "]");
 						message.Key(SAY);
+						dirty_messages.push_back(message);
 					}
 				}
 			}
-			if (keep && message.Key() == SAY)
-				holdingVec.push_back(Item(itemIter->Name(), MOD, messages));
+			if (keep && message.Key() == SAY) {
+				std::cout << "Added: " << itemIter->Name() << std::endl;
+				if (itemIter->Name().size() > max_name_length)
+					max_name_length = itemIter->Name().size();
+				dirty_mods.push_back(Item(itemIter->Name(), MOD, dirty_messages));
+			}
 		}
 	}
-
-	// Now the masterlist contents should be sorted alphabetically.
-	std::sort(holdingVec.begin(), holdingVec.end(), SortModsByName);
-
-	// Finally, we output it as our dirtylist.
-	SaveDirtyList(holdingVec, dirtylist);
+	masterlist.clear();
+	SaveDirtyList(dirty_mods, dirtylist, max_name_length);
 	dirtylist.close();
 	return 0;
 }
