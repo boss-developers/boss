@@ -71,6 +71,8 @@ set(BOSS_API_H  ${BOSS_H}
 set(BOSS_API_SRC ${BOSS_SRC}
                  src/api/boss.cpp)
 
+# API Tester Files
+
 # GUI Header Files
 
 set(GUI_H       ${BOSS_H}
@@ -328,3 +330,13 @@ endif ()
 if (WIN32)
 	target_link_libraries(bapi${ARCH} ws2_32)
 endif ()
+
+add_executable(boss_tester src/api/tester.cpp ${BOSS_API_H} ${BOSS_API_SRC})
+target_compile_options(boss_tester PUBLIC "-O3" "-std=c++11")
+target_include_directories(boss_tester PUBLIC ${Boost_INCLUDE_DIRS} src)
+target_link_libraries(boss_tester bapi${ARCH} ${Boost_LIBRARIES})
+
+add_executable(dlg dirty_list_generator/main.cpp ${BOSS_H} ${BOSS_SRC})
+target_compile_options(dlg PUBLIC "-O3" "-std=c++11")
+target_include_directories(dlg PUBLIC ${Boost_INCLUDE_DIRS} src)
+target_link_libraries(dlg bapi${ARCH} ${Boost_LIBRARIES} git2)
