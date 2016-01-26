@@ -1,4 +1,4 @@
-﻿/*	BOSS
+/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
