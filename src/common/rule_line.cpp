@@ -187,7 +187,7 @@ void RuleLine::Object(const std::string inObject) {
 // Rule Class Functions
 //////////////////////////////
 
-Rule::Rule() : RuleLine(){
+Rule::Rule() : RuleLine() {
 	enabled = true;
 	lines.clear();
 }

@@ -532,7 +532,7 @@ std::size_t ItemList::FindLastItem(const std::string name,
 	//std::clog << "FindLastItem: items.size(): " << max + 1 << std::endl;
 	//for (std::vector<Item>::const_iterator it = items.end(), begin = items.begin();
 	//     it != begin; --it) {
-	for (max; max > 0; --max){
+	for (max; max > 0; --max) {
 		//std::clog << "Looping..." << std::endl;
 		//std::clog << "Item name: " << items[max].Name() << std::endl;
 		//std::clog << "Item type: " << items[max].Type() << std::endl;
