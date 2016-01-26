@@ -1,7 +1,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: BOSS2\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2015-12-18 09:34-0500\n"
+        "POT-Creation-Date: 2016-01-26 10:44-0500\n"
         "PO-Revision-Date: 2014-03-15 20:03+0600\n"
         "Last-Translator: Tokc.D.K. <TokcDK@gmail.com>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,114 +11,114 @@ msgstr  "Project-Id-Version: BOSS2\n"
         "Content-Transfer-Encoding: 8bit\n"
         "X-Generator: Poedit 1.6.4\n"
 
-#: src/common/error.h:102
+#: src/common/error.h:119
 #, boost-format
 msgid   "Masterlist Parsing Error: Expected a %1% at:"
 msgstr  "Ошибка обработки мастерлиста: Ожидалось %1% на:"
 
-#: src/common/error.h:104
+#: src/common/error.h:121
 #, boost-format
 msgid   "Ini Parsing Error: Expected a %1% at:"
 msgstr  "Ошибка обработки INI: Ожидалось %1% на:"
 
-#: src/common/error.h:106
+#: src/common/error.h:123
 #, boost-format
 msgid   "Userlist Parsing Error: Expected a %1% at:"
 msgstr  "Ошибка обработки списка правил: Ожидалось %1% на:"
 
-#: src/common/error.h:108
+#: src/common/error.h:125
 #, boost-format
 msgid   "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
 msgstr  "Ошибка в синтаксисе списка правил: Правило начинается с \"%1%: %2%\" "
         "%3%"
 
-#: src/common/error.h:110
+#: src/common/error.h:127
 msgid   "Masterlist parsing aborted. Utility will end now."
 msgstr  "Обработка мастерлиста прервана. Утилита будет закрыта."
 
-#: src/common/error.h:112
+#: src/common/error.h:129
 msgid   "Ini parsing aborted. Some or all of the options may not have been "
         "set correctly."
 msgstr  "Обработка ini прервана. Некоторые или все настройки не могут быть "
         "установлены правильно."
 
-#: src/common/error.h:114
+#: src/common/error.h:131
 msgid   "Userlist parsing aborted. No rules will be applied."
 msgstr  "Обработка списка правил прервана. Отсутствуют правила, которые могли "
         "быть применены"
 
-#: src/common/error.h:119
+#: src/common/error.h:136
 msgid   "includes a sort line in a rule with a FOR rule keyword."
 msgstr  "включает строку сортировки в правиле с ключом FOR."
 
-#: src/common/error.h:121
+#: src/common/error.h:138
 msgid   "tries to add a group."
 msgstr  "пытается добавить группу."
 
-#: src/common/error.h:123
+#: src/common/error.h:140
 msgid   "tries to sort the group \"ESMs\"."
 msgstr  "пытается отсортировать группу \"ESMs\"."
 
-#: src/common/error.h:125
+#: src/common/error.h:142
 msgid   "tries to sort the master .ESM file."
 msgstr  "пытается отсортировать ESM-файл."
 
-#: src/common/error.h:127
+#: src/common/error.h:144
 msgid   "references a mod and a group."
 msgstr  "ссылается на мод и группу."
 
-#: src/common/error.h:129
+#: src/common/error.h:146
 msgid   "tries to sort a group before the group \"ESMs\"."
 msgstr  "пытается отсортировать группу, перед группой \"ESMs\"."
 
-#: src/common/error.h:131
+#: src/common/error.h:148
 msgid   "tries to sort a mod before the master .ESM file."
 msgstr  "пытается отсортировать группу, перед ESM-файлом."
 
-#: src/common/error.h:133
+#: src/common/error.h:150
 msgid   "tries to insert a mod into the top of the group \"ESMs\", before the "
         "master .ESM file."
 msgstr  "пытается вставить мод вверх группы \"ESMs\", перед мастерфайлом .ESM-"
         "файл."
 
-#: src/common/error.h:135
+#: src/common/error.h:152
 msgid   "tries to insert a group or insert something into a mod."
 msgstr  "пытается вставить группу или что-то в мод."
 
-#: src/common/error.h:137
+#: src/common/error.h:154
 msgid   "tries to attach a message to a group."
 msgstr  "пытается прикрепить сообщение к группе"
 
-#: src/common/error.h:139
+#: src/common/error.h:156
 msgid   "has more than one sort line."
 msgstr  "имеет больше чем одну строку для сортировки."
 
-#: src/common/error.h:141
+#: src/common/error.h:158
 msgid   "has more than one REPLACE-using message line."
 msgstr  "имеет больше чем одно использующее замену сообщение."
 
-#: src/common/error.h:143
+#: src/common/error.h:160
 msgid   "has a REPLACE-using message line that is not the first message line."
 msgstr  "имеет использующее замену сообщение, которое не первое сообщения в "
         "строке."
 
-#: src/common/error.h:145
+#: src/common/error.h:162
 msgid   "has a sort line that is not the second line of the rule."
 msgstr  "имеет строку сортировки, которая не вторая в правиле."
 
-#: src/common/error.h:147
+#: src/common/error.h:164
 msgid   "tries to sort a mod or group relative to itself."
 msgstr  "пытается сортировать мод или группу по отношению к себе."
 
-#: src/common/error.h:149
+#: src/common/error.h:166
 msgid   "tries to attach an malformatted message."
 msgstr  "пытается прикрепить сообщение неизвестного типа."
 
-#: src/common/error.h:151
+#: src/common/error.h:168
 msgid   "tries to sort a plugin before a master file."
 msgstr  "пытается отсортировать плагин перед мастерфайлом."
 
-#: src/common/error.h:153
+#: src/common/error.h:170
 msgid   "tries to sort a master file before a plugin."
 msgstr  "пытается отсортировать мастерфайл перед плагином."
 
@@ -142,146 +142,185 @@ msgid   "# See the BOSS ReadMe for details on what each setting does and the "
         "accepted values for integer and string settings."
 msgstr  ""
 
-#: src/common/error.cpp:107 src/common/error.cpp:146
+#: src/common/error.cpp:126 src/common/error.cpp:183
 msgid   "No error."
 msgstr  "Нет ошибки."
 
-#: src/common/error.cpp:109
+#: src/common/error.cpp:128
+msgid   "No game master .esm file found!"
+msgstr  "Не найден .esm мастерфайл игры!"
+
+#: src/common/error.cpp:130
 #, boost-format
 msgid   "\"%1%\" cannot be read!"
 msgstr  "\"%1%\" не может быть прочитан!"
 
-#: src/common/error.cpp:111
+#: src/common/error.cpp:132
 #, boost-format
 msgid   "\"%1%\" cannot be written to!"
 msgstr  "\"%1%\" не может быть записан!"
 
-#: src/common/error.cpp:113
+#: src/common/error.cpp:134
 #, boost-format
 msgid   "\"%1%\" is not encoded in valid UTF-8!"
 msgstr  "\"%1%\" не закодирован в верной кодировке UTF-8!"
 
-#: src/common/error.cpp:115
+#: src/common/error.cpp:136
 #, boost-format
 msgid   "\"%1%\" cannot be found!"
 msgstr  "\"%1%\" не найден!"
 
-#: src/common/error.cpp:117
+#: src/common/error.cpp:138
+#, boost-format
+msgid   "Parsing of \"%1%\" failed!"
+msgstr  "Обработка \"%1%\" не удалась!"
+
+#: src/common/error.cpp:140
 #, boost-format
 msgid   "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
 msgstr  "Определение условия \"%1%\" для \"%2%\" не удалось!"
 
-#: src/common/error.cpp:119
+#: src/common/error.cpp:142
 #, boost-format
 msgid   "\"%1%\" is not a valid regular expression. Item skipped."
 msgstr  "\"%1%\" это неверное регулярное выражение. Запись пропущена."
 
-#: src/common/error.cpp:121
+#: src/common/error.cpp:144
 msgid   "No game detected!"
 msgstr  "Игра не найдена!"
 
-#: src/common/error.cpp:123
+#: src/common/error.cpp:146
 #, boost-format
 msgid   "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
 msgstr  "\"%1%\" не может быть конвертирован из UTF-8 в \"%2%\"."
 
-#: src/common/error.cpp:125
-#, boost-format
-msgid   "Master file \"%1%\" loading after non-master plugins!"
-msgstr  "Мастерфайл \"%1%\" загружается после плагинов, не являющихся "
-        "мастерфайлами!"
+#: src/common/error.cpp:148
+msgid   "Cannot find online masterlist revision number!"
+msgstr  "Невозможно найти номер ревизии мастерлиста онлайн!"
 
-#: src/common/error.cpp:129
-#, boost-format
-msgid   "Git operation failed. Error: %1%"
-msgstr  "Операция с Git не удалась. Ошибка: %1%"
+#: src/common/error.cpp:150
+msgid   "Cannot find online masterlist revision date!"
+msgstr  "Невозможно найти дату ревизии мастерлиста онлайн!"
 
-#: src/common/error.cpp:131
+#: src/common/error.cpp:152
+msgid   "Cannot read list of files to be updated!"
+msgstr  "Невозможно прочесть список файлов для обновления!"
+
+#: src/common/error.cpp:154
+#, boost-format
+msgid   "Downloaded file \"%1%\" failed verification test!"
+msgstr  "Загруженный файл \"%1%\" не прошел проверку!"
+
+#: src/common/error.cpp:156
 #, boost-format
 msgid   "The modification date of \"%1%\" cannot be read! Filesystem "
         "response: \"%2%\"."
 msgstr  "Не читается дата модификации для \"%1%\"! Ответ файловой системы: "
         "\"%2%\"."
 
-#: src/common/error.cpp:133
-#, boost-format
-msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
-msgstr  "\"%1%\" не может быть переименован! Ответ файловой системы: \"%2%\"."
-
-#: src/common/error.cpp:135
-#, boost-format
-msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
-msgstr  "\"%1%\" не найден! Ответ файловой системы: \"%2%\"."
-
-#: src/common/error.cpp:137
-#, boost-format
-msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
-msgstr  "\"%1%\" не может быть создан! Ответ файловой системы: \"%2%\"."
-
-#: src/common/error.cpp:139
-#, boost-format
-msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
-msgstr  "\"%1%\" не может быть отсканирован! Ответ файловой системы: \"%2%\"."
-
-#: src/common/error.cpp:141
-#, boost-format
-msgid   "Parsing of \"%1%\" failed!"
-msgstr  "Обработка \"%1%\" не удалась!"
-
-#: src/common/error.cpp:143
+#: src/common/error.cpp:158
 #, boost-format
 msgid   "The modification date of \"%1%\" cannot be written! Filesystem "
         "response: \"%2%\"."
 msgstr  "Дата изменения для \"%1%\" не может быть записана! Ответ файловой "
         "системы: \"%2%\"."
 
-#: src/common/error.cpp:145
+#: src/common/error.cpp:160
+#, boost-format
+msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не может быть переименован! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:162
+#, boost-format
+msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не найден! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:164
+#, boost-format
+msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не может быть создан! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:166
+#, boost-format
+msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
+msgstr  "\"%1%\" не может быть отсканирован! Ответ файловой системы: \"%2%\"."
+
+#: src/common/error.cpp:168
 #, boost-format
 msgid   "The window \"%1%\" failed to initialise. Details: \"%2%\"."
 msgstr  "Окно \"%1%\" не удалось инициализировать. Детали: \"%2%\"."
 
-#: src/common/game.cpp:500
+#: src/common/error.cpp:170
+msgid   "Memory allocation failed."
+msgstr  "Ошибка выделения памяти."
+
+#: src/common/error.cpp:172
+msgid   "No Internet connection detected."
+msgstr  "Интернет-подключение не найдено."
+
+#: src/common/error.cpp:174
+msgid   "No tag map has yet been initialised."
+msgstr  "Карты тегов еще не инициализирована"
+
+#: src/common/error.cpp:176
+msgid   "The requested change to the active plugins list would result in over "
+        "255 plugins being active."
+msgstr  "Запрошенные изменения в списке активных плагинов приведут к наличию "
+        "более чем 255 активных плагинов."
+
+#: src/common/error.cpp:178
+#, boost-format
+msgid   "Master file \"%1%\" loading after non-master plugins!"
+msgstr  "Мастерфайл \"%1%\" загружается после плагинов, не являющихся "
+        "мастерфайлами!"
+
+#: src/common/error.cpp:182
+#, boost-format
+msgid   "Git operation failed. Error: %1%"
+msgstr  "Операция с Git не удалась. Ошибка: %1%"
+
+#: src/common/game.cpp:502
 msgid   "Rule is disabled."
 msgstr  "Правило отключено."
 
-#: src/common/game.cpp:524 src/common/game.cpp:587 src/common/game.cpp:640
+#: src/common/game.cpp:526 src/common/game.cpp:589 src/common/game.cpp:642
 msgid   " is not installed or in the masterlist."
 msgstr  " не установлен или уже в мастерлисте."
 
-#: src/common/game.cpp:531 src/common/game.cpp:594
+#: src/common/game.cpp:533 src/common/game.cpp:596
 msgid   " is already in the masterlist."
 msgstr  " уже в мастерлисте."
 
-#: src/common/game.cpp:537 src/common/game.cpp:601
+#: src/common/game.cpp:539 src/common/game.cpp:603
 msgid   " is not in the masterlist, cannot override."
 msgstr  " не в мастерлисте, невозможно перезаписать."
 
-#: src/common/game.cpp:551
+#: src/common/game.cpp:553
 msgid   " is not installed, and is not in the masterlist."
 msgstr  " не установлен и отсутствует в мастерлисте."
 
-#: src/common/game.cpp:557
+#: src/common/game.cpp:559
 msgid   " is not in the masterlist and has not been sorted by a rule."
 msgstr  " отсутствует в мастерлисте и не может быть отсортирован правилом."
 
-#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+#: src/common/game.cpp:616 src/common/game.cpp:670 src/common/game.cpp:691
 msgid   "The group "
 msgstr  "Группа "
 
-#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+#: src/common/game.cpp:616 src/common/game.cpp:670 src/common/game.cpp:691
 msgid   " is not in the masterlist or is malformatted."
 msgstr  "  отсутствует в мастерлисте или неизвестного типа."
 
-#: src/common/game.cpp:748 src/common/game.cpp:766
+#: src/common/game.cpp:753 src/common/game.cpp:774
 msgid   "Version: "
 msgstr  "Версия: "
 
-#: src/common/game.cpp:750 src/common/game.cpp:768 src/common/game.cpp:854
-#: src/common/game.cpp:856
+#: src/common/game.cpp:755 src/common/game.cpp:776 src/common/game.cpp:862
+#: src/common/game.cpp:864
 msgid   "Checksum: "
 msgstr  "Контрольная сумма: "
 
-#: src/common/game.cpp:824
+#: src/common/game.cpp:832
 msgid   "The order of plugins set by BOSS differs from their order in its "
         "masterlist, as one or more of the installed plugins is false-"
         "flagged. For more information, see \"file:../Docs/BOSS%20Readme."
@@ -291,29 +330,29 @@ msgstr  "Порядок плагинов, заданный в BOSS, отлича
         "помеченными. Для подробной информации смотрите \"file:../Docs/BOSS"
         "%20Readme.html#appendix-c False-Flagged Plugins\"."
 
-#: src/common/game.cpp:827
+#: src/common/game.cpp:835
 msgid   "Could not enforce load order master/plugin partition. Details: "
 msgstr  "Не в состоянии обеспечить изменить порядок загрузки раздела плагинов/"
         "мастерфайлов. Детали: "
 
-#: src/common/game.cpp:848 src/output/boss_log.cpp:388
+#: src/common/game.cpp:856 src/output/boss_log.cpp:388
 #: src/output/boss_log.cpp:392 src/boss_cli.cpp:88
 msgid   "Version "
 msgstr  "Версия "
 
-#: src/common/game.cpp:850
+#: src/common/game.cpp:858
 msgid   "Active"
 msgstr  "Активен"
 
-#: src/common/game.cpp:872
+#: src/common/game.cpp:880
 msgid   "Error: "
 msgstr  "Ошибка: "
 
-#: src/common/game.cpp:907 src/boss_cli.cpp:356
+#: src/common/game.cpp:915 src/boss_cli.cpp:356
 msgid   "Critical Error: "
 msgstr  "Критическая ошибка: "
 
-#: src/common/game.cpp:908 src/gui/main_window.cpp:551
+#: src/common/game.cpp:916 src/gui/main_window.cpp:551
 #: src/gui/main_window.cpp:608 src/gui/main_window.cpp:661 src/boss_cli.cpp:357
 #: src/boss_cli.cpp:424 src/boss_cli.cpp:470 src/boss_cli.cpp:512
 msgid   "Check the Troubleshooting section of the ReadMe for more information "
@@ -321,7 +360,7 @@ msgid   "Check the Troubleshooting section of the ReadMe for more information "
 msgstr  "Проверьте секцию ридми \"Решение проблем\", для большей информации и "
         "возможных решений."
 
-#: src/common/game.cpp:909 src/gui/main_window.cpp:552
+#: src/common/game.cpp:917 src/gui/main_window.cpp:552
 #: src/gui/main_window.cpp:609 src/gui/main_window.cpp:662 src/boss_cli.cpp:358
 #: src/boss_cli.cpp:425 src/boss_cli.cpp:471 src/boss_cli.cpp:513
 msgid   "Utility will end now."
@@ -805,12 +844,12 @@ msgid   "Masterlist revision: %1%."
 msgstr  "Версия мастерлиста: %1%."
 
 #: src/gui/user_rule_editor.cpp:455
-msgid   "before"
-msgstr  "перед"
-
-#: src/gui/user_rule_editor.cpp:455
 msgid   "after"
 msgstr  "после"
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "before"
+msgstr  "перед"
 
 #: src/gui/user_rule_editor.cpp:457
 msgid   "top"
@@ -1462,21 +1501,6 @@ msgstr  "Неправильный выбор."
 #~ msgid        "Exception occurred:"
 #~ msgstr       "Произошло исключение:"
 
-#~ msgid        "No game master .esm file found!"
-#~ msgstr       "Не найден .esm мастерфайл игры!"
-
-#~ msgid        "Cannot find online masterlist revision number!"
-#~ msgstr       "Невозможно найти номер ревизии мастерлиста онлайн!"
-
-#~ msgid        "Cannot find online masterlist revision date!"
-#~ msgstr       "Невозможно найти дату ревизии мастерлиста онлайн!"
-
-#~ msgid        "Cannot read list of files to be updated!"
-#~ msgstr       "Невозможно прочесть список файлов для обновления!"
-
-#~ msgid        "Downloaded file \"%1%\" failed verification test!"
-#~ msgstr       "Загруженный файл \"%1%\" не прошел проверку!"
-
 #~ msgid        "cURL cannot be initialised!"
 #~ msgstr       "cURL не может быть инициализирован!"
 
@@ -1508,20 +1532,6 @@ msgstr  "Неправильный выбор."
 
 #~ msgid        "Cancelled by user."
 #~ msgstr       "Отменено пользователем."
-
-#~ msgid        "Memory allocation failed."
-#~ msgstr       "Ошибка выделения памяти."
-
-#~ msgid        "No Internet connection detected."
-#~ msgstr       "Интернет-подключение не найдено."
-
-#~ msgid        "No tag map has yet been initialised."
-#~ msgstr       "Карты тегов еще не инициализирована"
-
-#~ msgid        "The requested change to the active plugins list would result "
-#~      "in over 255 plugins being active."
-#~ msgstr       "Запрошенные изменения в списке активных плагинов приведут к "
-#~      "наличию более чем 255 активных плагинов."
 
 #~ msgid        "Display Settings"
 #~ msgstr       "Настройки отображения"

@@ -1,7 +1,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: Better Oblivion Mod Manager 2.1\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2015-12-18 09:34-0500\n"
+        "POT-Creation-Date: 2016-01-26 10:44-0500\n"
         "PO-Revision-Date: 2012-09-11 17:25+0800\n"
         "Last-Translator: icedream <icedream@tesfans.org>\n"
         "Language-Team: 上古卷轴爱好者 <icedream@tesfans.org>\n"
@@ -10,109 +10,109 @@ msgstr  "Project-Id-Version: Better Oblivion Mod Manager 2.1\n"
         "Content-Type: text/plain; charset=UTF-8\n"
         "Content-Transfer-Encoding: 8bit\n"
 
-#: src/common/error.h:102
+#: src/common/error.h:119
 #, boost-format
 msgid   "Masterlist Parsing Error: Expected a %1% at:"
 msgstr  "解析Masterlist出错: 预计%1%于:"
 
-#: src/common/error.h:104
+#: src/common/error.h:121
 #, boost-format
 msgid   "Ini Parsing Error: Expected a %1% at:"
 msgstr  "解析Ini出错: 预计%1%于:"
 
-#: src/common/error.h:106
+#: src/common/error.h:123
 #, boost-format
 msgid   "Userlist Parsing Error: Expected a %1% at:"
 msgstr  "解析Userlist出错: 预计%1%于:"
 
-#: src/common/error.h:108
+#: src/common/error.h:125
 #, boost-format
 msgid   "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
 msgstr  "Userlist语法出错: 规则起始于\"%1%: %2%\" %3%"
 
-#: src/common/error.h:110
+#: src/common/error.h:127
 msgid   "Masterlist parsing aborted. Utility will end now."
 msgstr  "Masterlist解析已终止。程序即将关闭。"
 
-#: src/common/error.h:112
+#: src/common/error.h:129
 msgid   "Ini parsing aborted. Some or all of the options may not have been "
         "set correctly."
 msgstr  "Ini解析已终止。多个或者全部选项可能没有设置正确。"
 
-#: src/common/error.h:114
+#: src/common/error.h:131
 msgid   "Userlist parsing aborted. No rules will be applied."
 msgstr  "Userlist解析已终止。未应用任何规则。"
 
-#: src/common/error.h:119
+#: src/common/error.h:136
 msgid   "includes a sort line in a rule with a FOR rule keyword."
 msgstr  "含一条带For规则关键词的排序行。"
 
-#: src/common/error.h:121
+#: src/common/error.h:138
 msgid   "tries to add a group."
 msgstr  "试图添加群组。"
 
-#: src/common/error.h:123
+#: src/common/error.h:140
 msgid   "tries to sort the group \"ESMs\"."
 msgstr  "试图排序群组\"ESMs\"。"
 
-#: src/common/error.h:125
+#: src/common/error.h:142
 msgid   "tries to sort the master .ESM file."
 msgstr  "试图排序.ESM文件。"
 
-#: src/common/error.h:127
+#: src/common/error.h:144
 msgid   "references a mod and a group."
 msgstr  "引用mod和群组。"
 
-#: src/common/error.h:129
+#: src/common/error.h:146
 msgid   "tries to sort a group before the group \"ESMs\"."
 msgstr  "试图将一个群组排到群组\"ESMs\"前面。"
 
-#: src/common/error.h:131
+#: src/common/error.h:148
 msgid   "tries to sort a mod before the master .ESM file."
 msgstr  "试图将一个mod排到.ESM文件前面。"
 
-#: src/common/error.h:133
+#: src/common/error.h:150
 msgid   "tries to insert a mod into the top of the group \"ESMs\", before the "
         "master .ESM file."
 msgstr  "试图将一个mod插入群组\"ESMs\"顶部，位于.ESM文件前面。"
 
-#: src/common/error.h:135
+#: src/common/error.h:152
 msgid   "tries to insert a group or insert something into a mod."
 msgstr  "试图插入群组或者其他到mod内。"
 
-#: src/common/error.h:137
+#: src/common/error.h:154
 msgid   "tries to attach a message to a group."
 msgstr  "试图给群组添加信息。"
 
-#: src/common/error.h:139
+#: src/common/error.h:156
 msgid   "has more than one sort line."
 msgstr  "含不止一个排序行。"
 
-#: src/common/error.h:141
+#: src/common/error.h:158
 msgid   "has more than one REPLACE-using message line."
 msgstr  "含不止一个REPLACE消息行。"
 
-#: src/common/error.h:143
+#: src/common/error.h:160
 msgid   "has a REPLACE-using message line that is not the first message line."
 msgstr  "含一个非首个信息行的REPLACE信息行。"
 
-#: src/common/error.h:145
+#: src/common/error.h:162
 msgid   "has a sort line that is not the second line of the rule."
 msgstr  "含一个非规则第二行的排序行。"
 
-#: src/common/error.h:147
+#: src/common/error.h:164
 msgid   "tries to sort a mod or group relative to itself."
 msgstr  "视图修改mod或者群组到本来的位置。"
 
-#: src/common/error.h:149
+#: src/common/error.h:166
 msgid   "tries to attach an malformatted message."
 msgstr  "视图添加非法格式的信息。"
 
-#: src/common/error.h:151
+#: src/common/error.h:168
 msgid   "tries to sort a plugin before a master file."
 msgstr  "试图将.ESP排在.ESM文件前面。"
 
-#: src/common/error.h:153
+#: src/common/error.h:170
 msgid   "tries to sort a master file before a plugin."
 msgstr  "试图将.ESM排在.ESP文件前面。"
 
@@ -136,144 +136,182 @@ msgid   "# See the BOSS ReadMe for details on what each setting does and the "
         "accepted values for integer and string settings."
 msgstr  ""
 
-#: src/common/error.cpp:107 src/common/error.cpp:146
+#: src/common/error.cpp:126 src/common/error.cpp:183
 msgid   "No error."
 msgstr  "未出现错误。"
 
-#: src/common/error.cpp:109
+#: src/common/error.cpp:128
+msgid   "No game master .esm file found!"
+msgstr  "找不到游戏.ESM文件！"
+
+#: src/common/error.cpp:130
 #, boost-format
 msgid   "\"%1%\" cannot be read!"
 msgstr  "\"%1%\" 无法读取！"
 
-#: src/common/error.cpp:111
+#: src/common/error.cpp:132
 #, boost-format
 msgid   "\"%1%\" cannot be written to!"
 msgstr  "\"%1%\" 无法写入！"
 
-#: src/common/error.cpp:113
+#: src/common/error.cpp:134
 #, boost-format
 msgid   "\"%1%\" is not encoded in valid UTF-8!"
 msgstr  "\"%1%\" 未以UTF-8编码！"
 
-#: src/common/error.cpp:115
+#: src/common/error.cpp:136
 #, boost-format
 msgid   "\"%1%\" cannot be found!"
 msgstr  "\"%1%\" 无法找到！"
 
-#: src/common/error.cpp:117
+#: src/common/error.cpp:138
+#, boost-format
+msgid   "Parsing of \"%1%\" failed!"
+msgstr  "解析\"%1%\"失败！"
+
+#: src/common/error.cpp:140
 #, boost-format
 msgid   "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
 msgstr  "对象\"%2%\"的条件\"%1%\"评估出错！"
 
-#: src/common/error.cpp:119
+#: src/common/error.cpp:142
 #, boost-format
 msgid   "\"%1%\" is not a valid regular expression. Item skipped."
 msgstr  "\"%1%\" 不是有效的正则表达式。已跳过。"
 
-#: src/common/error.cpp:121
+#: src/common/error.cpp:144
 msgid   "No game detected!"
 msgstr  "未检测游戏！"
 
-#: src/common/error.cpp:123
+#: src/common/error.cpp:146
 #, boost-format
 msgid   "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
 msgstr  "无法将\"%1%\"由UTF-8转换为\"%2%\"。"
 
-#: src/common/error.cpp:125
+#: src/common/error.cpp:148
+msgid   "Cannot find online masterlist revision number!"
+msgstr  "找不到在线masterlist修订编号！"
+
+#: src/common/error.cpp:150
+msgid   "Cannot find online masterlist revision date!"
+msgstr  "找不到在线masterlist修订日期！"
+
+#: src/common/error.cpp:152
+msgid   "Cannot read list of files to be updated!"
+msgstr  "无法读取需要更新的文件列表！"
+
+#: src/common/error.cpp:154
 #, boost-format
-msgid   "Master file \"%1%\" loading after non-master plugins!"
-msgstr  "master文件\"%1%\"排在一个非Mater文件后面！"
+msgid   "Downloaded file \"%1%\" failed verification test!"
+msgstr  "已下载的文件\"%1%\"验证失败！"
 
-#: src/common/error.cpp:129
-#, fuzzy, boost-format
-#| msgid        "Critical Error: %1%"
-msgid           "Git operation failed. Error: %1%"
-msgstr          "严重错误：%1%"
-
-#: src/common/error.cpp:131
+#: src/common/error.cpp:156
 #, boost-format
 msgid   "The modification date of \"%1%\" cannot be read! Filesystem "
         "response: \"%2%\"."
 msgstr  "无法获取文件\"%1%\"的修改时间！系统错误提示：\"%2%\"。"
 
-#: src/common/error.cpp:133
-#, boost-format
-msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
-msgstr  "无法重命名文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: src/common/error.cpp:135
-#, boost-format
-msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
-msgstr  "无法删除文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: src/common/error.cpp:137
-#, boost-format
-msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
-msgstr  "无法创建文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: src/common/error.cpp:139
-#, boost-format
-msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
-msgstr  "无法扫描文件\"%1%\"！系统错误提示：\"%2%\"。"
-
-#: src/common/error.cpp:141
-#, boost-format
-msgid   "Parsing of \"%1%\" failed!"
-msgstr  "解析\"%1%\"失败！"
-
-#: src/common/error.cpp:143
+#: src/common/error.cpp:158
 #, boost-format
 msgid   "The modification date of \"%1%\" cannot be written! Filesystem "
         "response: \"%2%\"."
 msgstr  "\"%1%\"的修改时间无法写入！系统错误提示：\"%2%\"。"
 
-#: src/common/error.cpp:145
+#: src/common/error.cpp:160
+#, boost-format
+msgid   "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
+msgstr  "无法重命名文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:162
+#, boost-format
+msgid   "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
+msgstr  "无法删除文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:164
+#, boost-format
+msgid   "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
+msgstr  "无法创建文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:166
+#, boost-format
+msgid   "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
+msgstr  "无法扫描文件\"%1%\"！系统错误提示：\"%2%\"。"
+
+#: src/common/error.cpp:168
 #, boost-format
 msgid   "The window \"%1%\" failed to initialise. Details: \"%2%\"."
 msgstr  "窗口\"%1%\"初始化失败。详细信息：\"%2%\"。"
 
-#: src/common/game.cpp:500
+#: src/common/error.cpp:170
+msgid   "Memory allocation failed."
+msgstr  "记忆分配出错。"
+
+#: src/common/error.cpp:172
+msgid   "No Internet connection detected."
+msgstr  "未检测到可用网络。"
+
+#: src/common/error.cpp:174
+msgid   "No tag map has yet been initialised."
+msgstr  "标签映射未初始化。"
+
+#: src/common/error.cpp:176
+msgid   "The requested change to the active plugins list would result in over "
+        "255 plugins being active."
+msgstr  "对已激活插件列表的修改将导致超过255个插件被激活。"
+
+#: src/common/error.cpp:178
+#, boost-format
+msgid   "Master file \"%1%\" loading after non-master plugins!"
+msgstr  "master文件\"%1%\"排在一个非Mater文件后面！"
+
+#: src/common/error.cpp:182
+#, fuzzy, boost-format
+#| msgid        "Critical Error: %1%"
+msgid           "Git operation failed. Error: %1%"
+msgstr          "严重错误：%1%"
+
+#: src/common/game.cpp:502
 msgid   "Rule is disabled."
 msgstr  "规则已禁止。"
 
-#: src/common/game.cpp:524 src/common/game.cpp:587 src/common/game.cpp:640
+#: src/common/game.cpp:526 src/common/game.cpp:589 src/common/game.cpp:642
 msgid   " is not installed or in the masterlist."
 msgstr  "未安装或者已存在于masterlist中。"
 
-#: src/common/game.cpp:531 src/common/game.cpp:594
+#: src/common/game.cpp:533 src/common/game.cpp:596
 msgid   " is already in the masterlist."
 msgstr  "已存在于masterlist中。"
 
-#: src/common/game.cpp:537 src/common/game.cpp:601
+#: src/common/game.cpp:539 src/common/game.cpp:603
 msgid   " is not in the masterlist, cannot override."
 msgstr  "不存在于masterlist中，不能覆盖。"
 
-#: src/common/game.cpp:551
+#: src/common/game.cpp:553
 msgid   " is not installed, and is not in the masterlist."
 msgstr  "未安装，并且不存在于masterlist中。"
 
-#: src/common/game.cpp:557
+#: src/common/game.cpp:559
 msgid   " is not in the masterlist and has not been sorted by a rule."
 msgstr  "不存在于masterlist中并且未定义排序规则。"
 
-#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+#: src/common/game.cpp:616 src/common/game.cpp:670 src/common/game.cpp:691
 msgid   "The group "
 msgstr  "群组"
 
-#: src/common/game.cpp:614 src/common/game.cpp:668 src/common/game.cpp:689
+#: src/common/game.cpp:616 src/common/game.cpp:670 src/common/game.cpp:691
 msgid   " is not in the masterlist or is malformatted."
 msgstr  "不存在于masterlist中或者格式错误。"
 
-#: src/common/game.cpp:748 src/common/game.cpp:766
+#: src/common/game.cpp:753 src/common/game.cpp:774
 msgid   "Version: "
 msgstr  "版本："
 
-#: src/common/game.cpp:750 src/common/game.cpp:768 src/common/game.cpp:854
-#: src/common/game.cpp:856
+#: src/common/game.cpp:755 src/common/game.cpp:776 src/common/game.cpp:862
+#: src/common/game.cpp:864
 msgid   "Checksum: "
 msgstr  "CRC："
 
-#: src/common/game.cpp:824
+#: src/common/game.cpp:832
 msgid   "The order of plugins set by BOSS differs from their order in its "
         "masterlist, as one or more of the installed plugins is false-"
         "flagged. For more information, see \"file:../Docs/BOSS%20Readme."
@@ -282,28 +320,28 @@ msgstr  "由BOSS调整的排序与masterlist中的排序不一致，因为一个
         "插件标记错误。更新信息可以查看\"file:../Docs/BOSS%20Readme."
         "html#appendix-c False-Flagged Plugins\"。"
 
-#: src/common/game.cpp:827
+#: src/common/game.cpp:835
 msgid   "Could not enforce load order master/plugin partition. Details: "
 msgstr  "无法运行.ESM、.ESP排序比较。详细信息："
 
-#: src/common/game.cpp:848 src/output/boss_log.cpp:388
+#: src/common/game.cpp:856 src/output/boss_log.cpp:388
 #: src/output/boss_log.cpp:392 src/boss_cli.cpp:88
 msgid   "Version "
 msgstr  "版本 "
 
-#: src/common/game.cpp:850
+#: src/common/game.cpp:858
 msgid   "Active"
 msgstr  "已激活"
 
-#: src/common/game.cpp:872
+#: src/common/game.cpp:880
 msgid   "Error: "
 msgstr  "错误："
 
-#: src/common/game.cpp:907 src/boss_cli.cpp:356
+#: src/common/game.cpp:915 src/boss_cli.cpp:356
 msgid   "Critical Error: "
 msgstr  "严重错误："
 
-#: src/common/game.cpp:908 src/gui/main_window.cpp:551
+#: src/common/game.cpp:916 src/gui/main_window.cpp:551
 #: src/gui/main_window.cpp:608 src/gui/main_window.cpp:661 src/boss_cli.cpp:357
 #: src/boss_cli.cpp:424 src/boss_cli.cpp:470 src/boss_cli.cpp:512
 msgid   "Check the Troubleshooting section of the ReadMe for more information "
@@ -311,7 +349,7 @@ msgid   "Check the Troubleshooting section of the ReadMe for more information "
 msgstr  "请检查说明文档中问题解决部分的介绍，获取更多相关信息以及可能的解决办"
         "法。"
 
-#: src/common/game.cpp:909 src/gui/main_window.cpp:552
+#: src/common/game.cpp:917 src/gui/main_window.cpp:552
 #: src/gui/main_window.cpp:609 src/gui/main_window.cpp:662 src/boss_cli.cpp:358
 #: src/boss_cli.cpp:425 src/boss_cli.cpp:471 src/boss_cli.cpp:513
 msgid   "Utility will end now."
@@ -802,12 +840,12 @@ msgid   "Masterlist revision: %1%."
 msgstr  ""
 
 #: src/gui/user_rule_editor.cpp:455
-msgid   "before"
-msgstr  "早于"
-
-#: src/gui/user_rule_editor.cpp:455
 msgid   "after"
 msgstr  "晚于"
+
+#: src/gui/user_rule_editor.cpp:455
+msgid   "before"
+msgstr  "早于"
 
 #: src/gui/user_rule_editor.cpp:457
 msgid   "top"
@@ -1409,21 +1447,6 @@ msgstr  "运行BOSS，但不修改排序"
 msgid   "Invalid selection."
 msgstr  "选项无效。"
 
-#~ msgid        "No game master .esm file found!"
-#~ msgstr       "找不到游戏.ESM文件！"
-
-#~ msgid        "Cannot find online masterlist revision number!"
-#~ msgstr       "找不到在线masterlist修订编号！"
-
-#~ msgid        "Cannot find online masterlist revision date!"
-#~ msgstr       "找不到在线masterlist修订日期！"
-
-#~ msgid        "Cannot read list of files to be updated!"
-#~ msgstr       "无法读取需要更新的文件列表！"
-
-#~ msgid        "Downloaded file \"%1%\" failed verification test!"
-#~ msgstr       "已下载的文件\"%1%\"验证失败！"
-
 #~ msgid        "cURL cannot be initialised!"
 #~ msgstr       "cURL无法初始化！"
 
@@ -1452,19 +1475,6 @@ msgstr  "选项无效。"
 
 #~ msgid        "Cancelled by user."
 #~ msgstr       "用户已取消。"
-
-#~ msgid        "Memory allocation failed."
-#~ msgstr       "记忆分配出错。"
-
-#~ msgid        "No Internet connection detected."
-#~ msgstr       "未检测到可用网络。"
-
-#~ msgid        "No tag map has yet been initialised."
-#~ msgstr       "标签映射未初始化。"
-
-#~ msgid        "The requested change to the active plugins list would result "
-#~      "in over 255 plugins being active."
-#~ msgstr       "对已激活插件列表的修改将导致超过255个插件被激活。"
 
 #~ msgid        "\tVersion "
 #~ msgstr       "由<a href=\"http://www.tesfans.org/boss-chinese-translator/"
