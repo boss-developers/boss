@@ -165,30 +165,30 @@ struct _boss_db_int {
 // The following are the possible codes that the API can return.
 // Taken from common/error.h and extended.
 BOSS_API const uint32_t BOSS_API_OK                           = boss::BOSS_OK;
-BOSS_API const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY       = boss::BOSS_OK_NO_UPDATE_NECESSARY;
-BOSS_API const uint32_t BOSS_API_WARN_BAD_FILENAME            = boss::BOSS_ERROR_ENCODING_CONVERSION_FAIL;
-BOSS_API const uint32_t BOSS_API_WARN_LO_MISMATCH             = boss::BOSS_ERROR_LO_MISMATCH;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL        = boss::BOSS_ERROR_FILE_WRITE_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL       = boss::BOSS_ERROR_FS_FILE_DELETE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8          = boss::BOSS_ERROR_FILE_NOT_UTF8;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND         = boss::BOSS_ERROR_FILE_NOT_FOUND;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL       = boss::BOSS_ERROR_FS_FILE_RENAME_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL    = boss::BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL   = boss::BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL             = boss::BOSS_ERROR_FILE_PARSE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL    = boss::BOSS_ERROR_CONDITION_EVAL_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL        = boss::BOSS_ERROR_REGEX_EVAL_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL             = boss::BOSS_ERROR_FILE_PARSE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND         = boss::BOSS_ERROR_NO_GAME_DETECTED;
+BOSS_API const uint32_t BOSS_API_WARN_BAD_FILENAME            = boss::BOSS_ERROR_ENCODING_CONVERSION_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL    = boss::BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL   = boss::BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL       = boss::BOSS_ERROR_FS_FILE_RENAME_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL       = boss::BOSS_ERROR_FS_FILE_DELETE_FAIL;
+BOSS_API const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY       = boss::BOSS_OK_NO_UPDATE_NECESSARY;
+BOSS_API const uint32_t BOSS_API_WARN_LO_MISMATCH             = boss::BOSS_ERROR_LO_MISMATCH;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM                 = boss::BOSS_ERROR_NO_MEM;
 BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS           = boss::BOSS_ERROR_INVALID_ARGS;
 BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL           = boss::BOSS_ERROR_NETWORK_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION = boss::BOSS_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP             = boss::BOSS_ERROR_NO_TAG_MAP;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGINS_FULL           = boss::BOSS_ERROR_PLUGINS_FULL;
-BOSS_API const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND         = boss::BOSS_ERROR_NO_GAME_DETECTED;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER   = boss::BOSS_ERROR_PLUGIN_BEFORE_MASTER;
 BOSS_API const uint32_t BOSS_API_ERROR_INVALID_SYNTAX         = boss::BOSS_ERROR_INVALID_SYNTAX;
-BOSS_API const uint32_t BOSS_API_RETURN_MAX                   = boss::BOSS_ERROR_MAX;
 BOSS_API const uint32_t BOSS_API_ERROR_GIT_ERROR              = boss::BOSS_ERROR_GIT_ERROR;
+BOSS_API const uint32_t BOSS_API_RETURN_MAX                   = boss::BOSS_ERROR_MAX;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO      = 0;
@@ -289,6 +289,7 @@ uint8_t * StringToUint8_tString(std::string str) {
 
 uint32_t ReturnCode(uint32_t returnCode, std::string details) {
 	lastErrorDetails = details;
+	//std::cerr << details << std::endl;
 	return returnCode;
 }
 
@@ -299,6 +300,7 @@ uint32_t ReturnCode(uint32_t returnCode) {
 
 uint32_t ReturnCode(boss::boss_error e) {
 	lastErrorDetails = e.getString();
+	//std::cerr << e.getString() << std::endl;
 	return e.getCode();
 }
 
@@ -1632,7 +1634,7 @@ BOSS_API uint32_t GetDirtyMessage(boss_db db, const uint8_t *plugin,
 				} catch (std::bad_alloc /*&e*/) {
 					return ReturnCode(boss::boss_error(boss::BOSS_ERROR_NO_MEM));
 				}
-				 *message = db->extString;
+				*message = db->extString;
 
 				if (messageIter->Data().find("Do not clean.") != std::string::npos)  // Mod should not be cleaned.
 					*needsCleaning = BOSS_API_CLEAN_NO;

@@ -50,16 +50,12 @@ BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_PARSE_FAIL                      
 BOSS_COMMON const std::uint32_t BOSS_ERROR_CONDITION_EVAL_FAIL                  = 7;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_REGEX_EVAL_FAIL                      = 8;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_NO_GAME_DETECTED                     = 9;
-BOSS_COMMON const std::uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL             = 10;
-BOSS_COMMON const std::uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER                 = 39;
-BOSS_COMMON const std::uint32_t BOSS_ERROR_INVALID_SYNTAX                       = 40;
 
+BOSS_COMMON const std::uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL             = 10;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL = 11;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL     = 12;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL           = 13;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_CRC_MISMATCH                    = 14;
-
-BOSS_COMMON const std::uint32_t BOSS_ERROR_GIT_ERROR                            = 41;
 
 BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL           = 15;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL          = 16;
@@ -78,8 +74,12 @@ BOSS_COMMON const std::uint32_t BOSS_ERROR_NETWORK_FAIL                         
 BOSS_COMMON const std::uint32_t BOSS_ERROR_NO_INTERNET_CONNECTION               = 36;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_NO_TAG_MAP                           = 37;
 BOSS_COMMON const std::uint32_t BOSS_ERROR_PLUGINS_FULL                         = 38;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER                 = 39;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_INVALID_SYNTAX                       = 40;
 
-BOSS_COMMON const std::uint32_t BOSS_ERROR_MAX = BOSS_ERROR_GIT_ERROR;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_GIT_ERROR                            = 41;
+
+BOSS_COMMON const std::uint32_t BOSS_ERROR_MAX                                  = BOSS_ERROR_GIT_ERROR;
 
 
 ////////////////////////////////
@@ -134,6 +134,8 @@ std::string boss_error::getString() const {
 		return (boost::format(bloc::translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
 		return (boost::format(bloc::translate("\"%1%\" cannot be found!")) % errSubject).str();
+	else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
+		return (boost::format(bloc::translate("Parsing of \"%1%\" failed!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
 		return (boost::format(bloc::translate("Evaluation of conditional \"%1%\" for item \"%2%\" failed!")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
@@ -142,10 +144,6 @@ std::string boss_error::getString() const {
 		return bloc::translate("No game detected!");
 	else if (errCode == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
 		return (boost::format(bloc::translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
-	else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
-		return (boost::format(bloc::translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
-	else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
-		return errString;
 	else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL)
 		return bloc::translate("Cannot find online masterlist revision number!");
 	else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL)
@@ -154,10 +152,10 @@ std::string boss_error::getString() const {
 		return bloc::translate("Cannot read list of files to be updated!");
 	else if (errCode == BOSS_ERROR_FILE_CRC_MISMATCH)
 		return (boost::format(bloc::translate("Downloaded file \"%1%\" failed verification test!")) % errSubject).str();
-	else if (errCode == BOSS_ERROR_GIT_ERROR)
-		return (boost::format(bloc::translate("Git operation failed. Error: %1%")) % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
 		return (boost::format(bloc::translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)
+		return (boost::format(bloc::translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)
 		return (boost::format(bloc::translate("\"%1%\" cannot be renamed! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_DELETE_FAIL)
@@ -166,10 +164,6 @@ std::string boss_error::getString() const {
 		return (boost::format(bloc::translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_ITER_DIRECTORY_FAIL)
 		return (boost::format(bloc::translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
-	else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
-		return (boost::format(bloc::translate("Parsing of \"%1%\" failed!")) % errSubject).str();
-	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)
-		return (boost::format(bloc::translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
 		return (boost::format(bloc::translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_NO_MEM)
@@ -180,6 +174,12 @@ std::string boss_error::getString() const {
 		return bloc::translate("No tag map has yet been initialised.");
 	else if (errCode == BOSS_ERROR_PLUGINS_FULL)
 		return bloc::translate("The requested change to the active plugins list would result in over 255 plugins being active.");
+	else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
+		return (boost::format(bloc::translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
+	else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
+		return errString;
+	else if (errCode == BOSS_ERROR_GIT_ERROR)
+		return (boost::format(bloc::translate("Git operation failed. Error: %1%")) % errString).str();
 	return bloc::translate("No error.");
 }
 

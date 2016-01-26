@@ -91,30 +91,30 @@ typedef struct {
 
 // The following are the possible codes that the API can return.
 BOSS_API extern const uint32_t BOSS_API_OK;
-BOSS_API extern const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY;
-BOSS_API extern const uint32_t BOSS_API_WARN_BAD_FILENAME;
-BOSS_API extern const uint32_t BOSS_API_WARN_LO_MISMATCH;
 BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8;
 BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND;
+BOSS_API extern const uint32_t BOSS_API_WARN_BAD_FILENAME;
+BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL;
+BOSS_API extern const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY;
+BOSS_API extern const uint32_t BOSS_API_WARN_LO_MISMATCH;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGINS_FULL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_SYNTAX;
-BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;
 BOSS_API extern const uint32_t BOSS_API_ERROR_GIT_ERROR;
+BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API extern const uint32_t BOSS_API_CLEAN_NO;

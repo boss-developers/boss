@@ -29,6 +29,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 #include <fstream>
 #include <iostream>
@@ -48,18 +49,19 @@ int main() {
 	boost::filesystem::path::imbue(loc);
 
 	boss_db db;
-	std::uint8_t *mPath = reinterpret_cast<std::uint8_t *>("Oblivion/masterlist.txt");
-	std::uint8_t *uPath = reinterpret_cast<std::uint8_t *>("");
-	std::uint8_t *gPath = reinterpret_cast<std::uint8_t *>("..");
+	const std::uint8_t *mPath = reinterpret_cast<const std::uint8_t *>("oblivion/masterlist.txt");
+	const std::uint8_t *uPath = reinterpret_cast<const std::uint8_t *>("");
+	const std::uint8_t *gPath = reinterpret_cast<const std::uint8_t *>("..");
 	std::uint32_t game = BOSS_API_GAME_OBLIVION;
 
-	const std::uint8_t *file = reinterpret_cast<std::uint8_t *>("minimal.txt");
-	const std::uint8_t *cleanMod = reinterpret_cast<std::uint8_t *>("All Natural Base.esm");
-	const std::uint8_t *doNotCleanMod = reinterpret_cast<std::uint8_t *>("bgBalancingEVLAMEAddition.esp");
-	const std::uint8_t *inactiveMod = reinterpret_cast<std::uint8_t *>("français.esp");
-	const std::uint8_t *messageMod = reinterpret_cast<std::uint8_t *>("PerkUP-5555.esp");
-	const std::uint8_t *isActiveMod = reinterpret_cast<std::uint8_t *>("汉语漢語.esp");
-	const std::uint8_t *info = reinterpret_cast<std::uint8_t *>("Testing the API's SubmitUnrecognisedPlugin function.");
+	const std::uint8_t *file = reinterpret_cast<const std::uint8_t *>("minimal.txt");
+	const std::uint8_t *cleanMod = reinterpret_cast<const std::uint8_t *>("All Natural Base.esm");
+	const std::uint8_t *doNotCleanMod = reinterpret_cast<const std::uint8_t *>("bgBalancingEVLAMEAddition.esp");
+	const std::uint8_t *doCleanMod = reinterpret_cast<const std::uint8_t *>("PalePassIce.esp");
+	const std::uint8_t *inactiveMod = reinterpret_cast<const std::uint8_t *>("français.esp");
+	const std::uint8_t *messageMod = reinterpret_cast<const std::uint8_t *>("PerkUP-5555.esp");
+	const std::uint8_t *isActiveMod = reinterpret_cast<const std::uint8_t *>("汉语漢語.esp");
+	const std::uint8_t *info = reinterpret_cast<const std::uint8_t *>("Testing the API's SubmitUnrecognisedPlugin function.");
 	std::uint8_t **sortedPlugins;
 	std::uint8_t **unrecPlugins;
 	std::size_t len;
@@ -74,10 +76,10 @@ int main() {
 	BossMessage *messages;
 
 	std::uint32_t ret;
-	boss::fstream::ofstream out("API test.txt");
+	boss::boss_fstream::ofstream out("API test.txt");
 
 	out << "TESTING IsCompatibleVersion(...)" << std::endl;
-	bool b = IsCompatibleVersion(2, 1, 0);
+	bool b = IsCompatibleVersion(2, 3, 2);
 	if (b) {
 		out << '\t' << "API is compatible." << std::endl;
 	} else {
@@ -102,10 +104,10 @@ int main() {
 		if (ret != BOSS_API_OK)
 			out << '\t' << "Masterlist update failed. Error: " << ret << std::endl;
 
-		out << "TESTING SubmitUnrecognisedPlugin(...)" << std::endl;
+		/*out << "TESTING SubmitUnrecognisedPlugin(...)" << std::endl;
 		ret = SubmitUnrecognisedPlugin(db, cleanMod, NULL, info);
 		if (ret != BOSS_API_OK)
-			out << '\t' << "SubmitUnrecognisedPlugin(...) failed. Error: " << ret << std::endl;
+			out << '\t' << "SubmitUnrecognisedPlugin(...) failed. Error: " << ret << std::endl;*/
 
 		out << "TESTING Load(...)" << std::endl;
 		ret = Load(db, mPath, NULL);
@@ -152,6 +154,18 @@ int main() {
 					out << '\t' << "Failed to get dirty info on \"" << doNotCleanMod << "\". Error no " << ret << std::endl;
 				} else {
 					out << '\t' << "\"" << doNotCleanMod << "\" clean status: " << toClean << std::endl;
+					if (message != NULL) {
+						out << '\t' << "Message: " << message << std::endl;
+					}
+				}
+
+				out << "TESTING GetDirtyMessage(...)" << std::endl;
+				// Now try getting dirty message from one that will have one.
+				ret = GetDirtyMessage(db, doCleanMod, &message, &toClean);
+				if (ret != BOSS_API_OK) {
+					out << '\t' << "Failed to get dirty info on \"" << doCleanMod << "\". Error no " << ret << std::endl;
+				} else {
+					out << '\t' << "\"" << doCleanMod << "\" clean status: " << toClean << std::endl;
 					if (message != NULL) {
 						out << '\t' << "Message: " << message << std::endl;
 					}
@@ -213,6 +227,10 @@ int main() {
 				}
 
 				out << "TESTING GetActivePlugins(...)" << std::endl;
+				//std::size_t len2 = len;
+				/*std::uint8_t **sortedPlugins2;
+				for(std::size_t i = 0; i < len; i++)
+					std::memcpy(*sortedPlugins2 + i, *sortedPlugins + i, len);*/
 				ret = GetActivePlugins(db, &sortedPlugins, &len);
 				if (BOSS_API_OK != ret) {
 					out << '\t' << "GetActivePlugins(...) failed. Error: " << ret << std::endl;
