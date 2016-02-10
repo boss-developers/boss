@@ -90,57 +90,57 @@ typedef struct {
 } BossMessage;
 
 // The following are the possible codes that the API can return.
-BOSS_API extern const uint32_t BOSS_API_OK;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND;
-BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND;
-BOSS_API extern const uint32_t BOSS_API_WARN_BAD_FILENAME;
-BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL;
-BOSS_API extern const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY;
-BOSS_API extern const uint32_t BOSS_API_WARN_LO_MISMATCH;
-BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
-BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
-BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
-BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
-BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
-BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGINS_FULL;
+BOSS_API extern const uint32_t BOSS_API_OK;  ///< The function completed successfully.
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL;  ///< A file could not be written to.
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8;  ///< The specified BOSS file (masterlist or userlist) is not encoded in UTF-8.
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND;  ///< The specified file could not be found.
+BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;  ///< There was an error parsing the file.
+BOSS_API extern const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL;  ///< There was an error evaluating the conditionals in the masterlist.
+BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;  ///< There was an error evaluating the regular expressions in the masterlist.
+BOSS_API extern const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND;  ///< The specified game could not be found.
+BOSS_API extern const uint32_t BOSS_API_WARN_BAD_FILENAME;  ///< The plugin filename contains characters that do not have Windows-1251/1252 code points. The plugin cannot be activated.
+BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL;  ///< The modification date of a file could not be read.
+BOSS_API extern const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL;  ///< The modification date of a file could not be set.
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL;  ///< A file could not be renamed.
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL;  ///< A file could not be deleted.
+BOSS_API extern const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY;  ///< No update was found for the masterlist.
+BOSS_API extern const uint32_t BOSS_API_WARN_LO_MISMATCH;  ///< The order of plugins in plugins.txt and their order in loadorder.txt does not match. This is due to something (eg. the Skyrim launcher) editing one file without sychronising the other. Synchronisation is automatic when load order is managed through BAPI.
+BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;  ///< The API was unable to allocate the required memory.
+BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;  ///< Invalid arguments were given for the function.
+BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;  ///< There was an error in an Internet-related operation.
+BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;  ///< No Internet connection detected.
+BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;  ///< No Bash Tag map has been generated yet. GetBashTagMap must be run before GetModBashTags to build the Bash Tag map.
+BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGINS_FULL;  ///< Writing the specified plugins to plugins.txt would bring the number of active plugins over 255, which is the maximum allowed.
 BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_SYNTAX;
 BOSS_API extern const uint32_t BOSS_API_ERROR_GIT_ERROR;
-BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;
+BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;  ///< Matches the value of the highest-numbered return code. It isn't returned by any functions.
 
 // The following are the mod cleanliness states that the API can return.
-BOSS_API extern const uint32_t BOSS_API_CLEAN_NO;
-BOSS_API extern const uint32_t BOSS_API_CLEAN_YES;
-BOSS_API extern const uint32_t BOSS_API_CLEAN_UNKNOWN;
+BOSS_API extern const uint32_t BOSS_API_CLEAN_NO;  ///< The plugin does not need cleaning or should not be cleaned.
+BOSS_API extern const uint32_t BOSS_API_CLEAN_YES;  ///< The plugin needs cleaning.
+BOSS_API extern const uint32_t BOSS_API_CLEAN_UNKNOWN;  ///< BOSS does not know whether the plugin needs cleaning or not, or if it should not be cleaned.
 
 // The following are for signifying what load order method is being used:
-BOSS_API extern const uint32_t BOSS_API_LOMETHOD_TIMESTAMP;
-BOSS_API extern const uint32_t BOSS_API_LOMETHOD_TEXTFILE;
+BOSS_API extern const uint32_t BOSS_API_LOMETHOD_TIMESTAMP;  ///< The API is running for a game which uses the timestamp-based load order system. Oblivion, Fallout 3, Fallout: New Vegas all use this system, as does pre-v1.4.26 Skyrim.
+BOSS_API extern const uint32_t BOSS_API_LOMETHOD_TEXTFILE;  ///< The API is running for a game which uses the textfile-based load order system. Skyrim v1.4.26+ uses this system.
 
 // The following are the games identifiers used by the API.
-BOSS_API extern const uint32_t BOSS_API_GAME_OBLIVION;
-BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUT3;
-BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUTNV;
-BOSS_API extern const uint32_t BOSS_API_GAME_NEHRIM;
-BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;
+BOSS_API extern const uint32_t BOSS_API_GAME_OBLIVION;  ///< The Elder Scrolls IV: Oblivion
+BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUT3;  ///< Fallout 3
+BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUTNV;  ///< Fallout: New Vegas
+BOSS_API extern const uint32_t BOSS_API_GAME_NEHRIM;  ///< Nehrim - At Fate's Edge
+BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;  ///< The Elder Scrolls V: Skyrim
 //BOSS_API extern const uint32_t BOSS_API_GAME_MORROWIND;
 
 // BOSS message types.
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY;
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_TAG;
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_REQUIREMENT;
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_INCOMPATIBILITY;
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_DIRTY;
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_WARN;
-BOSS_API extern const uint32_t BOSS_API_MESSAGE_ERROR;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY;  ///< A general message.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_TAG;  ///< A Bash Tag suggestion or suggestions.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_REQUIREMENT;  ///< An installation requirement or requirements.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_INCOMPATIBILITY;  ///< An incompatibility or incompatibilities.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_DIRTY;  ///< A message about dirty edits.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_WARN;  ///< A warning message.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_ERROR;  ///< An error message.
 
 
 
