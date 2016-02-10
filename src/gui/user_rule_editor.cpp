@@ -839,7 +839,7 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent &event) {
 			SortModBox->Enable(true);
 			BeforeAfterChoiceBox->Enable(true);
 			SortModBox->SetValue(wxString(lines[j].Object().c_str(), wxConvUTF8));
-			if (lines[j].Key() == BEFORE)
+			if (lines[j].Key() == AFTER)
 				BeforeAfterChoiceBox->SetSelection(0);
 			else
 				BeforeAfterChoiceBox->SetSelection(1);
@@ -1003,9 +1003,9 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			RuleLine newLine;
 			newLine.Object(sortItem);
 			if (BeforeAfterChoiceBox->GetSelection() == 0)
-				newLine.Key(BEFORE);
-			else
 				newLine.Key(AFTER);
+			else
+				newLine.Key(BEFORE);
 			std::vector<RuleLine> lines = newRule.Lines();
 			lines.push_back(newLine);
 			newRule.Lines(lines);
